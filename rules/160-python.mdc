@@ -27,7 +27,7 @@ When providing code assistance, follow these guardrails:
 
 ## 1) Standards
 
-- **Shebang:** `#!/usr/bin/env -S uv run` (preferred) or `#!/usr/bin/env python3`.
+- **Shebang:** `#!/usr/bin/env -S uv run` (required for new scripts). Use `uv` for modern Python tooling.
 - **Python Version:** ≥ 3.12.
 - **Formatting:** 4-space indents; soft wrap at 120 chars (adhere to PEP 8, PEP 257, PEP 484).
 - **Linting:** Run `black`, `ruff`, and `pylint`. Aim for a score of ≥9.0 on `pylint`.
@@ -47,7 +47,7 @@ When providing code assistance, follow these guardrails:
     - `Union[X, Y]` → `X | Y`
     - `Optional[X]` → `X | None`
 - **Type Checking:** Enable strict mode (`mypy --strict`, `pyright`, or `pyre`) where appropriate. Use `NewType`, `TypedDict`, or `TypeAlias` for specificity.
-- **Dependencies:** Prefer `uv` for package management. Introduce third-party libraries only when needed—stick to stdlib otherwise.
+- **Dependencies:** Use `uv` for package management. Define dependencies in `pyproject.toml` (not `requirements.txt`). Introduce third-party libraries only when needed—stick to stdlib otherwise.
 - **Circular Imports:** Avoid by restructuring (move shared logic to separate module).
 - **Local Libraries:** Use `aws_utils.py`, `cloudflare_utils.py`, `utils.py` for common tasks to avoid duplication.
 
@@ -571,8 +571,7 @@ my_utils/
 ├── tests/
 │   └── test_aws_helper.py
 ├── README.md
-├── pyproject.toml
-└── requirements.txt
+└── pyproject.toml
 ```
 
 **Modern Approach: pyproject.toml (Recommended):**
@@ -600,7 +599,32 @@ dev = ["pytest>=7.0", "black", "ruff"]
 where = ["."]
 ```
 
-**Installation Commands:**
+**Installation Commands (with uv):**
+```bash
+# Initialize new project
+uv init my-project
+cd my-project
+
+# Add dependencies
+uv add boto3 pydantic
+
+# Add dev dependencies
+uv add --dev pytest black ruff
+
+# Sync dependencies (install from lock file)
+uv sync
+
+# Run script with uv
+uv run python main.py
+
+# Build distribution
+uv build
+
+# Publish to PyPI
+uv publish
+```
+
+**Legacy pip commands (if uv unavailable):**
 ```bash
 # Development mode (editable install)
 pip install -e .
@@ -610,12 +634,6 @@ pip install .
 
 # With optional dependencies
 pip install -e ".[dev]"
-
-# Build distribution
-python -m build
-
-# Upload to PyPI
-python -m twine upload dist/*
 ```
 
 **Best Practices:**
@@ -627,14 +645,19 @@ python -m twine upload dist/*
 
 ### Docker & CI/CD
 
-- **Docker:** Use multi-stage builds:
+- **Docker:** Use multi-stage builds with `uv`:
   ```dockerfile
-  FROM python:3.12 AS builder
-  COPY requirements.txt .
-  RUN pip install -r requirements.txt
-  FROM python:3.12-slim
-  COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+  FROM ghcr.io/astral-sh/uv:python3.12 AS builder
+  WORKDIR /app
+  COPY pyproject.toml uv.lock ./
+  RUN uv sync --frozen --no-dev
   COPY . .
+
+  FROM python:3.12-slim
+  WORKDIR /app
+  COPY --from=builder /app/.venv /app/.venv
+  COPY --from=builder /app /app
+  ENV PATH="/app/.venv/bin:$PATH"
   CMD ["python", "main.py"]
   ```
 - **Executables:** Use `PyInstaller` or `cx_Freeze` for standalone apps.
