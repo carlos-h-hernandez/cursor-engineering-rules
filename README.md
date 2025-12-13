@@ -10,15 +10,15 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 
 ---
 
-## 🎯 What's Included
+## What's Included
 
-### 📋 Core Standards
+### Core Standards
 
 - **[100-core.mdc](rules/100-core.mdc)** - Core coding standards and review guidelines
 - **[050-workflow.mdc](rules/050-workflow.mdc)** - Development workflow patterns
 - **[110-git.mdc](rules/110-git.mdc)** - Git conventions and commit standards
 
-### 💻 Programming Languages
+### Programming Languages
 
 - **[160-python.mdc](rules/160-python.mdc)** - Python best practices (PEP 8, type hints, async)
 - **[180-go.mdc](rules/180-go.mdc)** - Go patterns (error handling, concurrency, generics)
@@ -27,19 +27,19 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 - **[185-rust.mdc](rules/185-rust.mdc)** - Rust (ownership, borrowing, async)
 - **[130-bash.mdc](rules/130-bash.mdc)** - Shell scripting (POSIX compliance, safety)
 
-### ☁️ Cloud Platforms
+### Cloud Platforms
 
 - **[280-aws.mdc](rules/280-aws.mdc)** - AWS (EKS, VPC Lattice, Zero Trust, IAM)
 - **[285-azure.mdc](rules/285-azure.mdc)** - Azure (Bicep, Key Vault, App Service)
 - **[290-gcp.mdc](rules/290-gcp.mdc)** - GCP (Cloud Run, GKE, Secret Manager)
 - **[250-cloudflare.mdc](rules/250-cloudflare.mdc)** - Cloudflare (Workers, Rules Engine)
 
-### 🤖 AI & Machine Learning
+### AI & Machine Learning
 
 - **[295-ai-ml.mdc](rules/295-ai-ml.mdc)** - LLM integration (OpenAI, Claude, Bedrock, Vertex AI)
 - **[230-mcp-servers.mdc](rules/230-mcp-servers.mdc)** - Model Context Protocol servers
 
-### 🛠️ DevOps & Infrastructure
+### DevOps & Infrastructure
 
 - **[140-terraform.mdc](rules/140-terraform.mdc)** - Terraform (modules, state, validation)
 - **[150-cloudformation.mdc](rules/150-cloudformation.mdc)** - CloudFormation templates
@@ -49,12 +49,12 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 - **[195-helm.mdc](rules/195-helm.mdc)** - Helm charts and templating
 - **[155-docker.mdc](rules/155-docker.mdc)** - Docker & containers (multi-stage builds, security)
 
-### 🔒 Security & Testing
+### Security & Testing
 
 - **[310-security.mdc](rules/310-security.mdc)** - OWASP Top 10, secret management
 - **[300-testing.mdc](rules/300-testing.mdc)** - Unit/Integration/E2E testing strategies
 
-### 📚 Patterns & Best Practices
+### Patterns & Best Practices
 
 - **[320-api-design.mdc](rules/320-api-design.mdc)** - REST API design patterns
 - **[330-observability.mdc](rules/330-observability.mdc)** - Logging, metrics, tracing
@@ -65,14 +65,14 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 - **[190-makefile.mdc](rules/190-makefile.mdc)** - Makefile patterns
 - **[240-configuration.mdc](rules/240-configuration.mdc)** - Configuration management
 
-### 🧰 Utilities
+### Utilities
 
 - **[115-utilities.mdc](rules/115-utilities.mdc)** - CLI utilities (lynx, curl, jq, ripgrep)
 - **[800-markdown.mdc](rules/800-markdown.mdc)** - Markdown & Mermaid diagrams
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Option 1: Use Individual Rules
 
@@ -148,34 +148,34 @@ See [rules/INDEX.md](rules/INDEX.md) for complete categorization.
 
 ---
 
-## ✨ Features
+## Features
 
-### 🏆 Production Quality
+### Production Quality
 
-- ✅ **22,000+ lines** of curated best practices
-- ✅ **Battle-tested** patterns from real-world projects
-- ✅ **Security-first** approach (OWASP Top 10, secret scanning)
-- ✅ **Performance-focused** (benchmarks, optimization patterns)
+- **22,000+ lines** of curated best practices
+- **Battle-tested** patterns from real-world projects
+- **Security-first** approach (OWASP Top 10, secret scanning)
+- **Performance-focused** (benchmarks, optimization patterns)
 
-### 🎯 Comprehensive Coverage
+### Comprehensive Coverage
 
-- ✅ **9 programming languages** (Python, Go, TypeScript, JavaScript, Rust, Bash, SQL, etc.)
-- ✅ **3 major cloud platforms** (AWS, Azure, GCP)
-- ✅ **15+ DevOps tools** (Terraform, K8s, Docker, Ansible, Helm, GitHub Actions)
-- ✅ **AI/ML integration** (OpenAI, Claude, Bedrock, Vertex AI)
+- **9 programming languages** (Python, Go, TypeScript, JavaScript, Rust, Bash, SQL, etc.)
+- **3 major cloud platforms** (AWS, Azure, GCP)
+- **15+ DevOps tools** (Terraform, K8s, Docker, Ansible, Helm, GitHub Actions)
+- **AI/ML integration** (OpenAI, Claude, Bedrock, Vertex AI)
 
-### 📝 Code Examples
+### Code Examples
 
-- ✅ **Real-world examples** for every pattern
-- ✅ **Good vs Bad** comparisons
-- ✅ **Common mistakes** and anti-patterns
-- ✅ **Quick reference** sections
+- **Real-world examples** for every pattern
+- **Good vs Bad** comparisons
+- **Common mistakes** and anti-patterns
+- **Quick reference** sections
 
-### 🔄 Modern Standards
+### Modern Standards
 
-- ✅ **Latest versions** (Python 3.12+, Go 1.23+, Node 20+)
-- ✅ **Modern patterns** (async/await, generics, type safety)
-- ✅ **Current tools** (ripgrep, jq, httpie)
+- **Latest versions** (Python 3.12+, Go 1.23+, Node 20+)
+- **Modern patterns** (async/await, generics, type safety)
+- **Current tools** (ripgrep, jq, httpie)
 
 ---
 
@@ -216,7 +216,7 @@ files:
 
 ---
 
-## 📊 Statistics
+## Statistics
 
 | Metric | Count |
 |--------|-------|
@@ -229,7 +229,7 @@ files:
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
@@ -258,7 +258,7 @@ This project was inspired by and incorporates patterns from:
 
 ---
 
-## 🔗 Related Projects
+## Related Projects
 
 - [eslint-config-airbnb](https://github.com/airbnb/javascript) - JavaScript style guide
 - [google-styleguides](https://github.com/google/styleguide) - Google's style guides
@@ -266,7 +266,7 @@ This project was inspired by and incorporates patterns from:
 
 ---
 
-## 📧 Contact & Support
+## Contact & Support
 
 - **Issues**: [GitHub Issues](https://github.com/d-padmanabhan/cursor-engineering-rules/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/d-padmanabhan/cursor-engineering-rules/discussions)
@@ -275,4 +275,4 @@ This project was inspired by and incorporates patterns from:
 
 **Last Updated**: December 2025  
 **Version**: 1.0.0  
-**Status**: Production Ready ✅
+**Status**: Production Ready

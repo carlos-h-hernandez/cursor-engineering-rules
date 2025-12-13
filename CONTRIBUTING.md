@@ -4,7 +4,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ---
 
-## 🎯 How to Contribute
+## How to Contribute
 
 ### 1. Report Issues
 
@@ -75,15 +75,15 @@ Enhancement ideas:
 
 High-quality examples should:
 
-- ✅ Be production-ready (not toy examples)
-- ✅ Show best practices
-- ✅ Include error handling
-- ✅ Be well-commented
-- ✅ Follow the rule's standards
+- Be production-ready (not toy examples)
+- Show best practices
+- Include error handling
+- Be well-commented
+- Follow the rule's standards
 
 ---
 
-## 📝 Pull Request Process
+## Pull Request Process
 
 ### Before Submitting
 
@@ -134,7 +134,7 @@ refactor(go): reorganize concurrency section
 
 ---
 
-## 🏗️ Project Structure
+## 🏗Project Structure
 
 ```
 cursor-engineering-rules/
@@ -152,7 +152,7 @@ cursor-engineering-rules/
 
 ---
 
-## 📋 Rule Numbering & Priority
+## Rule Numbering & Priority
 
 ### Numbering Scheme
 
@@ -178,7 +178,7 @@ Rules are numbered by category:
 
 ---
 
-## ✅ Code Quality Standards
+## Code Quality Standards
 
 ### Rule File Standards
 
@@ -191,7 +191,7 @@ Rules are numbered by category:
 ### Code Example Standards
 
 ```markdown
-# ✅ GOOD - Clear, complete, explained
+# GOOD - Clear, complete, explained
 \```python
 def calculate_total(items: list[Item]) -> Decimal:
     """Calculate total with proper error handling."""
@@ -201,7 +201,7 @@ def calculate_total(items: list[Item]) -> Decimal:
     return sum(item.price for item in items)
 \```
 
-# ❌ BAD - No error handling
+# BAD - No error handling
 \```python
 def calculate_total(items):
     return sum(item.price for item in items)
@@ -250,7 +250,7 @@ Currently, all rules are in English. If you'd like to contribute translations:
 
 ---
 
-## 💡 Areas for Contribution
+## Areas for Contribution
 
 ### High Priority
 
@@ -278,7 +278,7 @@ Currently, all rules are in English. If you'd like to contribute translations:
 
 ---
 
-## 📧 Questions?
+## Questions?
 
 - **GitHub Discussions**: For general questions and discussions
 - **GitHub Issues**: For specific bugs or feature requests
@@ -320,6 +320,6 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to Cursor Engineering Rules!** 🎉
+**Thank you for contributing to Cursor Engineering Rules!**
 
 Your contributions help developers worldwide write better, more maintainable code.

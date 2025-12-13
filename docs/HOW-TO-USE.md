@@ -4,7 +4,7 @@ This guide explains how to integrate Cursor Engineering Rules into your projects
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Installation Methods](#installation-methods)
 2. [Configuration Strategies](#configuration-strategies)
@@ -352,11 +352,11 @@ Create a REST API endpoint with authentication, input validation, and rate limit
 
 Check that generated code follows patterns:
 
-- ✅ Proper error handling
-- ✅ Type annotations
-- ✅ Security best practices
-- ✅ Documentation
-- ✅ Tests
+- Proper error handling
+- Type annotations
+- Security best practices
+- Documentation
+- Tests
 
 ---
 
@@ -490,7 +490,7 @@ For team projects:
 
 ---
 
-## 🎯 Quick Reference
+## Quick Reference
 
 ### Essential Commands
 
