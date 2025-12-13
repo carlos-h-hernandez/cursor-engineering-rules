@@ -147,6 +147,44 @@ docs/
 - Define technical terms
 - Use examples liberally
 
+### Emoji Usage
+
+**Avoid emojis in professional technical documentation:**
+
+- ❌ Do NOT use decorative emojis in headings, lists, or body text
+- ❌ Do NOT use emojis as visual markers or icons
+- ❌ Emojis reduce professionalism and authority
+- ❌ Screen readers announce emojis, disrupting flow
+- ❌ Emojis don't render consistently across platforms
+
+**Rationale:**
+- Industry-standard style guides (Google, Microsoft, Airbnb, Uber) avoid emojis
+- Technical audiences expect professional, emoji-free documentation
+- Emojis are subjective and can be interpreted differently across cultures
+- Better alternatives exist: GitHub alerts (`[!NOTE]`, `[!TIP]`), badges, icons
+
+**Acceptable emoji usage (rare cases):**
+- ✅ Casual community forums or Discord channels
+- ✅ Internal team wikis (if team culture supports it)
+- ✅ Code comments for visual separation (use sparingly)
+- ✅ Commit messages (if project conventions allow)
+
+**Example - BAD (with emojis):**
+```markdown
+## 🚀 Quick Start
+### ✨ Features
+- ✅ Fast performance
+- 🔒 Secure by default
+```
+
+**Example - GOOD (without emojis):**
+```markdown
+## Quick Start
+### Features
+- Fast performance
+- Secure by default
+```
+
 ### Structure
 
 - Start with overview/context

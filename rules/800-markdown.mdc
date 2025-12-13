@@ -468,7 +468,70 @@ All documents should follow this structure:
 5. Incorporate **GitHub alerts** where they add value
 6. Use **Mermaid diagrams** to visualize complex concepts
 7. Use proper markdown formatting (lists, code blocks, links, emphasis)
-8. End with conclusion or next steps if applicable
+8. **Avoid decorative emojis** - use professional, clean formatting
+9. End with conclusion or next steps if applicable
+
+---
+
+## Emoji Guidelines
+
+**Do NOT use emojis in professional technical documentation.**
+
+### Why Avoid Emojis
+
+- **Professionalism**: Industry-standard style guides (Google, Microsoft, Airbnb, Uber) avoid emojis
+- **Accessibility**: Screen readers announce emojis ("rocket emoji", "checkmark emoji"), disrupting flow
+- **Consistency**: Emojis render differently across platforms (iOS, Android, GitHub, VS Code)
+- **Subjectivity**: Emoji interpretation varies across cultures and contexts
+- **Credibility**: Technical audiences expect authoritative, emoji-free documentation
+
+### Better Alternatives
+
+Instead of emojis, use:
+
+| Instead of Emoji | Use This |
+|-----------------|----------|
+| 🚀 Quick Start | `## Quick Start` (clean heading) |
+| ✅ Feature list | `- Feature name` (bullet list) |
+| ⚠️ Warning | `> [!WARNING]` (GitHub alert) |
+| 💡 Tip | `> [!TIP]` (GitHub alert) |
+| 📝 Note | `> [!NOTE]` (GitHub alert) |
+| 🔒 Security | Use badge: `![Security](https://img.shields.io/badge/Security-Passing-green)` |
+
+### Acceptable Emoji Usage (Rare Cases)
+
+Emojis MAY be used in:
+- Casual community forums or Discord channels
+- Internal team wikis (if team culture supports it)
+- Git commit messages (if project conventions allow, e.g., `:rocket:` for gitmoji)
+- Code comments for visual separation (use very sparingly)
+
+### Examples
+
+**BAD - With Emojis:**
+```markdown
+## 🚀 Quick Start Guide
+
+### ✨ Amazing Features
+- ✅ Super fast performance
+- 🔒 Secure by default
+- 💻 Easy to use
+
+> ⚠️ Warning: This is important!
+```
+
+**GOOD - Without Emojis:**
+```markdown
+## Quick Start Guide
+
+### Features
+- Fast performance
+- Secure by default
+- Easy to use
+
+> [!WARNING]
+> This is important!
+```
 
 ---
 
