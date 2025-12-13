@@ -179,7 +179,7 @@ See [rules/INDEX.md](rules/INDEX.md) for complete categorization.
 
 ---
 
-## 🎨 Customization
+## Customization
 
 ### Workspace-Specific Overrides
 
@@ -250,16 +250,3 @@ This project was inspired by and incorporates patterns from:
 - [eslint-config-airbnb](https://github.com/airbnb/javascript) - JavaScript style guide
 - [google-styleguides](https://github.com/google/styleguide) - Google's style guides
 - [uber-go-guide](https://github.com/uber-go/guide) - Uber's Go style guide
-
----
-
-## Contact & Support
-
-- **Issues**: [GitHub Issues](https://github.com/d-padmanabhan/cursor-engineering-rules/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/d-padmanabhan/cursor-engineering-rules/discussions)
-
----
-
-**Last Updated**: December 2025  
-**Version**: 1.0.0  
-**Status**: Production Ready
