@@ -363,7 +363,59 @@ Show your work:`;
 
 ## AI Agents
 
-### Simple Agent Pattern
+### Model Context Protocol (MCP) for Agents
+
+The [Model Context Protocol (MCP)](https://github.blog/open-source/maintainers/mcp-joins-the-linux-foundation-what-this-means-for-developers-building-the-next-era-of-ai-tools-and-agents/) is now the **vendor-neutral standard** for connecting AI agents to tools and systems, managed by the Linux Foundation's Agentic AI Foundation.
+
+**Why MCP Matters:**
+- **Vendor-neutral:** Works across Claude, Cursor, GitHub Copilot, and other AI agents
+- **Standard protocol:** Solves the n×m integration problem (one protocol, many clients/tools)
+- **Enterprise-ready:** OAuth support, secure remote servers, audit logging
+- **Production-grade:** Long-running task support, registry for discoverability
+
+**MCP vs. Custom Tool Integration:**
+
+```typescript
+// ❌ OLD WAY: Custom tool integration per AI platform
+// - OpenAI has function calling
+// - Anthropic has tools
+// - Custom agents need bespoke APIs
+// = n×m integration problem
+
+// ✅ NEW WAY: MCP standard protocol
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+
+const server = new Server({
+  name: 'my-tools',
+  version: '1.0.0',
+});
+
+// Works with all MCP-compatible clients
+server.setRequestHandler('tools/list', async () => ({
+  tools: [
+    {
+      name: 'search_docs',
+      description: 'Search internal documentation',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string' }
+        }
+      }
+    }
+  ]
+}));
+```
+
+**When to use MCP:**
+- Building tools for multiple AI platforms
+- Enterprise AI agents requiring OAuth/security
+- Long-running operations (builds, deployments)
+- Discoverable tool ecosystems
+
+**See also:** `230-mcp-servers.mdc` for MCP server patterns, OAuth, and security
+
+### Simple Agent Pattern (Without MCP)
 ```typescript
 interface Tool {
   name: string;
@@ -850,7 +902,7 @@ Rating (1-10):"""
 
 ## Related Files
 
-- `230-mcp-servers.mdc` - Building MCP servers and tools
+- `230-mcp-servers.mdc` - **MCP server patterns** (vendor-neutral AI agent standard)
 - `310-security.mdc` - Security best practices
 - `320-api-design.mdc` - API patterns
 - `330-observability.mdc` - Logging and monitoring
@@ -860,5 +912,16 @@ Rating (1-10):"""
 
 ---
 
+## Resources
+
+- [MCP joins Linux Foundation](https://github.blog/open-source/maintainers/mcp-joins-the-linux-foundation-what-this-means-for-developers-building-the-next-era-of-ai-tools-and-agents/) - Vendor-neutral AI agent standard
+- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [OpenAI API Docs](https://platform.openai.com/docs)
+- [Anthropic Claude API](https://docs.anthropic.com/)
+- [AWS Bedrock](https://aws.amazon.com/bedrock/)
+- [Google Vertex AI](https://cloud.google.com/vertex-ai)
+
+---
+
 **Last Updated**: December 2025
-**Purpose**: AI/ML development, LLM integration, cloud AI services, and agent patterns
+**Purpose**: AI/ML development, LLM integration, cloud AI services, agent patterns, and MCP standard protocol

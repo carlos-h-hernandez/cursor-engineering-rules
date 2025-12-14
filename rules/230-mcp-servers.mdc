@@ -16,9 +16,20 @@ files:
 
 **Goal:** Build MCP servers with rich, AI-agent-friendly documentation that enables effective tool selection and usage.
 
+## About MCP
+
+The [Model Context Protocol (MCP)](https://github.blog/open-source/maintainers/mcp-joins-the-linux-foundation-what-this-means-for-developers-building-the-next-era-of-ai-tools-and-agents/) is a **vendor-neutral, open standard** managed by the Linux Foundation's Agentic AI Foundation. MCP enables consistent AI agent integration across platforms (Claude Code, Cursor, GitHub Copilot, and others), solving the n×m integration problem where every AI client had to integrate separately with every tool.
+
+**Key Capabilities:**
+- **Multi-vendor:** GitHub, Microsoft, OpenAI, Anthropic, community-supported
+- **Enterprise-ready:** OAuth for remote servers, no proprietary tokens
+- **Long-running tasks:** Support for builds, deployments, multi-minute operations
+- **Discoverable:** MCP Registry for governance and discoverability
+- **Production-grade:** Industry-standard maturity (like Kubernetes, GraphQL)
+
 ## Core Principle
 
-**Exception to lean comment rules:** MCP tools require **detailed docstrings** because AI agents rely on them for tool selection and usage. Unlike human-facing code, agents need rich descriptions to understand capabilities and constraints.
+**Exception to lean comment rules:** MCP tools require **detailed docstrings** because AI agents rely on them for tool selection and usage. Unlike human-facing code, agents need rich descriptions to understand capabilities and constraints. This is critical for vendor-neutral AI agent ecosystems.
 
 ## Tool Documentation Standards
 
@@ -344,6 +355,289 @@ async def execute_shell_command(command: str) -> str:
     """
 ```
 
+---
+
+## OAuth & Remote Servers
+
+### OAuth Flow for Enterprise MCP Servers
+
+MCP supports OAuth for remote servers, enabling secure, compliant integrations at scale:
+
+```typescript
+// OAuth-enabled MCP server configuration
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { OAuth2Server } from '@modelcontextprotocol/sdk/oauth';
+
+const server = new Server(
+  {
+    name: 'enterprise-tools',
+    version: '1.0.0',
+  },
+  {
+    capabilities: {
+      tools: {},
+      oauth: {
+        authorizationEndpoint: 'https://auth.acme.com/oauth/authorize',
+        tokenEndpoint: 'https://auth.acme.com/oauth/token',
+        scopes: ['tools:read', 'tools:execute'],
+      },
+    },
+  }
+);
+
+// Validate OAuth token before tool execution
+async function validateToken(token: string): Promise<boolean> {
+  const response = await fetch('https://auth.acme.com/oauth/verify', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.ok;
+}
+```
+
+**Benefits:**
+- No proprietary token formats
+- Familiar authentication model for enterprises
+- Multi-machine orchestration support
+- Compliant with existing enterprise auth stacks
+
+---
+
+## Long-Running Tasks
+
+### Pattern for Builds, Deployments, and Multi-Minute Operations
+
+MCP supports long-running task APIs without polling hacks or custom callbacks:
+
+```python
+from typing import Optional
+import asyncio
+import uuid
+
+class TaskStatus:
+    """Track long-running task status."""
+
+    def __init__(self, task_id: str):
+        self.id = task_id
+        self.status = "pending"  # pending, running, completed, failed
+        self.progress = 0.0
+        self.message = ""
+        self.result: Optional[str] = None
+        self.error: Optional[str] = None
+
+# In-memory task store (use Redis/DB in production)
+tasks: dict[str, TaskStatus] = {}
+
+@mcp.tool
+async def start_deployment(
+    app_name: str,
+    version: str,
+    environment: str
+) -> str:
+    """Start application deployment (long-running task).
+
+    This operation typically takes 5-15 minutes. Use check_task_status()
+    to poll for completion.
+
+    Args:
+        app_name: Application to deploy
+        version: Version/tag to deploy
+        environment: Target environment (dev, staging, prod)
+
+    Returns:
+        JSON with task tracking info:
+        {
+            "task_id": "uuid-here",
+            "status": "pending",
+            "estimated_duration": "10-15 minutes",
+            "check_status_tool": "check_task_status"
+        }
+    """
+    task_id = str(uuid.uuid4())
+    tasks[task_id] = TaskStatus(task_id)
+
+    # Start async deployment
+    asyncio.create_task(run_deployment(task_id, app_name, version, environment))
+
+    return json.dumps({
+        "task_id": task_id,
+        "status": "pending",
+        "estimated_duration": "10-15 minutes",
+        "check_status_tool": "check_task_status"
+    })
+
+@mcp.tool
+async def check_task_status(task_id: str) -> str:
+    """Check status of a long-running task.
+
+    Args:
+        task_id: Task ID returned from start_deployment() or similar
+
+    Returns:
+        JSON with current status:
+        {
+            "task_id": "uuid",
+            "status": "running",
+            "progress": 0.45,
+            "message": "Deploying to production (45%)",
+            "result": null  // or result data if completed
+        }
+    """
+    if task_id not in tasks:
+        return json.dumps({"error": "Task not found"})
+
+    task = tasks[task_id]
+    return json.dumps({
+        "task_id": task.id,
+        "status": task.status,
+        "progress": task.progress,
+        "message": task.message,
+        "result": task.result,
+        "error": task.error
+    })
+```
+
+**Best Practices:**
+- Return task ID immediately
+- Provide separate status-check tool
+- Include estimated duration
+- Report progress percentage
+- Store task state (Redis, DB, not just memory)
+
+---
+
+## MCP Registry & Discoverability
+
+### Publishing to MCP Registry
+
+The [MCP Registry](https://github.com/modelcontextprotocol/registry) provides discoverability and governance:
+
+```json
+// mcp-server.json (registry manifest)
+{
+  "name": "enterprise-tools",
+  "version": "1.0.0",
+  "description": "Internal enterprise tools for deployment and monitoring",
+  "author": "Platform Team",
+  "license": "MIT",
+  "repository": "https://github.com/acme/mcp-enterprise-tools",
+  "tools": [
+    {
+      "name": "k8s_deploy",
+      "description": "Deploy applications to Kubernetes clusters",
+      "category": "deployment"
+    },
+    {
+      "name": "check_service_health",
+      "description": "Monitor service health metrics",
+      "category": "monitoring"
+    }
+  ],
+  "oauth": {
+    "required": true,
+    "scopes": ["deploy:write", "monitoring:read"]
+  },
+  "tags": ["kubernetes", "deployment", "monitoring", "enterprise"]
+}
+```
+
+**Enterprise Governance:**
+- Discoverability: Developers find high-quality servers
+- Governance: Enterprises control what users adopt
+- Versioning: Track and manage MCP server versions
+- Compliance: Audit which tools are available
+
+---
+
+## Security Best Practices
+
+### MCP Server Security Checklist
+
+```python
+# ✅ GOOD: Secure MCP server implementation
+import secrets
+from typing import Optional
+
+# 1. Token Validation
+async def validate_request(token: Optional[str]) -> bool:
+    """Validate OAuth token or API key."""
+    if not token:
+        return False
+
+    # Verify with auth provider (OAuth)
+    return await verify_oauth_token(token)
+
+# 2. Input Sanitization
+@mcp.tool
+async def execute_command(command: str) -> str:
+    """Execute command with input validation."""
+
+    # Allowlist approach
+    ALLOWED_COMMANDS = ['kubectl', 'helm', 'docker']
+    cmd_parts = command.split()
+
+    if not cmd_parts or cmd_parts[0] not in ALLOWED_COMMANDS:
+        raise ValueError(f"Command not allowed: {cmd_parts[0]}")
+
+    # Additional validation
+    if any(dangerous in command for dangerous in ['rm -rf', '> /dev/', '|', ';']):
+        raise ValueError("Potentially dangerous command detected")
+
+    return await safe_execute(command)
+
+# 3. Rate Limiting
+from collections import defaultdict
+import time
+
+request_counts = defaultdict(list)
+
+async def check_rate_limit(client_id: str, limit: int = 100, window: int = 60) -> bool:
+    """Implement rate limiting per client."""
+    now = time.time()
+
+    # Clean old requests
+    request_counts[client_id] = [
+        ts for ts in request_counts[client_id]
+        if now - ts < window
+    ]
+
+    if len(request_counts[client_id]) >= limit:
+        return False
+
+    request_counts[client_id].append(now)
+    return True
+
+# 4. Audit Logging
+import logging
+
+audit_logger = logging.getLogger('mcp.audit')
+
+@mcp.tool
+async def sensitive_operation(params: dict) -> str:
+    """Log all sensitive operations."""
+    audit_logger.info(
+        "Tool execution",
+        extra={
+            "tool": "sensitive_operation",
+            "client_id": get_client_id(),
+            "params": sanitize_params(params),
+            "timestamp": time.time()
+        }
+    )
+
+    return await execute_operation(params)
+```
+
+**Security Principles:**
+1. **OAuth by default** for remote servers
+2. **Input validation** on all tool parameters
+3. **Rate limiting** to prevent abuse
+4. **Audit logging** for compliance
+5. **Least privilege** - only required scopes
+6. **No hardcoded secrets** - use environment variables
+7. **Allowlist approach** for commands/operations
+
+---
+
 ## Testing MCP Tools
 
 ### Test Tool Documentation
@@ -364,16 +658,41 @@ def test_tool_docstring_completeness():
 
 When reviewing MCP tool code, check:
 
+### Documentation
 - [ ] Docstring is comprehensive and detailed
 - [ ] Input parameters are clearly documented
 - [ ] Output structure is specified (especially for JSON)
 - [ ] Error cases are documented
 - [ ] Examples are provided
-- [ ] Security implications are noted
 - [ ] Type hints are used
 - [ ] Tool name is descriptive
 - [ ] Related tools are grouped logically
+
+### Security
+- [ ] Security implications are noted
+- [ ] OAuth configuration (if remote server)
+- [ ] Input validation and sanitization
+- [ ] Rate limiting implemented
+- [ ] Audit logging for sensitive operations
+- [ ] No hardcoded secrets
+
+### Production Readiness
 - [ ] Return format is consistent (structured JSON for commands)
+- [ ] Long-running tasks use task ID pattern
+- [ ] Error handling with proper status codes
+- [ ] Timeout configuration
+- [ ] Registry manifest (mcp-server.json) if publishing
+
+---
+
+## Resources
+
+- [MCP Specification](https://spec.modelcontextprotocol.io/)
+- [MCP Registry](https://github.com/modelcontextprotocol/registry)
+- [MCP joins Linux Foundation](https://github.blog/open-source/maintainers/mcp-joins-the-linux-foundation-what-this-means-for-developers-building-the-next-era-of-ai-tools-and-agents/)
+- [MCP SDK (TypeScript/Python)](https://github.com/modelcontextprotocol/sdk)
+
 ---
 
 **Last Updated**: December 2025
+**Purpose**: MCP server patterns, OAuth, long-running tasks, security, and registry publishing
