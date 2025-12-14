@@ -5,11 +5,62 @@ alwaysApply: true
 priority: 50
 ---
 
+# ⚠️ GOLDEN RULES (READ FIRST)
+
+**YOU MUST FOLLOW THIS THREE-PHASE APPROACH FOR ALL NON-TRIVIAL WORK:**
+
+1. **PLAN** → Design solution → Document approach → **WAIT FOR EXPLICIT APPROVAL**
+2. **IMPLEMENT** → Code ONLY what was approved → **STOP** when agreed scope is complete
+3. **REVIEW** → Verify results → Suggest improvements → Return to PLAN phase
+
+**🚨 CRITICAL VIOLATIONS TO AVOID:**
+
+```diff
+❌ DON'T DO THIS:
+User: "Can you add authentication?"
+AI: [Immediately starts coding without discussion]
+
+✅ DO THIS INSTEAD:
+User: "Can you add authentication?"
+AI: "Let me design a solution first. Key decisions needed:
+     - OAuth 2.0 vs local authentication?
+     - JWT tokens vs session-based?
+     - User data storage location?
+     - Password hashing strategy?
+
+     Let's agree on the approach before I write any code."
+```
+
+**WHY THIS MATTERS:**
+- ❌ Skipping planning → Wasted time, wrong solutions, scope creep
+- ❌ Implementing unplanned features → Breaking existing code, technical debt
+- ❌ Not stopping after agreed scope → Confusion, frustration, rework
+
+---
+
 # Development Workflow & Context Management
 
 **Role:** Workflow orchestrator that combines structured development phases with persistent context management.
 
 **Integration:** This rule works alongside your detailed coding standards (`100-core.mdc` and language-specific rules) and provides workflow structure for complex tasks.
+
+---
+
+## 📚 Just-in-Time Rule Loading
+
+**DON'T READ ALL 35 RULES AT ONCE!** Load rules as needed:
+
+| Working on... | Read these rules |
+|--------------|------------------|
+| **Python code** | `160-python.mdc` |
+| **AWS infrastructure** | `280-aws.mdc` |
+| **Terraform modules** | `140-terraform.mdc` |
+| **Documentation** | `220-documentation.mdc`, `800-markdown.mdc` |
+| **Creating PR** | `110-git.mdc` |
+| **GitHub Actions** | `120-gha.mdc` |
+| **Security review** | `310-security.mdc` |
+
+**This prevents information overload and keeps you focused.**
 
 ---
 
@@ -19,22 +70,30 @@ You MUST follow this three-phase approach for all non-trivial changes:
 
 ### Phase 1: Planning ⚙️
 
-**When:** Before making any code changes for tasks that involve:
-- Multiple files or modules
+⚠️ **CRITICAL:** You MUST NOT begin implementation until:
+- [ ] User has explicitly approved the plan
+- [ ] All clarifying questions have been answered
+- [ ] The scope is clearly defined and agreed upon
+- [ ] Risks and dependencies are identified
+
+**When Planning is Required:**
+- Multiple files or modules affected
 - New features or significant refactoring
 - Complex integrations
 - Security-sensitive changes
+- Architectural decisions needed
 
 **Process:**
 1. **Analyze the request** - Understand scope, constraints, and requirements
 2. **Check existing code** - Look for patterns, conventions, and reusable components
 3. **Design the solution** - Propose approach with alternatives considered
-4. **Create/update context files** - Document plan in `tasks.md` or `active-context.md`
-5. **Wait for approval** - Present plan and await explicit confirmation before proceeding
+4. **Create/update context files** - Document plan in `tasks.md` or `active-context.md` (in `extras/` directory)
+5. **WAIT FOR APPROVAL** - Present plan and await explicit confirmation before proceeding
 
 **Output:**
 - Clear problem statement
 - Proposed solution with rationale
+- Alternative approaches considered (with pros/cons)
 - Files/modules affected
 - Dependencies and risks
 - Testing strategy
@@ -46,6 +105,10 @@ You MUST follow this three-phase approach for all non-trivial changes:
 - What are the security implications?
 - How will this be tested?
 - What documentation needs updating?
+
+**VIOLATION WARNING:** Proceeding without approval wastes time and creates frustration.
+
+---
 
 ### Phase 2: QA Validation ✅ (Level 2+ Tasks)
 
@@ -77,19 +140,24 @@ You MUST follow this three-phase approach for all non-trivial changes:
 - Remediation steps (if needed)
 - Clear to proceed to Implementation (if pass)
 
+---
+
 ### Phase 3: Implementation 🔨
 
-**When:** Only after:
-- Explicit approval in Planning phase
-- **QA Validation passed** (for Level 2+ tasks)
-- **Creative Phase completed** (for Level 4 tasks)
+⚠️ **IMPLEMENTATION GATE CHECKS:**
+
+**You MUST NOT start implementation until:**
+- [ ] Explicit user approval received in Planning phase
+- [ ] QA Validation passed (for Level 2+ tasks)
+- [ ] Creative Phase completed (for Level 4 tasks)
+- [ ] All questions answered and scope agreed
 
 **Process:**
 1. **Follow the agreed plan** - Implement exactly what was discussed
 2. **Make incremental changes** - Small, testable commits
 3. **Update context files** - Track progress in `progress.md` or `tasks.md`
 4. **Stop at boundaries** - Don't fix unrelated issues or add unplanned features
-5. **Complete the agreed scope** - Then stop and wait for review
+5. **Complete the agreed scope** - Then STOP and wait for review
 
 **Constraints:**
 - ✅ Implement only what was planned
@@ -100,8 +168,26 @@ You MUST follow this three-phase approach for all non-trivial changes:
 - ❌ Don't optimize prematurely
 
 **If you encounter issues:**
-- Trivial fixes: OK to fix immediately
-- Substantial changes: Stop, document in Review phase, discuss in next Planning phase
+- Trivial fixes (typos, obvious bugs): OK to fix immediately
+- Substantial changes needed: STOP, document in Review phase, discuss in next Planning phase
+
+**❌ Common Implementation Violations:**
+
+```diff
+❌ BAD: Adding unplanned features
+User: "Add a login form"
+AI: [Adds login form + password reset + 2FA + OAuth integration]
+
+✅ GOOD: Implementing only what was agreed
+User: "Add a login form"
+AI: [Adds only login form as specified]
+     "Login form complete. For next phase, we could discuss:
+      - Password reset flow?
+      - 2FA integration?
+      - OAuth providers?"
+```
+
+---
 
 ### Phase 4: Review 🔍
 
@@ -110,7 +196,7 @@ You MUST follow this three-phase approach for all non-trivial changes:
 **Process:**
 1. **Review implemented changes** - Verify they match the plan
 2. **Check for issues** - Security, bugs, edge cases, performance
-3. **Suggest improvements** - But don't implement them yet
+3. **Suggest improvements** - But DON'T implement them yet
 4. **Update context files** - Document findings in `reflect-*.md` or `tasks.md`
 5. **Identify cleanup opportunities** - Can we remove/simplify existing code?
 6. **Propose next steps** - What should happen next?
@@ -212,21 +298,25 @@ Adapt workflow based on task complexity:
 - **Workflow:** Direct implementation → Quick review
 - **Context Files:** Optional
 - **Example:** Fix typo, update comment, simple bug fix
+- **Skip Planning:** Yes, for obvious fixes
 
 ### Level 2: Moderate (Single Feature)
-- **Workflow:** Brief plan → Implement → Review
+- **Workflow:** Brief plan → QA Validation → Implement → Review
 - **Context Files:** `tasks.md` recommended
 - **Example:** Add new function, update single module
+- **Skip Planning:** No
 
 ### Level 3: Complex (Multi-Module)
-- **Workflow:** Full Plan → Implement → Review → Archive
+- **Workflow:** Full Plan → Creative Phase → QA Validation → Implement → Review → Archive
 - **Context Files:** `tasks.md`, `active-context.md`, `progress.md`
 - **Example:** New feature spanning multiple files, API changes
+- **Skip Planning:** Never
 
 ### Level 4: Very Complex (Architectural)
-- **Workflow:** Detailed Plan → Creative Phase → Implement → Review → Archive
+- **Workflow:** Detailed Plan → Creative Phase (MANDATORY) → QA Validation → Implement → Review → Archive
 - **Context Files:** All files, including `creative-*.md` for design decisions
 - **Example:** Major refactoring, new subsystem, architectural changes
+- **Skip Planning:** Never
 
 ---
 
@@ -239,12 +329,12 @@ User Request → Quick Implementation → Brief Review → Done
 
 ### For Moderate Tasks (Level 2)
 ```
-User Request → Brief Planning → QA Validation → Implementation → Review → Done
+User Request → Brief Planning (WAIT) → QA Validation → Implementation → Review → Done
 ```
 
 ### For Complex Tasks (Level 3-4)
 ```
-User Request → Planning Phase → Creative Phase (MANDATORY) → QA Validation → Implementation Phase → Review Phase → Archive
+User Request → Planning Phase (WAIT) → Creative Phase (MANDATORY) → QA Validation → Implementation Phase → Review Phase → Archive
 ```
 
 ---
@@ -575,6 +665,57 @@ This workflow rule integrates with:
 
 ---
 
+## ❌ Common Workflow Violations (Learn from These)
+
+### Violation 1: Starting Without Planning
+```diff
+❌ BAD:
+User: "Refactor the authentication system"
+AI: [Immediately rewrites auth code]
+
+✅ GOOD:
+User: "Refactor the authentication system"
+AI: "Let me analyze the current system first:
+     - Current: Session-based with cookies
+     - Issues: No token refresh, vulnerable to CSRF
+     - Options: Keep sessions vs migrate to JWT
+     - Impact: Affects 15 files, requires DB changes
+
+     Shall I proceed with a detailed migration plan?"
+```
+
+### Violation 2: Adding Unplanned Features
+```diff
+❌ BAD:
+User: "Add a search bar to the header"
+AI: [Adds search bar + autocomplete + search history + filters + advanced search]
+
+✅ GOOD:
+User: "Add a search bar to the header"
+AI: [Adds only basic search bar as requested]
+     "Search bar complete. Would you like to discuss:
+      - Autocomplete suggestions?
+      - Search history?
+      - Advanced filters?"
+```
+
+### Violation 3: Not Stopping at Agreed Scope
+```diff
+❌ BAD:
+User: "Fix the login button styling"
+AI: [Fixes button + refactors entire CSS + updates all components]
+
+✅ GOOD:
+User: "Fix the login button styling"
+AI: [Fixes only the login button]
+     "Login button fixed. I noticed other styling issues:
+      - Header alignment is off
+      - Footer needs responsive updates
+      Should we address these in the next phase?"
+```
+
+---
+
 ## ⚠️ Important Notes
 
 - **Simple tasks** (Level 1) can skip formal phases, but still follow coding standards
@@ -585,6 +726,7 @@ This workflow rule integrates with:
 - **Creative Phase is mandatory** for Level 3-4 tasks before Implementation
 - **Platform detection** happens automatically - adapt commands accordingly
 - **QA command ("QA")** can interrupt any process and takes immediate precedence
+
 ---
 
 **Last Updated**: December 2025

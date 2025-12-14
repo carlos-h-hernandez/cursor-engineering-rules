@@ -216,6 +216,26 @@ uv sync
 
 ## 6) Error Handling & Resilience
 
+- **Domain Boundary Exception Handling:** Always re-raise exceptions with context at system boundaries. Never swallow errors by returning empty/default data.
+  ```python
+  # ❌ BAD: Masks failure and returns empty data
+  def load_database() -> dict:
+      try:
+          # Load database data...
+          return data
+      except Exception as e:
+          logger.error(f"Error loading YAML database: {str(e)}")
+          return {"books": [], "library": []}  # BAD! Silent failure
+
+  # ✅ GOOD: Re-raises with context, fails fast
+  def load_database() -> dict:
+      try:
+          # Load database data...
+          return data
+      except Exception as e:
+          logger.error(f"Error loading YAML database: {str(e)}")
+          raise RuntimeError(f"Failed to load database: {str(e)}") from e
+  ```
 - **Exception Groups:** For batch operations:
   ```python
   from exceptiongroup import ExceptionGroup

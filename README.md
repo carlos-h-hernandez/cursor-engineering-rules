@@ -72,6 +72,39 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 
 ---
 
+## 🚀 MCP Server
+
+**NEW:** Model Context Protocol (MCP) server for Claude Desktop and other MCP-compatible AI clients!
+
+```bash
+# Install
+cd mcp/cursor-rules-mcp
+npm install
+npm run build
+npm link
+
+# Configure Claude Desktop
+# Add to ~/Library/Application Support/Claude/claude_desktop_config.json:
+{
+  "mcpServers": {
+    "cursor-engineering-rules": {
+      "command": "cursor-rules-mcp"
+    }
+  }
+}
+```
+
+**Features:**
+
+- ✅ Fetch workflow guide (Plan/Implement/Review)
+- ✅ Fetch specific rules by category/topic
+- ✅ List all 35+ available rules
+- ✅ Just-in-time rule loading (load only what you need)
+
+See [mcp/cursor-rules-mcp/README.md](mcp/cursor-rules-mcp/README.md) for full documentation.
+
+---
+
 ## Quick Start
 
 ### Option 1: Use Individual Rules

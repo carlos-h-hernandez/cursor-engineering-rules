@@ -58,3 +58,6 @@ build/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Private/local documentation
+extras/

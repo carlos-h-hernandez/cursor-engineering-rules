@@ -1,0 +1,41 @@
+{
+  "name": "cursor-engineering-rules-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Cursor Engineering Rules - production-grade AI agent rules for 15+ languages",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "cursor-rules-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch & node --watch dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cursor",
+    "engineering-rules",
+    "ai-agent",
+    "python",
+    "go",
+    "typescript",
+    "terraform",
+    "kubernetes",
+    "aws",
+    "azure",
+    "gcp",
+    "cloudflare"
+  ],
+  "author": "Platform Engineering",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
