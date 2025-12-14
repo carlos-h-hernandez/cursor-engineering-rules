@@ -119,17 +119,17 @@ files:
 
 ### Avoid `any` - Use Proper Types
 ```typescript
-// ❌ BAD - Loses all type safety
+//  BAD - Loses all type safety
 function processData(data: any): any {
   return data.value;
 }
 
-// ✅ GOOD - Generic type
+//  GOOD - Generic type
 function processData<T>(data: T): T {
   return data;
 }
 
-// ✅ GOOD - Unknown for truly unknown types
+//  GOOD - Unknown for truly unknown types
 function processData(data: unknown): string {
   if (typeof data === 'object' && data !== null && 'value' in data) {
     return String((data as { value: unknown }).value);
@@ -140,7 +140,7 @@ function processData(data: unknown): string {
 
 ### Use Discriminated Unions
 ```typescript
-// ✅ EXCELLENT - Type-safe with discriminated unions
+//  EXCELLENT - Type-safe with discriminated unions
 type SuccessResponse = {
   status: 'success';
   data: { id: string; name: string };
@@ -156,23 +156,23 @@ type ApiResponse = SuccessResponse | ErrorResponse;
 function handleResponse(response: ApiResponse): void {
   // TypeScript knows the shape based on discriminant
   if (response.status === 'success') {
-    console.log(response.data.id); // ✅ Type-safe
+    console.log(response.data.id); //  Type-safe
   } else {
-    console.log(response.error.message); // ✅ Type-safe
+    console.log(response.error.message); //  Type-safe
   }
 }
 ```
 
 ### Prefer Interfaces for Objects, Types for Unions
 ```typescript
-// ✅ GOOD - Interface for object shapes
+//  GOOD - Interface for object shapes
 interface User {
   id: string;
   name: string;
   email: string;
 }
 
-// ✅ GOOD - Type for unions and computed types
+//  GOOD - Type for unions and computed types
 type Status = 'pending' | 'active' | 'inactive';
 type Nullable<T> = T | null;
 type ReadonlyUser = Readonly<User>;
@@ -239,15 +239,15 @@ function createEmail(email: string): Email {
   return email as Email;
 }
 
-// ✅ Type-safe - can't mix up IDs and emails
+//  Type-safe - can't mix up IDs and emails
 function getUser(userId: UserId): User { /* ... */ }
 function sendEmail(email: Email): void { /* ... */ }
 
 const userId = createUserId('12345678-1234-5678-1234-567812345678');
 const email = createEmail('user@acme.com');
 
-getUser(userId); // ✅ OK
-getUser(email);  // ❌ Compile error!
+getUser(userId); //  OK
+getUser(email);  //  Compile error!
 ```
 
 ### Template Literal Types
@@ -263,8 +263,8 @@ function makeRequest<M extends HttpMethod>(
   return fetch(route, { method });
 }
 
-makeRequest('GET', '/api/users'); // ✅ OK
-makeRequest('GET', '/users');     // ❌ Error: must start with /api/
+makeRequest('GET', '/api/users'); //  OK
+makeRequest('GET', '/users');     //  Error: must start with /api/
 
 // Event names with type safety
 type EventName = `on${Capitalize<string>}`;
@@ -349,7 +349,7 @@ type Nullable<T> = {
 
 ### Function Overloads
 ```typescript
-// ✅ GOOD - Clear overload signatures
+//  GOOD - Clear overload signatures
 function createElement(tag: 'img'): HTMLImageElement;
 function createElement(tag: 'input'): HTMLInputElement;
 function createElement(tag: 'div'): HTMLDivElement;
@@ -365,14 +365,14 @@ const custom = createElement('x-custom'); // HTMLElement
 
 ### Generic Constraints
 ```typescript
-// ✅ GOOD - Constrain generic types
+//  GOOD - Constrain generic types
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
   return obj[key];
 }
 
 const user = { id: '123', name: 'John' };
-getProperty(user, 'name');  // ✅ OK - returns string
-getProperty(user, 'age');   // ❌ Error: 'age' not in user
+getProperty(user, 'name');  //  OK - returns string
+getProperty(user, 'age');   //  Error: 'age' not in user
 
 // Multiple constraints
 function merge<T extends object, U extends object>(obj1: T, obj2: U): T & U {
@@ -400,7 +400,7 @@ function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
 function processUser(user: User | undefined) {
   assertIsDefined(user);
   // TypeScript now knows user is User (not undefined)
-  console.log(user.name); // ✅ OK
+  console.log(user.name); //  OK
 }
 
 // Type guard with assertion
@@ -421,7 +421,7 @@ function assertIsString(value: unknown): asserts value is string {
 
 ### Modern Class with Access Modifiers
 ```typescript
-// ✅ GOOD - Clear encapsulation
+//  GOOD - Clear encapsulation
 class User {
   // Public by default
   readonly id: string;
@@ -512,7 +512,7 @@ class UserRepository extends BaseRepository<User> {
 
 ### Functional Components with Props
 ```typescript
-// ✅ GOOD - Explicit prop types
+//  GOOD - Explicit prop types
 interface ButtonProps {
   label: string;
   onClick: () => void;
@@ -647,7 +647,7 @@ async function fetchApi<T>(
 
 // Usage with automatic type inference
 const user = await fetchApi<User>('/api/users/123');
-console.log(user.name); // ✅ Type-safe
+console.log(user.name); //  Type-safe
 ```
 
 ### Zod for Runtime Validation
@@ -755,9 +755,9 @@ function divide(a: number, b: number): Result<number, string> {
 // Usage
 const result = divide(10, 2);
 if (result.ok) {
-  console.log(result.value); // ✅ Type-safe access
+  console.log(result.value); //  Type-safe access
 } else {
-  console.error(result.error); // ✅ Type-safe access
+  console.error(result.error); //  Type-safe access
 }
 ```
 
@@ -767,21 +767,21 @@ if (result.ok) {
 
 ### Code Organization
 ```typescript
-// ✅ GOOD - Explicit exports
+//  GOOD - Explicit exports
 export type { User, UserCredentials, UserPublic };
 export { createUser, updateUser, deleteUser };
 export default UserService;
 
-// ❌ BAD - Export * loses tree-shaking benefits
+//  BAD - Export * loses tree-shaking benefits
 export * from './user';
 ```
 
 ### Avoid Type Assertions When Possible
 ```typescript
-// ❌ BAD - Unsafe type assertion
+//  BAD - Unsafe type assertion
 const user = data as User;
 
-// ✅ GOOD - Type guard with validation
+//  GOOD - Type guard with validation
 function isUser(data: unknown): data is User {
   return (
     typeof data === 'object' &&
@@ -793,13 +793,13 @@ function isUser(data: unknown): data is User {
 }
 
 if (isUser(data)) {
-  console.log(data.name); // ✅ Type-safe
+  console.log(data.name); //  Type-safe
 }
 ```
 
 ### Use const Assertions
 ```typescript
-// ✅ GOOD - Readonly and literal types
+//  GOOD - Readonly and literal types
 const COLORS = {
   primary: '#007bff',
   secondary: '#6c757d',
@@ -809,7 +809,7 @@ const COLORS = {
 type Color = typeof COLORS[keyof typeof COLORS];
 // type Color = "#007bff" | "#6c757d" | "#dc3545"
 
-// ✅ GOOD - Readonly array
+//  GOOD - Readonly array
 const ROLES = ['admin', 'user', 'guest'] as const;
 type Role = typeof ROLES[number];
 // type Role = "admin" | "user" | "guest"

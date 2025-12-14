@@ -287,7 +287,7 @@ def stream_completion(prompt: str):
 
 ### System Prompts (Best Practices)
 ```typescript
-// ✅ GOOD - Clear, specific, with examples
+//  GOOD - Clear, specific, with examples
 const systemPrompt = `You are an expert code reviewer specializing in TypeScript.
 
 Your task:
@@ -309,7 +309,7 @@ Critical:
   Fix: Use parameterized queries instead of string concatenation"
 `;
 
-// ❌ BAD - Vague, no structure
+//  BAD - Vague, no structure
 const systemPrompt = "You are a helpful assistant that reviews code.";
 ```
 
@@ -345,7 +345,7 @@ Sentiment:"""
 
 ### Chain of Thought (CoT)
 ```typescript
-// ✅ GOOD - Encourage step-by-step reasoning
+//  GOOD - Encourage step-by-step reasoning
 const prompt = `Problem: A store has 15 apples. They sell 8 apples and then receive a shipment of 20 more apples. How many apples do they have now?
 
 Solve this step by step:
@@ -376,13 +376,13 @@ The [Model Context Protocol (MCP)](https://github.blog/open-source/maintainers/m
 **MCP vs. Custom Tool Integration:**
 
 ```typescript
-// ❌ OLD WAY: Custom tool integration per AI platform
+//  OLD WAY: Custom tool integration per AI platform
 // - OpenAI has function calling
 // - Anthropic has tools
 // - Custom agents need bespoke APIs
 // = n×m integration problem
 
-// ✅ NEW WAY: MCP standard protocol
+//  NEW WAY: MCP standard protocol
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 
 const server = new Server({
@@ -719,7 +719,7 @@ def generate_with_safety(prompt: str) -> str:
 
 ### Prompt Injection Prevention
 ```typescript
-// ✅ GOOD - Clear separation of instructions and user input
+//  GOOD - Clear separation of instructions and user input
 const systemPrompt = `You are a customer service assistant.
 
 Rules:

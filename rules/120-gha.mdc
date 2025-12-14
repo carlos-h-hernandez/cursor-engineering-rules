@@ -20,7 +20,7 @@ files:
 
 ---
 
-## 🚀 Quick Reference
+##  Quick Reference
 
 ### Essential Checklist
 - [ ] Workflows use minimal permissions (`permissions: {}` at root)
@@ -343,17 +343,17 @@ Where it makes sense, use `GITHUB_STEP_SUMMARY` or `actions/github-script`:
   if: always()
   run: |
     {
-      echo "## 📊 Test Results"
+      echo "##  Test Results"
       echo ""
       echo "| Metric | Value |"
       echo "|--------|-------|"
       echo "| Total Tests | ${{ env.TOTAL_TESTS }} |"
-      echo "| Passed | ✅ ${{ env.PASSED_TESTS }} |"
-      echo "| Failed | ❌ ${{ env.FAILED_TESTS }} |"
+      echo "| Passed |  ${{ env.PASSED_TESTS }} |"
+      echo "| Failed |  ${{ env.FAILED_TESTS }} |"
       echo "| Coverage | ${{ env.COVERAGE }}% |"
       echo ""
       if [ "${{ env.FAILED_TESTS }}" -gt 0 ]; then
-        echo "### ⚠️ Failed Tests"
+        echo "###  Failed Tests"
         echo '```'
         cat test-failures.txt
         echo '```'
@@ -535,7 +535,7 @@ jobs:
 
 ### 1. Using `pull_request_target` Unsafely
 ```yaml
-# ❌ DANGER - Runs untrusted code with write permissions
+#  DANGER - Runs untrusted code with write permissions
 on: pull_request_target
 jobs:
   test:
@@ -545,7 +545,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: npm test  # Attacker can inject malicious code!
 
-# ✅ Safe - Limit permissions, run trusted code only
+#  Safe - Limit permissions, run trusted code only
 on: pull_request_target
 jobs:
   test:
@@ -555,21 +555,21 @@ jobs:
 
 ### 2. Not Quoting Context Variables
 ```yaml
-# ❌ Wrong
+#  Wrong
 - run: echo ${{ github.event.head_commit.message }}
 
-# ✅ Correct
+#  Correct
 - run: echo "${{ github.event.head_commit.message }}"
 ```
 
 ### 3. Secrets in Environment Variables
 ```yaml
-# ❌ Wrong - Secrets can leak in logs
+#  Wrong - Secrets can leak in logs
 - run: |
     export SECRET=${{ secrets.MY_SECRET }}
     ./script.sh
 
-# ✅ Correct - Use env block
+#  Correct - Use env block
 - env:
     SECRET: ${{ secrets.MY_SECRET }}
   run: ./script.sh
@@ -577,10 +577,10 @@ jobs:
 
 ### 4. Not Using Path Filters
 ```yaml
-# ❌ Wasteful - Runs on every push
+#  Wasteful - Runs on every push
 on: [push]
 
-# ✅ Efficient - Only run when relevant files change
+#  Efficient - Only run when relevant files change
 on:
   push:
     paths:
@@ -590,12 +590,12 @@ on:
 
 ### 5. Missing Timeout Protection
 ```yaml
-# ❌ Can run for 6 hours (GitHub default)
+#  Can run for 6 hours (GitHub default)
 jobs:
   test:
     runs-on: ubuntu-latest
 
-# ✅ Fail fast on hangs
+#  Fail fast on hangs
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -604,12 +604,12 @@ jobs:
 
 ### 6. Not Handling Matrix Failures
 ```yaml
-# ❌ One failure cancels all jobs
+#  One failure cancels all jobs
 strategy:
   matrix:
     os: [ubuntu-latest, windows-latest, macos-latest]
 
-# ✅ Continue testing all combinations
+#  Continue testing all combinations
 strategy:
   fail-fast: false
   matrix:
@@ -942,7 +942,7 @@ jobs:
 
 ### Security Warning
 
-**⚠️ CRITICAL:** Never use self-hosted runners for public repositories!
+** CRITICAL:** Never use self-hosted runners for public repositories!
 - Attackers can fork and send malicious PRs
 - Self-hosted runners access internal network
 - GitHub-hosted runners are ephemeral and isolated
@@ -1274,18 +1274,18 @@ jobs:
 
 ```
 .github/
-├── workflows/
-│   ├── ci.yml                 # Continuous Integration
-│   ├── cd.yml                 # Continuous Deployment
-│   ├── security.yml           # Security scanning
-│   ├── release.yml            # Release automation
-│   └── cleanup.yml            # Scheduled maintenance
-├── actions/
-│   └── custom-action/         # Composite actions
-│       ├── action.yml
-│       └── README.md
-├── CODEOWNERS                 # Workflow approval requirements
-└── dependabot.yml             # Keep actions updated
+ workflows/
+    ci.yml                 # Continuous Integration
+    cd.yml                 # Continuous Deployment
+    security.yml           # Security scanning
+    release.yml            # Release automation
+    cleanup.yml            # Scheduled maintenance
+ actions/
+    custom-action/         # Composite actions
+        action.yml
+        README.md
+ CODEOWNERS                 # Workflow approval requirements
+ dependabot.yml             # Keep actions updated
 ```
 
 ---

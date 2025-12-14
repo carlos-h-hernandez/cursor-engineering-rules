@@ -12,13 +12,13 @@ files:
     - "**/*.cf.mdc"
 ---
 
-# 🛡️ Cloudflare Ruleset Engine Engineering Guide v2.1 - (December 2025)
+#  Cloudflare Ruleset Engine Engineering Guide v2.1 - (December 2025)
 
 *The Complete Prompt Library for Building, Optimizing, and Deploying Production-Grade Rulesets*
 
 ---
 
-## 🚀 Quick Reference
+##  Quick Reference
 
 ### Essential Commands
 ```bash
@@ -39,7 +39,7 @@ wrangler publish                                  # Deploy
 
 ### Critical Patterns
 ```javascript
-// ✅ GOOD: Fast to slow evaluation order
+//  GOOD: Fast to slow evaluation order
 (
   http.request.method eq "POST" and              // Fast: method
   http.host eq "api.acme.com" and            // Fast: host
@@ -47,12 +47,12 @@ wrangler publish                                  # Deploy
   not ip.src in {1.1.1.0/24}                    // Fast: IP
 )
 
-// ✅ GOOD: Use 'in' for multiple values
+//  GOOD: Use 'in' for multiple values
 http.host in {"api.acme.com" "admin.acme.com"}
-// ❌ BAD: Multiple OR
+//  BAD: Multiple OR
 http.host eq "api.acme.com" or http.host eq "admin.acme.com"
 
-// ✅ GOOD: Case-insensitive with encoding checks
+//  GOOD: Case-insensitive with encoding checks
 (
   lower(http.request.uri.path) contains "/admin" or
   lower(urldecode(http.request.uri.path)) contains "/admin"
@@ -68,7 +68,7 @@ Expensive: http.request.body, matches (regex)
 
 ---
 
-## 📋 Meta-Prompt (How to Use This Guide)
+##  Meta-Prompt (How to Use This Guide)
 
 ```
 You are an expert Cloudflare engineer. Use this guide to help me create, optimize, test, and deploy Cloudflare rules for my requirement: **[Insert requirement]**
@@ -90,7 +90,7 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ---
 
-## 🎯 Phase 1: Discovery & Planning
+##  Phase 1: Discovery & Planning
 
 ### 1) Requirements Analysis (Prompt)
 > Analyze the requirement and identify:
@@ -110,7 +110,7 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ---
 
-## ✍️ Phase 2: Rule Generation
+##  Phase 2: Rule Generation
 
 ### 3) Generate from Policy (Prompt + Pattern)
 > Create a Cloudflare expression for: **[Policy]**
@@ -148,17 +148,17 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ---
 
-## ⚙️ Phase 3: Optimization
+##  Phase 3: Optimization
 
 ### 7) Performance Ordering (Prompt)
 > Reorder cheap checks first (IP, host, method), then path/header, and use regex last. Short-circuit for early exits.
 
 **Example:**
 ```javascript
-// ❌ BAD: Expensive first
+//  BAD: Expensive first
 (http.request.body.raw contains "x" and http.host eq "acme.com")
 
-// ✅ GOOD: Fast first
+//  GOOD: Fast first
 (http.host eq "acme.com" and contains(http.request.body.raw, "x"))
 ```
 
@@ -170,14 +170,14 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ---
 
-## 🔒 Phase 4: Security Hardening
+##  Phase 4: Security Hardening
 
 ### 10) Bypass Analysis (Prompt + Hardened Pattern)
 ```javascript
-// ❌ VULNERABLE: Case sensitive, single encoding
+//  VULNERABLE: Case sensitive, single encoding
 http.request.uri.path contains "/admin"
 
-// ✅ HARDENED: Case insensitive, multiple encoding
+//  HARDENED: Case insensitive, multiple encoding
 (
   lower(http.request.uri.path) contains "/admin" or
   lower(urldecode(http.request.uri.path)) contains "/admin" or
@@ -209,7 +209,7 @@ http.request.uri.path contains "/admin"
 
 ---
 
-## 🧪 Phase 5: Testing & Validation
+##  Phase 5: Testing & Validation
 
 ### 14) Test Case Generator (Prompt)
 > Produce **positive/negative/edge/security/perf** cases (curl or API format) for the rule.
@@ -234,16 +234,16 @@ curl https://edge.acme.com/%2561dmin
 
 **Common Logic Errors:**
 ```javascript
-// ❌ BAD: Precedence issue
+//  BAD: Precedence issue
 A or B and C  // Interpreted as: A or (B and C)
 
-// ✅ GOOD: Explicit parentheses
+//  GOOD: Explicit parentheses
 (A or B) and C
 
-// ❌ BAD: Null header not handled
+//  BAD: Null header not handled
 http.request.headers["x-api-key"][0] eq "secret"
 
-// ✅ GOOD: Check existence
+//  GOOD: Check existence
 (http.request.headers["x-api-key"][0] ne "" and
  http.request.headers["x-api-key"][0] eq "secret")
 ```
@@ -270,7 +270,7 @@ http.request.headers["x-api-key"][0] eq "secret"
 
 ---
 
-## 🚀 Phase 6: Deployment & Ops
+##  Phase 6: Deployment & Ops
 
 ### 17) IaC / API Conversion (Prompt + Terraform & API)
 
@@ -331,7 +331,7 @@ Phase 4: Full Block (Week 4) - 100% traffic
 
 ---
 
-## 🔧 Phase 7: Workers Integration
+##  Phase 7: Workers Integration
 
 ### 21) When to Use Workers vs Rules
 **Use Workers if:**
@@ -373,7 +373,7 @@ export default {
 
 ---
 
-## 🌍 Phase 8: Multi-Environment Management
+##  Phase 8: Multi-Environment Management
 
 ### 23) Environment Strategy
 ```hcl
@@ -419,7 +419,7 @@ dynamic "rules" {
 
 ---
 
-## 🔄 Phase 9: CI/CD Integration
+##  Phase 9: CI/CD Integration
 
 ### 25) GitHub Actions Workflow
 ```yaml
@@ -463,18 +463,18 @@ jobs:
 
 ---
 
-## 🔒 Security Hardening
+##  Security Hardening
 
 ### Bypass Protection Patterns
 ```javascript
-// ✅ HARDENED: Multiple encoding + case insensitive
+//  HARDENED: Multiple encoding + case insensitive
 (
   lower(http.request.uri.path) contains "/admin" or
   lower(urldecode(http.request.uri.path)) contains "/admin" or
   lower(urldecode(urldecode(http.request.uri.path))) contains "/admin"
 )
 
-// ✅ HARDENED: Prevent header injection
+//  HARDENED: Prevent header injection
 (
   http.request.headers["x-custom"][0] ne "" and
   not http.request.headers["x-custom"][0] matches "[\\r\\n]"  // Block CRLF
@@ -483,7 +483,7 @@ jobs:
 
 ---
 
-## 📊 Monitoring & Analytics
+##  Monitoring & Analytics
 
 ### GraphQL Queries
 ```graphql
@@ -516,7 +516,7 @@ jobs:
 
 ---
 
-## 🚨 Incident Response
+##  Incident Response
 
 ### Emergency Deployment
 ```bash
@@ -549,7 +549,7 @@ curl -X PATCH \
 
 ---
 
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -578,7 +578,7 @@ curl -X PATCH \
 
 ---
 
-## 📚 Example Library
+##  Example Library
 
 ### E-commerce Checkout
 ```javascript
@@ -633,7 +633,7 @@ curl -X PATCH \
 
 ---
 
-## ✅ Final Checklist (Pre-Prod)
+##  Final Checklist (Pre-Prod)
 
 - [ ] Stakeholder/requirement sign-off
 - [ ] Bypass analysis complete

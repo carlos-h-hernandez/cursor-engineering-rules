@@ -28,21 +28,21 @@ files:
 
 ```
 mychart/
-├── Chart.yaml              # Chart metadata
-├── values.yaml             # Default values
-├── values-prod.yaml        # Production values
-├── values-staging.yaml     # Staging values
-├── charts/                 # Chart dependencies
-├── templates/              # Kubernetes manifests
-│   ├── deployment.yaml
-│   ├── service.yaml
-│   ├── ingress.yaml
-│   ├── configmap.yaml
-│   ├── secret.yaml
-│   ├── hpa.yaml
-│   ├── _helpers.tpl       # Template helpers
-│   └── NOTES.txt          # Post-install notes
-└── README.md
+ Chart.yaml              # Chart metadata
+ values.yaml             # Default values
+ values-prod.yaml        # Production values
+ values-staging.yaml     # Staging values
+ charts/                 # Chart dependencies
+ templates/              # Kubernetes manifests
+    deployment.yaml
+    service.yaml
+    ingress.yaml
+    configmap.yaml
+    secret.yaml
+    hpa.yaml
+    _helpers.tpl       # Template helpers
+    NOTES.txt          # Post-install notes
+ README.md
 ```
 
 ---

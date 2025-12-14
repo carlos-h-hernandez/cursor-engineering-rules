@@ -95,7 +95,7 @@ flink-engine      Pending  1          2m
 3. Ensure single ownership patterns
 
 ```go
-// ❌ BAD: Retrying on conflict masks the real problem
+//  BAD: Retrying on conflict masks the real problem
 func (r *Reconciler) updateStatus(ctx context.Context, obj *MyResource) error {
 	for i := 0; i < 5; i++ {
 		err := r.Client.Status().Update(ctx, obj)
@@ -114,7 +114,7 @@ func (r *Reconciler) updateStatus(ctx context.Context, obj *MyResource) error {
 	return fmt.Errorf("failed after retries")
 }
 
-// ✅ GOOD: Single ownership, no retries
+//  GOOD: Single ownership, no retries
 func (r *Reconciler) updateStatus(ctx context.Context, obj *MyResource) error {
 	// Only this controller updates status - no conflicts expected
 	if err := r.Client.Status().Update(ctx, obj); err != nil {
@@ -134,7 +134,7 @@ func (r *Reconciler) updateStatus(ctx context.Context, obj *MyResource) error {
 **Ensure only one controller updates a resource's status:**
 
 ```go
-// ✅ GOOD: Clear ownership
+//  GOOD: Clear ownership
 // This controller owns status.phase
 func (r *PhaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	obj := &MyResource{}
@@ -162,7 +162,7 @@ func (r *PhaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 Check for race conditions:
 
 ```go
-// ✅ GOOD: Check current state before updating
+//  GOOD: Check current state before updating
 func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	obj := &MyResource{}
 	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
@@ -476,23 +476,23 @@ resource "aws_iam_openid_connect_provider" "eks" {
 
 ### Do's
 
-- ✅ Document CRDs with kubebuilder tags and comments
-- ✅ Use printer columns for `kubectl get` output
-- ✅ Ensure single ownership for status updates
-- ✅ Use IRSA for AWS service access
-- ✅ Set resource requests and limits
-- ✅ Use Network Policies for security
-- ✅ Monitor for concurrency conflicts
-- ✅ Use Pod Disruption Budgets
+-  Document CRDs with kubebuilder tags and comments
+-  Use printer columns for `kubectl get` output
+-  Ensure single ownership for status updates
+-  Use IRSA for AWS service access
+-  Set resource requests and limits
+-  Use Network Policies for security
+-  Monitor for concurrency conflicts
+-  Use Pod Disruption Budgets
 
 ### Don'ts
 
-- ❌ Retry on concurrency conflicts
-- ❌ Allow multiple controllers to update same resource
-- ❌ Skip CRD documentation
-- ❌ Hardcode AWS credentials
-- ❌ Skip resource limits
-- ❌ Ignore conflict errors
+-  Retry on concurrency conflicts
+-  Allow multiple controllers to update same resource
+-  Skip CRD documentation
+-  Hardcode AWS credentials
+-  Skip resource limits
+-  Ignore conflict errors
 
 ## Review Checklist
 

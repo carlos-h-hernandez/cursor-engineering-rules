@@ -134,20 +134,20 @@ refactor(go): reorganize concurrency section
 
 ---
 
-## 🏗Project Structure
+## Project Structure
 
 ```
 cursor-engineering-rules/
-├── rules/              # All .mdc rule files
-│   ├── 050-workflow.mdc
-│   ├── 100-core.mdc
-│   ├── ...
-│   └── INDEX.md       # Rule catalog
-├── docs/              # Additional documentation
-├── examples/          # Example configurations
-├── README.md          # Main documentation
-├── CONTRIBUTING.md    # This file
-└── LICENSE            # MIT License
+ rules/              # All .mdc rule files
+    050-workflow.mdc
+    100-core.mdc
+    ...
+    INDEX.md       # Rule catalog
+ docs/              # Additional documentation
+ examples/          # Example configurations
+ README.md          # Main documentation
+ CONTRIBUTING.md    # This file
+ LICENSE            # MIT License
 ```
 
 ---
@@ -210,7 +210,7 @@ def calculate_total(items):
 
 ---
 
-## 🧪 Testing Your Changes
+## Testing Your Changes
 
 ### Validate Markdown
 
@@ -240,7 +240,7 @@ Ensure all code examples:
 
 ---
 
-## 🌍 Internationalization
+## Internationalization
 
 Currently, all rules are in English. If you'd like to contribute translations:
 
@@ -286,7 +286,7 @@ Currently, all rules are in English. If you'd like to contribute translations:
 
 ---
 
-## 🙏 Code of Conduct
+## Code of Conduct
 
 ### Our Pledge
 
@@ -314,7 +314,7 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be repor
 
 ---
 
-## 📜 License
+## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
 

@@ -72,7 +72,7 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 
 ---
 
-## 🚀 MCP Server
+## MCP Server
 
 **NEW:** Model Context Protocol (MCP) server for Claude Desktop and other MCP-compatible AI clients!
 
@@ -96,10 +96,10 @@ npm link
 
 **Features:**
 
-- ✅ Fetch workflow guide (Plan/Implement/Review)
-- ✅ Fetch specific rules by category/topic
-- ✅ List all 35+ available rules
-- ✅ Just-in-time rule loading (load only what you need)
+- Fetch workflow guide (Plan/Implement/Review)
+- Fetch specific rules by category/topic
+- List all 35+ available rules
+- Just-in-time rule loading (load only what you need)
 
 See [mcp/cursor-rules-mcp/README.md](mcp/cursor-rules-mcp/README.md) for full documentation.
 
@@ -168,7 +168,7 @@ rules:
 
 ---
 
-## 📖 Rule Priorities
+## Rule Priorities
 
 Rules have `alwaysApply` flags and priority levels:
 

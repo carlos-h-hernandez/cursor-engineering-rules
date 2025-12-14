@@ -38,26 +38,26 @@ node --prof app.js            # Generate profiling data
 ### Critical Patterns
 ```js
 // 1. Use strict equality
-if (value === 0) { }        // ✅ GOOD
-if (value == 0) { }         // ❌ BAD
+if (value === 0) { }        //  GOOD
+if (value == 0) { }         //  BAD
 
 // 2. Handle Promise rejections
-fetchData().catch(err => console.error(err));  // ✅ GOOD
+fetchData().catch(err => console.error(err));  //  GOOD
 
 // 3. Optional chaining and nullish coalescing
-const name = user?.profile?.name ?? 'Guest';  // ✅ GOOD
+const name = user?.profile?.name ?? 'Guest';  //  GOOD
 
 // 4. Use Set/Map for lookups
-const seen = new Set();     // ✅ GOOD (O(1))
-const seen = [];            // ❌ BAD (O(n))
+const seen = new Set();     //  GOOD (O(1))
+const seen = [];            //  BAD (O(n))
 
 // 5. Never use eval or new Function
-eval(userInput);            // ❌ NEVER DO THIS
+eval(userInput);            //  NEVER DO THIS
 
 // 6. Sanitize HTML
-element.textContent = userInput;            // ✅ GOOD
-element.innerHTML = DOMPurify.sanitize(html);  // ✅ GOOD
-element.innerHTML = userInput;              // ❌ BAD (XSS)
+element.textContent = userInput;            //  GOOD
+element.innerHTML = DOMPurify.sanitize(html);  //  GOOD
+element.innerHTML = userInput;              //  BAD (XSS)
 ```
 
 ---
@@ -95,13 +95,13 @@ element.innerHTML = userInput;              // ❌ BAD (XSS)
 
 ## 2) Prioritized Review Flow (Impact-First)
 
-1. **Security** 🛡️
-2. **Correctness** 🐛
-3. **Performance** ⚡
-4. **Readability/Maintainability** 🧹
-5. **Modern JS best practices** ✅
-6. **Docs & Tests** 📚🧪
-7. **Tooling/CI** 🔧
+1. **Security**
+2. **Correctness**
+3. **Performance**
+4. **Readability/Maintainability**
+5. **Modern JS best practices**
+6. **Docs & Tests**
+7. **Tooling/CI**
 
 ---
 
@@ -156,11 +156,11 @@ element.innerHTML = userInput;              // ❌ BAD (XSS)
 **Example (unique):**
 
 ```js
-// ❌ BAD: O(n²)
+//  BAD: O(n²)
 const uniq = [];
 for (const x of arr) if (!uniq.includes(x)) uniq.push(x);
 
-// ✅ GOOD: O(n)
+//  GOOD: O(n)
 const uniq = [...new Set(arr)];
 ```
 
@@ -314,7 +314,7 @@ test('throws on invalid items', () => {
 
 ### DOM Manipulation
 ```js
-// ✅ GOOD: Batch DOM updates
+//  GOOD: Batch DOM updates
 const fragment = document.createDocumentFragment();
 items.forEach(item => {
   const li = document.createElement('li');
@@ -326,7 +326,7 @@ list.appendChild(fragment);
 
 ### Event Listeners
 ```js
-// ✅ GOOD: Event delegation + cleanup
+//  GOOD: Event delegation + cleanup
 const controller = new AbortController();
 element.addEventListener('click', handler, { signal: controller.signal });
 // Later: controller.abort();
@@ -376,10 +376,10 @@ await pipeline(
 ```js
 import { spawn } from 'node:child_process';
 
-// ✅ GOOD: Pass arguments separately (no shell injection)
+//  GOOD: Pass arguments separately (no shell injection)
 spawn('cat', [userInput]);
 
-// ❌ BAD: Shell injection risk
+//  BAD: Shell injection risk
 exec(`cat ${userInput}`);
 ```
 
@@ -389,7 +389,7 @@ exec(`cat ${userInput}`);
 
 ### Handler Structure
 ```js
-// ✅ GOOD: Initialize outside handler (reused across invocations)
+//  GOOD: Initialize outside handler (reused across invocations)
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 const dynamoClient = new DynamoDBClient({ region: 'us-east-1' });
@@ -418,22 +418,22 @@ export const handler = async (event, context) => {
 
 ### 1. Using `==` Instead of `===`
 ```js
-// ❌ BAD
+//  BAD
 if (value == 0) { }       // true for: 0, '0', false, '', []
 
-// ✅ GOOD
+//  GOOD
 if (value === 0) { }      // true only for: 0
 ```
 
 ### 2. Mutating Arrays/Objects
 ```js
-// ❌ BAD: Mutates original
+//  BAD: Mutates original
 function addItem(arr, item) {
   arr.push(item);
   return arr;
 }
 
-// ✅ GOOD: Returns new array
+//  GOOD: Returns new array
 function addItem(arr, item) {
   return [...arr, item];
 }
@@ -441,21 +441,21 @@ function addItem(arr, item) {
 
 ### 3. Not Handling Promise Rejections
 ```js
-// ❌ BAD: Unhandled rejection
+//  BAD: Unhandled rejection
 fetchData();
 
-// ✅ GOOD: Handle errors
+//  GOOD: Handle errors
 fetchData().catch(err => console.error(err));
 ```
 
 ### 4. Blocking the Event Loop
 ```js
-// ❌ BAD: Synchronous heavy computation blocks everything
+//  BAD: Synchronous heavy computation blocks everything
 function processLargeArray(arr) {
   arr.forEach(item => expensiveCalculation(item));
 }
 
-// ✅ GOOD: Break into chunks
+//  GOOD: Break into chunks
 async function processLargeArray(arr, chunkSize = 1000) {
   for (let i = 0; i < arr.length; i += chunkSize) {
     const chunk = arr.slice(i, i + chunkSize);
@@ -467,11 +467,11 @@ async function processLargeArray(arr, chunkSize = 1000) {
 
 ### 5. Memory Leaks (Event Listeners)
 ```js
-// ❌ BAD: Not cleaning up
+//  BAD: Not cleaning up
 button.addEventListener('click', handleClick);
 // Component removed, but listener still exists!
 
-// ✅ GOOD: Cleanup
+//  GOOD: Cleanup
 const controller = new AbortController();
 button.addEventListener('click', handleClick, { signal: controller.signal });
 // Later: controller.abort();
@@ -479,7 +479,7 @@ button.addEventListener('click', handleClick, { signal: controller.signal });
 
 ### 6. Incorrect `this` Binding
 ```js
-// ❌ BAD: Lost context
+//  BAD: Lost context
 class Counter {
   count = 0;
   increment() { this.count++; }
@@ -487,7 +487,7 @@ class Counter {
 const counter = new Counter();
 btn.addEventListener('click', counter.increment);  // `this` is undefined!
 
-// ✅ GOOD: Use arrow function method
+//  GOOD: Use arrow function method
 class Counter {
   count = 0;
   increment = () => { this.count++; }
@@ -496,12 +496,12 @@ class Counter {
 
 ### 7. Not Validating External Inputs
 ```js
-// ❌ BAD: No validation
+//  BAD: No validation
 app.post('/api/users', (req, res) => {
   db.insert('users', req.body);  // Injection risk!
 });
 
-// ✅ GOOD: Validate with schema
+//  GOOD: Validate with schema
 import Joi from 'joi';
 
 const userSchema = Joi.object({
@@ -518,10 +518,10 @@ app.post('/api/users', (req, res) => {
 
 ### 8. Hardcoded Secrets
 ```js
-// ❌ BAD
+//  BAD
 const API_KEY = 'sk_live_1234567890abcdef';
 
-// ✅ GOOD
+//  GOOD
 const API_KEY = process.env.API_KEY;
 if (!API_KEY) throw new Error('API_KEY required');
 ```
@@ -546,21 +546,21 @@ node --prof-process isolate-*.log
 
 **UnhandledPromiseRejectionWarning:**
 ```js
-// ❌ Cause: Missing .catch()
+//  Cause: Missing .catch()
 fetchData();
 
-// ✅ Fix
+//  Fix
 fetchData().catch(err => console.error(err));
 ```
 
 **Maximum call stack size exceeded:**
 ```js
-// ❌ Cause: Infinite recursion
+//  Cause: Infinite recursion
 function factorial(n) {
   return n * factorial(n - 1);  // No base case!
 }
 
-// ✅ Fix: Add base case
+//  Fix: Add base case
 function factorial(n) {
   if (n <= 1) return 1;
   return n * factorial(n - 1);
@@ -608,13 +608,13 @@ jobs:
 
 ### Prototype Pollution
 ```js
-// ❌ BAD: Vulnerable
+//  BAD: Vulnerable
 function merge(target, source) {
   for (const key in source) target[key] = source[key];
   return target;
 }
 
-// ✅ GOOD: Prevent prototype pollution
+//  GOOD: Prevent prototype pollution
 function safeMerge(target, source) {
   for (const key in source) {
     if (Object.hasOwnProperty.call(source, key) &&
@@ -628,10 +628,10 @@ function safeMerge(target, source) {
 
 ### ReDoS (Regular Expression Denial of Service)
 ```js
-// ❌ BAD: Vulnerable to ReDoS
+//  BAD: Vulnerable to ReDoS
 const regex = /^([a-zA-Z0-9]+)+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
 
-// ✅ GOOD: Simpler regex or use validator library
+//  GOOD: Simpler regex or use validator library
 const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Or: import validator from 'validator'; validator.isEmail(input);
 ```

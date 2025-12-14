@@ -31,46 +31,46 @@ files:
 ### Standard Layout
 ```
 ansible/
-├── ansible.cfg               # Ansible configuration
-├── inventory/
-│   ├── production/
-│   │   ├── hosts            # Production inventory
-│   │   └── group_vars/
-│   │       ├── all.yml
-│   │       └── webservers.yml
-│   └── staging/
-│       ├── hosts
-│       └── group_vars/
-│           └── all.yml
-├── playbooks/
-│   ├── site.yml             # Master playbook
-│   ├── webservers.yml
-│   ├── database.yml
-│   └── deploy.yml
-├── roles/
-│   ├── common/
-│   │   ├── tasks/
-│   │   │   └── main.yml
-│   │   ├── handlers/
-│   │   │   └── main.yml
-│   │   ├── templates/
-│   │   ├── files/
-│   │   ├── vars/
-│   │   │   └── main.yml
-│   │   ├── defaults/
-│   │   │   └── main.yml
-│   │   └── meta/
-│   │       └── main.yml
-│   ├── nginx/
-│   ├── postgresql/
-│   └── app/
-├── group_vars/
-│   ├── all.yml              # Variables for all hosts
-│   └── webservers.yml       # Variables for webserver group
-├── host_vars/
-│   └── web1.acme.com.yml    # Variables for specific host
-└── vault/
-    └── secrets.yml          # Encrypted secrets
+ ansible.cfg               # Ansible configuration
+ inventory/
+    production/
+       hosts            # Production inventory
+       group_vars/
+           all.yml
+           webservers.yml
+    staging/
+        hosts
+        group_vars/
+            all.yml
+ playbooks/
+    site.yml             # Master playbook
+    webservers.yml
+    database.yml
+    deploy.yml
+ roles/
+    common/
+       tasks/
+          main.yml
+       handlers/
+          main.yml
+       templates/
+       files/
+       vars/
+          main.yml
+       defaults/
+          main.yml
+       meta/
+           main.yml
+    nginx/
+    postgresql/
+    app/
+ group_vars/
+    all.yml              # Variables for all hosts
+    webservers.yml       # Variables for webserver group
+ host_vars/
+    web1.acme.com.yml    # Variables for specific host
+ vault/
+     secrets.yml          # Encrypted secrets
 ```
 
 ---
@@ -235,20 +235,20 @@ compose:
 ### Role Structure
 ```
 roles/nginx/
-├── tasks/
-│   └── main.yml          # Main task list
-├── handlers/
-│   └── main.yml          # Handlers
-├── templates/
-│   └── nginx.conf.j2     # Jinja2 templates
-├── files/
-│   └── index.html        # Static files
-├── vars/
-│   └── main.yml          # Role variables
-├── defaults/
-│   └── main.yml          # Default variables
-└── meta/
-    └── main.yml          # Role metadata
+ tasks/
+    main.yml          # Main task list
+ handlers/
+    main.yml          # Handlers
+ templates/
+    nginx.conf.j2     # Jinja2 templates
+ files/
+    index.html        # Static files
+ vars/
+    main.yml          # Role variables
+ defaults/
+    main.yml          # Default variables
+ meta/
+     main.yml          # Role metadata
 ```
 
 ### Role Tasks
@@ -546,13 +546,13 @@ ansible-playbook playbooks/site.yml
 
 ### Idempotency
 ```yaml
-# ✅ GOOD - Idempotent
+#  GOOD - Idempotent
 - name: Ensure nginx is installed
   apt:
     name: nginx
     state: present
 
-# ✅ GOOD - Check before creating
+#  GOOD - Check before creating
 - name: Check if config exists
   stat:
     path: /etc/app/config.yml
@@ -564,14 +564,14 @@ ansible-playbook playbooks/site.yml
     dest: /etc/app/config.yml
   when: not config_file.stat.exists
 
-# ❌ BAD - Not idempotent
+#  BAD - Not idempotent
 - name: Append to file
   shell: echo "option=value" >> /etc/config
 ```
 
 ### Use Modules Over Shell/Command
 ```yaml
-# ✅ GOOD - Use built-in modules
+#  GOOD - Use built-in modules
 - name: Create directory
   file:
     path: /opt/app
@@ -584,7 +584,7 @@ ansible-playbook playbooks/site.yml
     name: nginx
     state: present
 
-# ❌ BAD - Using shell
+#  BAD - Using shell
 - name: Create directory
   shell: mkdir -p /opt/app && chown app:app /opt/app
 
@@ -594,7 +594,7 @@ ansible-playbook playbooks/site.yml
 
 ### Use Handlers
 ```yaml
-# ✅ GOOD - Use handlers for service restarts
+#  GOOD - Use handlers for service restarts
 tasks:
   - name: Copy nginx config
     template:
@@ -608,7 +608,7 @@ handlers:
       name: nginx
       state: restarted
 
-# ❌ BAD - Restart in every task
+#  BAD - Restart in every task
 tasks:
   - name: Copy nginx config
     template:

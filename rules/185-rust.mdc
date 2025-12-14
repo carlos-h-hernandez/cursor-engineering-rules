@@ -27,24 +27,24 @@ files:
 ### Standard Layout
 ```
 my-project/
-├── Cargo.toml              # Project manifest
-├── Cargo.lock              # Dependency lock file
-├── src/
-│   ├── main.rs            # Binary entry point
-│   ├── lib.rs             # Library root
-│   ├── bin/               # Additional binaries
-│   │   └── another.rs
-│   └── modules/
-│       ├── mod.rs
-│       ├── user.rs
-│       └── auth.rs
-├── tests/                 # Integration tests
-│   └── integration_test.rs
-├── benches/               # Benchmarks
-│   └── benchmark.rs
-├── examples/              # Example code
-│   └── basic_usage.rs
-└── README.md
+ Cargo.toml              # Project manifest
+ Cargo.lock              # Dependency lock file
+ src/
+    main.rs            # Binary entry point
+    lib.rs             # Library root
+    bin/               # Additional binaries
+       another.rs
+    modules/
+        mod.rs
+        user.rs
+        auth.rs
+ tests/                 # Integration tests
+    integration_test.rs
+ benches/               # Benchmarks
+    benchmark.rs
+ examples/              # Example code
+    basic_usage.rs
+ README.md
 ```
 
 ### Cargo.toml
@@ -99,7 +99,7 @@ let s = String::from("hello");
 
 // Rule 2: Only one owner at a time
 let s1 = s;  // s moved to s1, s is no longer valid
-// println!("{}", s);  // ❌ Error: value borrowed after move
+// println!("{}", s);  //  Error: value borrowed after move
 
 // Rule 3: Value is dropped when owner goes out of scope
 {
@@ -109,16 +109,16 @@ let s1 = s;  // s moved to s1, s is no longer valid
 
 ### Borrowing (References)
 ```rust
-// ✅ GOOD - Immutable borrows
+//  GOOD - Immutable borrows
 fn calculate_length(s: &String) -> usize {
     s.len()
 }
 
 let s1 = String::from("hello");
 let len = calculate_length(&s1);
-println!("{} has length {}", s1, len); // ✅ s1 still valid
+println!("{} has length {}", s1, len); //  s1 still valid
 
-// ✅ GOOD - Mutable borrow
+//  GOOD - Mutable borrow
 fn append_world(s: &mut String) {
     s.push_str(", world!");
 }
@@ -127,15 +127,15 @@ let mut s = String::from("hello");
 append_world(&mut s);
 println!("{}", s); // "hello, world!"
 
-// ❌ BAD - Multiple mutable borrows
+//  BAD - Multiple mutable borrows
 let mut s = String::from("hello");
 let r1 = &mut s;
-let r2 = &mut s; // ❌ Error: cannot borrow as mutable more than once
+let r2 = &mut s; //  Error: cannot borrow as mutable more than once
 ```
 
 ### Lifetimes
 ```rust
-// ✅ GOOD - Explicit lifetimes
+//  GOOD - Explicit lifetimes
 fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     if x.len() > y.len() {
         x
@@ -144,7 +144,7 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
     }
 }
 
-// ✅ GOOD - Struct with lifetime
+//  GOOD - Struct with lifetime
 struct User<'a> {
     name: &'a str,
     email: &'a str,
@@ -156,7 +156,7 @@ impl<'a> User<'a> {
     }
 }
 
-// ✅ EXCELLENT - Use owned types when possible
+//  EXCELLENT - Use owned types when possible
 struct UserOwned {
     name: String,
     email: String,
@@ -188,7 +188,7 @@ pub enum AppError {
 
 type Result<T> = std::result::Result<T, AppError>;
 
-// ✅ GOOD - Return Result
+//  GOOD - Return Result
 async fn get_user(id: uuid::Uuid) -> Result<User> {
     let user = sqlx::query_as!(
         User,
@@ -202,7 +202,7 @@ async fn get_user(id: uuid::Uuid) -> Result<User> {
     Ok(user)
 }
 
-// ✅ GOOD - Use ? operator for error propagation
+//  GOOD - Use ? operator for error propagation
 async fn process_user(id: uuid::Uuid) -> Result<()> {
     let user = get_user(id).await?;
     validate_user(&user)?;
@@ -213,18 +213,18 @@ async fn process_user(id: uuid::Uuid) -> Result<()> {
 
 ### Option for Nullable Values
 ```rust
-// ✅ GOOD - Use Option
+//  GOOD - Use Option
 fn find_user_by_email(email: &str) -> Option<User> {
     // Return Some(user) or None
 }
 
-// ✅ GOOD - Pattern matching
+//  GOOD - Pattern matching
 match find_user_by_email("user@acme.com") {
     Some(user) => println!("Found: {}", user.name),
     None => println!("Not found"),
 }
 
-// ✅ GOOD - Combinators
+//  GOOD - Combinators
 let user_name = find_user_by_email("user@acme.com")
     .map(|u| u.name)
     .unwrap_or_else(|| String::from("Guest"));
@@ -232,12 +232,12 @@ let user_name = find_user_by_email("user@acme.com")
 
 ### Avoid Panics in Production
 ```rust
-// ❌ BAD - Panic in production code
+//  BAD - Panic in production code
 fn divide(a: i32, b: i32) -> i32 {
     a / b  // Panics if b == 0
 }
 
-// ✅ GOOD - Return Result
+//  GOOD - Return Result
 fn divide(a: i32, b: i32) -> Result<i32, String> {
     if b == 0 {
         Err("Division by zero".to_string())
@@ -246,7 +246,7 @@ fn divide(a: i32, b: i32) -> Result<i32, String> {
     }
 }
 
-// ✅ EXCELLENT - Custom error type
+//  EXCELLENT - Custom error type
 fn divide(a: i32, b: i32) -> Result<i32, DivisionError> {
     if b == 0 {
         Err(DivisionError::DivideByZero)
@@ -281,7 +281,7 @@ async fn fetch_data() -> Result<String, Box<dyn std::error::Error>> {
 ```rust
 use tokio::task;
 
-// ✅ GOOD - Join multiple tasks
+//  GOOD - Join multiple tasks
 async fn fetch_all_data() -> Result<(User, Posts, Comments)> {
     let (user, posts, comments) = tokio::try_join!(
         fetch_user(),
@@ -292,7 +292,7 @@ async fn fetch_all_data() -> Result<(User, Posts, Comments)> {
     Ok((user, posts, comments))
 }
 
-// ✅ GOOD - Spawn background tasks
+//  GOOD - Spawn background tasks
 async fn process_in_background() {
     let handle = task::spawn(async {
         // Long-running task
@@ -566,7 +566,7 @@ let user = UserBuilder::new()
 
 ### newtype Pattern
 ```rust
-// ✅ GOOD - Type safety with newtype
+//  GOOD - Type safety with newtype
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct UserId(uuid::Uuid);
 
@@ -592,7 +592,7 @@ fn get_user(id: UserId) -> Result<User> {
 
 ### Trait Implementation
 ```rust
-// ✅ GOOD - Implement common traits
+//  GOOD - Implement common traits
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct User {
     pub id: UserId,
@@ -692,12 +692,12 @@ pub async fn get_user(id: UserId) -> Result<User> {
 
 ### Use &str Over String When Possible
 ```rust
-// ✅ GOOD - Borrow when you don't need ownership
+//  GOOD - Borrow when you don't need ownership
 fn process_name(name: &str) {
     println!("Processing: {}", name);
 }
 
-// ❌ BAD - Unnecessary allocation
+//  BAD - Unnecessary allocation
 fn process_name(name: String) {
     println!("Processing: {}", name);
 }
@@ -705,13 +705,13 @@ fn process_name(name: String) {
 
 ### Use Iterators
 ```rust
-// ✅ GOOD - Iterator chains (lazy evaluation)
+//  GOOD - Iterator chains (lazy evaluation)
 let sum: i32 = (1..=100)
     .filter(|x| x % 2 == 0)
     .map(|x| x * 2)
     .sum();
 
-// ❌ BAD - Multiple allocations
+//  BAD - Multiple allocations
 let mut vec = Vec::new();
 for i in 1..=100 {
     if i % 2 == 0 {
@@ -727,14 +727,14 @@ let sum: i32 = vec2.iter().sum();
 
 ### Avoid Unnecessary Clones
 ```rust
-// ❌ BAD - Unnecessary clone
+//  BAD - Unnecessary clone
 fn process_users(users: Vec<User>) {
     for user in users.clone() {
         println!("{}", user.name);
     }
 }
 
-// ✅ GOOD - Borrow
+//  GOOD - Borrow
 fn process_users(users: &[User]) {
     for user in users {
         println!("{}", user.name);

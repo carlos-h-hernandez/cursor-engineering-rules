@@ -491,12 +491,12 @@ Instead of emojis, use:
 
 | Instead of Emoji | Use This |
 |-----------------|----------|
-| 🚀 Quick Start | `## Quick Start` (clean heading) |
-| ✅ Feature list | `- Feature name` (bullet list) |
-| ⚠️ Warning | `> [!WARNING]` (GitHub alert) |
-| 💡 Tip | `> [!TIP]` (GitHub alert) |
-| 📝 Note | `> [!NOTE]` (GitHub alert) |
-| 🔒 Security | Use badge: `![Security](https://img.shields.io/badge/Security-Passing-green)` |
+|  Quick Start | `## Quick Start` (clean heading) |
+|  Feature list | `- Feature name` (bullet list) |
+|  Warning | `> [!WARNING]` (GitHub alert) |
+|  Tip | `> [!TIP]` (GitHub alert) |
+|  Note | `> [!NOTE]` (GitHub alert) |
+|  Security | Use badge: `![Security](https://img.shields.io/badge/Security-Passing-green)` |
 
 ### Acceptable Emoji Usage (Rare Cases)
 
@@ -510,14 +510,14 @@ Emojis MAY be used in:
 
 **BAD - With Emojis:**
 ```markdown
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
-### ✨ Amazing Features
-- ✅ Super fast performance
-- 🔒 Secure by default
-- 💻 Easy to use
+###  Amazing Features
+-  Super fast performance
+-  Secure by default
+-  Easy to use
 
-> ⚠️ Warning: This is important!
+>  Warning: This is important!
 ```
 
 **GOOD - Without Emojis:**
@@ -691,13 +691,13 @@ stateDiagram-v2
 > Implement rate limiting on all authentication endpoints to prevent brute force attacks.
 
 **Best Practices:**
-- ✅ Use HTTPS for all API communication
-- ✅ Implement CSRF protection
-- ✅ Store passwords using bcrypt with salt rounds ≥ 12
-- ✅ Implement rate limiting (5 requests/minute per IP)
-- ✅ Use secure, httpOnly cookies for refresh tokens
-- ❌ Never store passwords in plain text
-- ❌ Never expose internal error details to clients
+-  Use HTTPS for all API communication
+-  Implement CSRF protection
+-  Store passwords using bcrypt with salt rounds ≥ 12
+-  Implement rate limiting (5 requests/minute per IP)
+-  Use secure, httpOnly cookies for refresh tokens
+-  Never store passwords in plain text
+-  Never expose internal error details to clients
 ```
 
 ---

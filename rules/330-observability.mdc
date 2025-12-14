@@ -43,7 +43,7 @@ files:
 
 ### JSON Logging (Best Practice)
 ```javascript
-// ✅ GOOD - Structured JSON
+//  GOOD - Structured JSON
 logger.info({
   event: 'user_login',
   userId: '123',
@@ -54,7 +54,7 @@ logger.info({
   success: true
 });
 
-// ❌ BAD - Plain text
+//  BAD - Plain text
 console.log('User user@acme.com logged in from 1.2.3.4');
 ```
 
@@ -239,20 +239,20 @@ groups:
 ### Key Metrics Dashboard
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│ Service Health Dashboard                                │
-├─────────────────────────────────────────────────────────┤
-│                                                         │
-│ Request Rate:  1,234 req/s  ↑ 5%                      │
-│ Error Rate:    0.01%        ✓ Normal                   │
-│ P95 Latency:   145ms        ✓ Normal                   │
-│ P99 Latency:   523ms        ⚠ Warning                  │
-│                                                         │
-├─────────────────────────────────────────────────────────┤
-│ [Request Rate Graph]        [Error Rate Graph]        │
-│                                                         │
-│ [Latency Graph]             [CPU/Memory Graph]        │
-└─────────────────────────────────────────────────────────┘
+
+ Service Health Dashboard
+
+
+ Request Rate:  1,234 req/s  ↑ 5%
+ Error Rate:    0.01%         Normal
+ P95 Latency:   145ms         Normal
+ P99 Latency:   523ms         Warning
+
+
+ [Request Rate Graph]        [Error Rate Graph]
+
+ [Latency Graph]             [CPU/Memory Graph]
+
 ```
 
 ---

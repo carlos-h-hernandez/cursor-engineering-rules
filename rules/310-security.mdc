@@ -36,13 +36,13 @@ Users can access resources they shouldn't be able to access.
 
 #### Prevention
 ```typescript
-// ❌ BAD - No authorization check
+//  BAD - No authorization check
 app.get('/api/users/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   res.json(user);
 });
 
-// ✅ GOOD - Verify user can access resource
+//  GOOD - Verify user can access resource
 app.get('/api/users/:id', authenticate, async (req, res) => {
   const requestedUserId = req.params.id;
   const currentUserId = req.user.id;
@@ -56,7 +56,7 @@ app.get('/api/users/:id', authenticate, async (req, res) => {
   res.json(user);
 });
 
-// ✅ EXCELLENT - Policy-based access control
+//  EXCELLENT - Policy-based access control
 import { authorize } from './policies';
 
 app.get('/api/users/:id',
@@ -105,7 +105,7 @@ Sensitive data exposed due to weak or missing encryption.
 ```typescript
 import bcrypt from 'bcrypt';
 
-// ✅ GOOD - Hash passwords with bcrypt
+//  GOOD - Hash passwords with bcrypt
 async function hashPassword(password: string): Promise<string> {
   const saltRounds = 12;
   return await bcrypt.hash(password, saltRounds);
@@ -115,7 +115,7 @@ async function verifyPassword(password: string, hash: string): Promise<boolean> 
   return await bcrypt.compare(password, hash);
 }
 
-// ❌ BAD - Never store passwords in plain text
+//  BAD - Never store passwords in plain text
 const user = { email: 'user@acme.com', password: 'secretPassword' };
 ```
 
@@ -155,7 +155,7 @@ function decrypt(encryptedData: string, key: string): string {
 
 **Use HTTPS Everywhere**
 ```typescript
-// ✅ GOOD - Force HTTPS
+//  GOOD - Force HTTPS
 import helmet from 'helmet';
 import express from 'express';
 
@@ -176,7 +176,7 @@ Untrusted data sent to interpreter as part of command or query.
 
 #### SQL Injection Prevention
 ```typescript
-// ❌ BAD - SQL injection vulnerability
+//  BAD - SQL injection vulnerability
 app.get('/api/users', async (req, res) => {
   const name = req.query.name;
   const query = `SELECT * FROM users WHERE name = '${name}'`;
@@ -184,7 +184,7 @@ app.get('/api/users', async (req, res) => {
   res.json(users);
 });
 
-// ✅ GOOD - Parameterized queries
+//  GOOD - Parameterized queries
 app.get('/api/users', async (req, res) => {
   const name = req.query.name;
   const users = await db.query(
@@ -194,7 +194,7 @@ app.get('/api/users', async (req, res) => {
   res.json(users);
 });
 
-// ✅ EXCELLENT - ORM with type safety
+//  EXCELLENT - ORM with type safety
 import { User } from './models';
 
 app.get('/api/users', async (req, res) => {
@@ -210,19 +210,19 @@ app.get('/api/users', async (req, res) => {
 ```python
 import psycopg2
 
-# ❌ BAD - SQL injection vulnerability
+#  BAD - SQL injection vulnerability
 def get_user_by_name(name: str):
     query = f"SELECT * FROM users WHERE name = '{name}'"
     cursor.execute(query)
     return cursor.fetchall()
 
-# ✅ GOOD - Parameterized queries
+#  GOOD - Parameterized queries
 def get_user_by_name(name: str):
     query = "SELECT * FROM users WHERE name = %s"
     cursor.execute(query, (name,))
     return cursor.fetchall()
 
-# ✅ EXCELLENT - ORM
+#  EXCELLENT - ORM
 from sqlalchemy.orm import Session
 from models import User
 
@@ -232,7 +232,7 @@ def get_user_by_name(session: Session, name: str):
 
 #### Command Injection Prevention
 ```typescript
-// ❌ BAD - Command injection vulnerability
+//  BAD - Command injection vulnerability
 import { exec } from 'child_process';
 
 app.post('/api/ping', (req, res) => {
@@ -242,7 +242,7 @@ app.post('/api/ping', (req, res) => {
   });
 });
 
-// ✅ GOOD - Input validation and safe execution
+//  GOOD - Input validation and safe execution
 import { spawn } from 'child_process';
 
 app.post('/api/ping', (req, res) => {
@@ -280,7 +280,7 @@ Missing or ineffective security controls by design.
 ```typescript
 import rateLimit from 'express-rate-limit';
 
-// ✅ GOOD - Rate limiting to prevent brute force
+//  GOOD - Rate limiting to prevent brute force
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Limit each IP to 5 requests per windowMs
@@ -293,7 +293,7 @@ app.post('/api/login', loginLimiter, async (req, res) => {
   // Login logic
 });
 
-// ✅ GOOD - Global rate limiting
+//  GOOD - Global rate limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -306,7 +306,7 @@ app.use('/api/', globalLimiter);
 ```typescript
 import { z } from 'zod';
 
-// ✅ EXCELLENT - Schema validation with Zod
+//  EXCELLENT - Schema validation with Zod
 const UserSchema = z.object({
   email: z.string().email().max(255),
   password: z.string().min(8).max(128)
@@ -368,7 +368,7 @@ app.use(helmet({
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
 }));
 
-// ✅ GOOD - CORS configuration
+//  GOOD - CORS configuration
 import cors from 'cors';
 
 app.use(cors({
@@ -381,7 +381,7 @@ app.use(cors({
 
 **Disable Debug Mode in Production**
 ```typescript
-// ✅ GOOD - Environment-based configuration
+//  GOOD - Environment-based configuration
 const app = express();
 
 if (process.env.NODE_ENV === 'production') {
@@ -392,15 +392,15 @@ if (process.env.NODE_ENV === 'production') {
   app.use(morgan('dev'));
 }
 
-// ❌ BAD - Debug mode in production
+//  BAD - Debug mode in production
 app.use((err, req, res, next) => {
   res.status(500).json({
     error: err.message,
-    stack: err.stack, // ❌ Exposes stack trace
+    stack: err.stack, //  Exposes stack trace
   });
 });
 
-// ✅ GOOD - Safe error handling
+//  GOOD - Safe error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
 
@@ -506,7 +506,7 @@ import session from 'express-session';
 import RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 
-// ✅ GOOD - Secure session configuration
+//  GOOD - Secure session configuration
 const redisClient = createClient({ url: process.env.REDIS_URL });
 const redisStore = new RedisStore({ client: redisClient });
 
@@ -632,7 +632,7 @@ Insufficient logging and monitoring, inadequate response to incidents.
 ```typescript
 import winston from 'winston';
 
-// ✅ GOOD - Structured logging
+//  GOOD - Structured logging
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
@@ -719,7 +719,7 @@ Application fetches remote resource without validating user-supplied URL.
 ```typescript
 import { URL } from 'url';
 
-// ❌ BAD - SSRF vulnerability
+//  BAD - SSRF vulnerability
 app.post('/api/fetch', async (req, res) => {
   const url = req.body.url;
   const response = await fetch(url);
@@ -727,7 +727,7 @@ app.post('/api/fetch', async (req, res) => {
   res.send(data);
 });
 
-// ✅ GOOD - Validate and restrict URLs
+//  GOOD - Validate and restrict URLs
 const ALLOWED_DOMAINS = ['api.acme.com', 'cdn.acme.com'];
 const BLOCKED_IPS = ['127.0.0.1', '0.0.0.0', '169.254.169.254']; // Block metadata service
 

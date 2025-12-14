@@ -8,7 +8,7 @@ files:
     - "**/*.sh"
 ---
 
-# 📖 Bash Engineering Ruleset
+#  Bash Engineering Ruleset
 
 **Scope:** Guidance for writing robust, portable Bash scripts that are easy to read, test, and operate.
 **Principles:** DRY • KISS • Fail Fast • Zero Warnings.
@@ -47,19 +47,19 @@ local var="value"           # Function-local variable
 
 ### Error Handling Modes
 
-**🟢 Strict Mode (Fail-Fast):**
+** Strict Mode (Fail-Fast):**
 ```bash
 set -euo pipefail  # Exit immediately on any error
 ```
 Use for: Simple linear scripts, dependency installation, straightforward validation.
 
-**🟡 Controlled Mode (Explicit):**
+** Controlled Mode (Explicit):**
 ```bash
 set -uo pipefail  # No -e: you handle errors explicitly
 ```
 Use for: Diagnostics, cleanup operations, commands where failure is expected (grep, curl with retries).
 
-**🔵 Strict + ERR Trap Propagation:**
+** Strict + ERR Trap Propagation:**
 ```bash
 set -Euo pipefail  # -E ensures ERR traps propagate to functions
 
@@ -90,14 +90,14 @@ Use for: Production scripts with comprehensive error handling via ERR traps.
 ### Process Substitution (Avoid Subshells)
 
 ```bash
-# ❌ Wrong - subshell, variables don't persist
+#  Wrong - subshell, variables don't persist
 count=0
 cat file.txt | while read -r line; do
   count=$((count + 1))
 done
 echo "$count"  # Empty! (subshell issue)
 
-# ✅ Correct - process substitution, no subshell
+#  Correct - process substitution, no subshell
 count=0
 while read -r line; do
   count=$((count + 1))
@@ -171,10 +171,10 @@ EOF
 
 ### 1. Unquoted Variables
 ```bash
-# ❌ Wrong
+#  Wrong
 if [ $var = "hello" ]; then  # Fails if var is empty or has spaces
 
-# ✅ Correct
+#  Correct
 if [ "$var" = "hello" ]; then
 # Or use [[ (Bash-specific but safer)
 if [[ $var = "hello" ]]; then
@@ -182,21 +182,21 @@ if [[ $var = "hello" ]]; then
 
 ### 2. Parsing `ls` Output
 ```bash
-# ❌ Wrong
+#  Wrong
 for file in $(ls *.txt); do
 
-# ✅ Correct
+#  Correct
 for file in *.txt; do
   [ -f "$file" ] || continue
 ```
 
 ### 3. Exit Code Checking
 ```bash
-# ❌ Wrong - only checks last command
+#  Wrong - only checks last command
 cmd1 && cmd2 && cmd3
 if [ $? -eq 0 ]; then  # Only checks cmd3!
 
-# ✅ Correct
+#  Correct
 if cmd1 && cmd2 && cmd3; then
   echo "All succeeded"
 fi
@@ -204,24 +204,24 @@ fi
 
 ### 4. `cd` Without Error Checking
 ```bash
-# ❌ Wrong
+#  Wrong
 cd "$some_dir"
 rm -rf *  # Disaster if cd failed!
 
-# ✅ Correct
+#  Correct
 cd "$some_dir" || { echo "Failed to cd"; exit 1; }
 rm -rf *
 ```
 
 ### 5. Subshell Variable Scope
 ```bash
-# ❌ Wrong - subshell doesn't persist
+#  Wrong - subshell doesn't persist
 echo "data" | while read -r line; do
   count=$((count + 1))
 done
 echo "$count"  # Empty!
 
-# ✅ Correct - use process substitution
+#  Correct - use process substitution
 while read -r line; do
   count=$((count + 1))
 done < <(echo "data")
@@ -342,14 +342,14 @@ fi
 
 ## 10) Anti-Patterns (Forbidden)
 
-- ❌ `eval` on user input.
-- ❌ Using unquoted variables in file paths.
-- ❌ Parsing `ls` output (use `find` or globs).
-- ❌ Swallowing errors (unless explicit `|| true`).
-- ❌ `echo` for logging (use specific log function targeting stderr).
-- ❌ `cd` without error checking before destructive operations.
-- ❌ Variables in pipes (use process substitution `< <(cmd)` instead).
-- ❌ Using aliases in scripts (use functions instead).
+-  `eval` on user input.
+-  Using unquoted variables in file paths.
+-  Parsing `ls` output (use `find` or globs).
+-  Swallowing errors (unless explicit `|| true`).
+-  `echo` for logging (use specific log function targeting stderr).
+-  `cd` without error checking before destructive operations.
+-  Variables in pipes (use process substitution `< <(cmd)` instead).
+-  Using aliases in scripts (use functions instead).
 
 ---
 

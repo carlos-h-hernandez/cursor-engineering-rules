@@ -19,17 +19,17 @@ Choose the right tool for the job. For documentation reading, prefer fast text-b
 
 ---
 
-## Documentation Reading: Tool Selection 🏆
+## Documentation Reading: Tool Selection
 
 ### Default Tool: Lynx (Use 95% of the time)
 
 **Why Lynx is Best:**
-- ✅ Renders readable text (not raw HTML)
-- ✅ Fast & lightweight (~5MB memory)
-- ✅ Works for most docs (AWS, K8s, GitHub, Terraform, Cloudflare, Python, Go)
-- ✅ Clean text output with numbered links
-- ✅ Screen reader simulation (accessibility testing)
-- ✅ No JavaScript overhead
+-  Renders readable text (not raw HTML)
+-  Fast & lightweight (~5MB memory)
+-  Works for most docs (AWS, K8s, GitHub, Terraform, Cloudflare, Python, Go)
+-  Clean text output with numbered links
+-  Screen reader simulation (accessibility testing)
+-  No JavaScript overhead
 
 **Example Commands:**
 ```bash
@@ -62,12 +62,12 @@ lynx -dump https://terraform.io/docs | grep -A 20 "Getting Started"
 ### Fallback Tool 1: curl (When You Need Raw Data)
 
 **Use curl When:**
-- ✅ Need raw HTML to parse specific elements
-- ✅ API documentation with JSON responses
-- ✅ Quick existence/status checks (HTTP headers)
-- ✅ Downloading files (PDF, images)
-- ✅ Maximum speed required (no rendering)
-- ✅ Extract specific data with grep/sed/awk
+-  Need raw HTML to parse specific elements
+-  API documentation with JSON responses
+-  Quick existence/status checks (HTTP headers)
+-  Downloading files (PDF, images)
+-  Maximum speed required (no rendering)
+-  Extract specific data with grep/sed/awk
 
 **Example Commands:**
 ```bash
@@ -100,12 +100,12 @@ curl -s https://registry.terraform.io/providers/hashicorp/aws/latest/docs | grep
 ### Fallback Tool 2: LightPanda/Puppeteer (JavaScript-Heavy Sites)
 
 **Use LightPanda Only When:**
-- ❌ Lynx returns empty/incomplete content
-- ✅ Documentation requires JavaScript to render
-- ✅ Single-Page Application (SPA) documentation
-- ✅ Need to interact with page (click tabs, expand sections)
-- ✅ Screenshots needed
-- ✅ Complex dynamic content loading
+-  Lynx returns empty/incomplete content
+-  Documentation requires JavaScript to render
+-  Single-Page Application (SPA) documentation
+-  Need to interact with page (click tabs, expand sections)
+-  Screenshots needed
+-  Complex dynamic content loading
 
 **Example Usage:**
 ```javascript
@@ -205,9 +205,9 @@ pricing models, and deployment methods.
 
 ### Speed
 ```
-Lynx:         ⚡⚡⚡⚡⚡ (Fastest)
-curl:         ⚡⚡⚡⚡⚡ (Fastest, but raw HTML)
-LightPanda:   ⚡⚡⚡   (Slower, full browser)
+Lynx:          (Fastest)
+curl:          (Fastest, but raw HTML)
+LightPanda:      (Slower, full browser)
 ```
 
 ### Memory Usage
@@ -228,7 +228,7 @@ LightPanda:   99% (Works everywhere, but overkill)
 
 ## Anti-Patterns (What NOT to Do)
 
-### ❌ Don't Default to LightPanda
+###  Don't Default to LightPanda
 ```bash
 # BAD
 Use LightPanda to read AWS Lambda documentation...
@@ -238,7 +238,7 @@ Use lynx to read AWS Lambda documentation...
 ```
 **Why:** LightPanda is slow and resource-intensive. Lynx is 10x faster for static docs.
 
-### ❌ Don't Use curl for Rendered Content
+###  Don't Use curl for Rendered Content
 ```bash
 # BAD (you'll get messy HTML)
 Use curl to fetch and explain the Kubernetes documentation...
@@ -248,7 +248,7 @@ Use lynx to read and explain the Kubernetes documentation...
 ```
 **Why:** curl returns raw HTML. Lynx renders it into readable text.
 
-### ❌ Don't Forget Fallback Strategy
+###  Don't Forget Fallback Strategy
 ```bash
 # BAD (no fallback)
 Use lynx to read the documentation...
@@ -550,14 +550,14 @@ http -h acme.com
 
 ## Text Search: ripgrep (rg) over grep
 
-### Default: Use ripgrep (rg) on macOS ⭐
+### Default: Use ripgrep (rg) on macOS
 
 **Why ripgrep is Better:**
-- ✅ **Faster**: 5-10x faster than grep for large codebases
-- ✅ **Smart defaults**: Respects .gitignore, skips hidden files/binaries
-- ✅ **Better output**: Colored, formatted, line numbers by default
-- ✅ **Modern syntax**: Simpler flags, Perl-compatible regex (PCRE2)
-- ✅ **Pre-installed**: Available via Homebrew on macOS
+-  **Faster**: 5-10x faster than grep for large codebases
+-  **Smart defaults**: Respects .gitignore, skips hidden files/binaries
+-  **Better output**: Colored, formatted, line numbers by default
+-  **Modern syntax**: Simpler flags, Perl-compatible regex (PCRE2)
+-  **Pre-installed**: Available via Homebrew on macOS
 
 ### Installation
 ```bash
@@ -619,12 +619,12 @@ rg -o "email: \S+"
 
 ### Comparison: rg vs grep
 ```bash
-# ❌ OLD (grep)
+#  OLD (grep)
 grep -r "pattern" .
 grep -r "pattern" . --include="*.py"
 grep -rn "pattern" . | grep -v node_modules
 
-# ✅ NEW (ripgrep)
+#  NEW (ripgrep)
 rg "pattern"
 rg "pattern" --type py
 rg "pattern" # Already excludes node_modules via .gitignore
@@ -633,11 +633,11 @@ rg "pattern" # Already excludes node_modules via .gitignore
 ### When to Use grep Instead
 ```bash
 # Standard input processing (pipes)
-cat file.txt | grep "pattern"  # ✅ Use grep
-rg "pattern" file.txt          # ✅ Use rg for files
+cat file.txt | grep "pattern"  #  Use grep
+rg "pattern" file.txt          #  Use rg for files
 
 # POSIX compliance required (scripts for CI/CD on minimal containers)
-grep -E "pattern" file.txt     # ✅ grep is more portable
+grep -E "pattern" file.txt     #  grep is more portable
 
 # Embedded systems / minimal environments
 # grep is more likely to be pre-installed
@@ -730,30 +730,30 @@ Only use `grep` when:
 ## Summary: Tool Selection Cheat Sheet
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│ Documentation Reading Tool Selection                        │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│ DEFAULT: Use Lynx                                          │
-│   • Fast, lightweight, readable                            │
-│   • Works for 95% of documentation sites                   │
-│   • Best for: AWS, K8s, GitHub, Terraform, Python, Go     │
-│                                                             │
-│ FALLBACK 1: Use curl                                       │
-│   • Raw HTML/JSON needed                                   │
-│   • API documentation                                       │
-│   • Maximum speed required                                 │
-│                                                             │
-│ FALLBACK 2: Use LightPanda                                 │
-│   • JavaScript required to render                          │
-│   • Interactive content                                     │
-│   • Lynx fails to return content                           │
-│                                                             │
-│ PROMPT PATTERN:                                             │
-│   "Use lynx to read [URL] and [task].                      │
-│    If lynx fails, fall back to LightPanda."                │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
+
+ Documentation Reading Tool Selection
+
+
+ DEFAULT: Use Lynx
+   • Fast, lightweight, readable
+   • Works for 95% of documentation sites
+   • Best for: AWS, K8s, GitHub, Terraform, Python, Go
+
+ FALLBACK 1: Use curl
+   • Raw HTML/JSON needed
+   • API documentation
+   • Maximum speed required
+
+ FALLBACK 2: Use LightPanda
+   • JavaScript required to render
+   • Interactive content
+   • Lynx fails to return content
+
+ PROMPT PATTERN:
+   "Use lynx to read [URL] and [task].
+    If lynx fails, fall back to LightPanda."
+
+
 ```
 
 ---

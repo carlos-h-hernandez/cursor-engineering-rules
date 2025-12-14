@@ -22,7 +22,7 @@ files:
 **Tables use plural snake_case:**
 
 ```sql
--- ✅ GOOD: Plural snake_case
+--  GOOD: Plural snake_case
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -37,7 +37,7 @@ CREATE TABLE user_books (
     UNIQUE(user_id, book_id)
 );
 
--- ❌ BAD: Singular or camelCase
+--  BAD: Singular or camelCase
 CREATE TABLE User ( ... );
 CREATE TABLE userBooks ( ... );
 ```
@@ -47,7 +47,7 @@ CREATE TABLE userBooks ( ... );
 **Columns use singular snake_case:**
 
 ```sql
--- ✅ GOOD: Singular snake_case
+--  GOOD: Singular snake_case
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ❌ BAD: Plural or camelCase
+--  BAD: Plural or camelCase
 CREATE TABLE users (
     firstName VARCHAR(100),
     EmailAddress VARCHAR(255)
@@ -69,13 +69,13 @@ CREATE TABLE users (
 **Primary keys are always named `id`:**
 
 ```sql
--- ✅ GOOD: Standard id column
+--  GOOD: Standard id column
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
     ...
 );
 
--- ❌ BAD: Custom primary key names
+--  BAD: Custom primary key names
 CREATE TABLE users (
     user_id BIGSERIAL PRIMARY KEY,
     user_uuid UUID PRIMARY KEY
@@ -87,7 +87,7 @@ CREATE TABLE users (
 **Foreign keys reference the table name in singular form plus `_id`:**
 
 ```sql
--- ✅ GOOD: user_id references users table
+--  GOOD: user_id references users table
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES users(id),
@@ -95,14 +95,14 @@ CREATE TABLE orders (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ✅ GOOD: Self-referencing foreign key
+--  GOOD: Self-referencing foreign key
 CREATE TABLE categories (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     parent_id BIGINT REFERENCES categories(id)
 );
 
--- ❌ BAD: Inconsistent naming
+--  BAD: Inconsistent naming
 CREATE TABLE orders (
     id BIGSERIAL PRIMARY KEY,
     customer_id BIGINT REFERENCES users(id),  -- Should be user_id
@@ -115,13 +115,13 @@ CREATE TABLE orders (
 **Indexes use descriptive names:**
 
 ```sql
--- ✅ GOOD: Descriptive index names
+--  GOOD: Descriptive index names
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_orders_user_id ON orders(user_id);
 CREATE INDEX idx_orders_created_at ON orders(created_at);
 CREATE UNIQUE INDEX idx_users_email_unique ON users(email);
 
--- ❌ BAD: Generic or unclear names
+--  BAD: Generic or unclear names
 CREATE INDEX idx1 ON users(email);
 CREATE INDEX idx_users_1 ON users(user_id);
 ```
@@ -131,12 +131,12 @@ CREATE INDEX idx_users_1 ON users(user_id);
 **Constraints use descriptive names:**
 
 ```sql
--- ✅ GOOD: Named constraints
+--  GOOD: Named constraints
 ALTER TABLE users
     ADD CONSTRAINT users_email_unique UNIQUE (email),
     ADD CONSTRAINT users_email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$');
 
--- ❌ BAD: Unnamed constraints (PostgreSQL will generate random names)
+--  BAD: Unnamed constraints (PostgreSQL will generate random names)
 ALTER TABLE users ADD UNIQUE (email);
 ```
 
@@ -194,7 +194,7 @@ SELECT * FROM users WHERE deleted_at IS NULL;
 **Use PostgreSQL enums for fixed value sets:**
 
 ```sql
--- ✅ GOOD: Use ENUM type
+--  GOOD: Use ENUM type
 CREATE TYPE user_status AS ENUM ('active', 'inactive', 'suspended');
 CREATE TYPE order_status AS ENUM ('pending', 'processing', 'shipped', 'delivered', 'cancelled');
 
@@ -210,7 +210,7 @@ CREATE TABLE orders (
     status order_status DEFAULT 'pending' NOT NULL
 );
 
--- ❌ BAD: String with CHECK constraint (less efficient)
+--  BAD: String with CHECK constraint (less efficient)
 CREATE TABLE users (
     status VARCHAR(20) CHECK (status IN ('active', 'inactive', 'suspended'))
 );
@@ -302,13 +302,13 @@ CREATE INDEX idx_orders_pending ON orders(created_at) WHERE status = 'pending';
 **Always use parameterized queries:**
 
 ```python
-# ✅ GOOD: Parameterized query
+#  GOOD: Parameterized query
 cursor.execute(
     "SELECT * FROM users WHERE email = %s",
     (email,)
 )
 
-# ❌ BAD: String concatenation (SQL injection risk)
+#  BAD: String concatenation (SQL injection risk)
 cursor.execute(f"SELECT * FROM users WHERE email = '{email}'")
 ```
 

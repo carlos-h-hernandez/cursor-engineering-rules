@@ -26,7 +26,7 @@ files:
   * **Value-Driven:** Every suggestion must add clear value. Avoid over-engineering.
   * **Production-Ready:** Include error handling, meaningful names, a security-first approach, and appropriate documentation.
   * **Constructive Collaboration:** Frame all feedback respectfully and focus on the code, not the author. Assume good intent and aim to teach and learn.
-  * **Non-Goals:** Do not refactor unrelated modules, change APIs, or add new dependencies unless required to fix a 🔴 Critical issue or explicitly requested.
+  * **Non-Goals:** Do not refactor unrelated modules, change APIs, or add new dependencies unless required to fix a  Critical issue or explicitly requested.
 
 **Naming Conventions:**
 
@@ -45,17 +45,17 @@ files:
 
 -----
 
-## 📋 Priority Framework
+##  Priority Framework
 
 When providing feedback, organize by impact:
 
-**🔴 Critical:** Security vulnerabilities, bugs that break functionality, data loss risks </br>
-**🟡 Recommended:** Performance issues, maintainability problems, scalability concerns </br>
-**🟢 Optional:** Style improvements, future-proofing, minor optimizations </br>
+** Critical:** Security vulnerabilities, bugs that break functionality, data loss risks </br>
+** Recommended:** Performance issues, maintainability problems, scalability concerns </br>
+** Optional:** Style improvements, future-proofing, minor optimizations </br>
 
 -----
 
-## 🔍 MODE: Code Review
+##  MODE: Code Review
 
 ### Review Approach
 
@@ -117,7 +117,7 @@ Prioritize high-impact changes that don't require major refactoring.
 
 -----
 
-## 🛠️ MODE: Code Generation
+##  MODE: Code Generation
 
 ### Generation Approach
 
@@ -170,7 +170,7 @@ Brief module description and purpose.
 
 -----
 
-## 📦 Dependency Management
+##  Dependency Management
 
 Adding a new dependency is a long-term commitment that adds to the maintenance burden and security surface area. **Prefer using the standard library or existing dependencies whenever possible.**
 
@@ -184,7 +184,7 @@ When a new dependency is unavoidable, it must be vetted against the following cr
 
 -----
 
-## ❓ Clarifying Questions Framework
+##  Clarifying Questions Framework
 
 When asking questions (limit to ≤3), prioritize those that would most change the solution:
 
@@ -194,7 +194,7 @@ When asking questions (limit to ≤3), prioritize those that would most change t
 
 -----
 
-## ✅ Self-Validation Checklist
+##  Self-Validation Checklist
 
 Before delivering code or feedback, verify:
 
@@ -209,7 +209,7 @@ Before delivering code or feedback, verify:
 
 -----
 
-## 📝 Response Format Guidelines
+##  Response Format Guidelines
 
 **For Code Reviews:**
 
@@ -217,13 +217,13 @@ Before delivering code or feedback, verify:
 ## Summary
 [Brief overview of findings]
 
-## 🔴 Critical Issues
+##  Critical Issues
 [List with code examples, fixes, and file/line references when possible]
 
-## 🟡 Recommended Improvements
+##  Recommended Improvements
 [List with code examples, explanations, and expected impact]
 
-## 🟢 Optional Enhancements
+##  Optional Enhancements
 [List with brief suggestions]
 
 Provide minimal diffs in this format when applicable:
@@ -272,7 +272,7 @@ To refine the solution, clarify:
 
 ***
 
-## 🎓 Best Practices by Language
+##  Best Practices by Language
 
 **Bash:**
 - Use `set -euo pipefail` for strict error handling or `set -uo pipefail` if `-e` is too aggressive.
@@ -349,7 +349,7 @@ To refine the solution, clarify:
 
 ***
 
-## 📊 Performance & Measurement
+##  Performance & Measurement
 
 When suggesting performance improvements:
 - **State the expected impact:** e.g., "Reduce p95 latency from X→Y", "Cut memory ~Z%".
@@ -359,7 +359,7 @@ When suggesting performance improvements:
 Example:
 ```
 
-🟡 Cache database query results
+ Cache database query results
 Expected impact: Reduce average response from 200ms to 50ms
 Measurement: Compare p95/p99 latency pre/post using app metrics
 Justification: Query runs \~1000/min against mostly-static data
@@ -368,7 +368,7 @@ Justification: Query runs \~1000/min against mostly-static data
 
 ***
 
-## 🔒 Security Checklist
+##  Security Checklist
 
 - [ ] No hardcoded secrets, API keys, passwords.
 - [ ] Secrets not logged or exposed in errors (mask sensitive keys).
@@ -380,7 +380,7 @@ Justification: Query runs \~1000/min against mostly-static data
 
 ***
 
-## 🚀 Remember
+##  Remember
 
 > "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away." — Antoine de Saint-Exupéry
 

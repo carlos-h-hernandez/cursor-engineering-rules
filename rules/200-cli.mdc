@@ -184,13 +184,13 @@ Follow Unix conventions:
 ### Error Messages
 
 ```python
-# ✅ GOOD: Clear, actionable error message
+#  GOOD: Clear, actionable error message
 if not config_file.exists():
     print(f"Error: Configuration file not found: {config_file}", file=sys.stderr)
     print(f"Hint: Run 'my-cli init' to create a default configuration", file=sys.stderr)
     sys.exit(1)
 
-# ❌ BAD: Vague error message
+#  BAD: Vague error message
 if not config_file.exists():
     print("Error")
     sys.exit(1)
@@ -238,11 +238,11 @@ def deploy(environment: str, region: str):
 ### Never Log Secrets
 
 ```python
-# ✅ GOOD: Mask secrets in logs
+#  GOOD: Mask secrets in logs
 logger.debug(f"Connecting to API endpoint: {endpoint}")
 logger.debug("Using API key: ***masked***")
 
-# ❌ BAD: Logging secrets
+#  BAD: Logging secrets
 logger.debug(f"API key: {api_key}")
 ```
 
@@ -251,11 +251,11 @@ logger.debug(f"API key: {api_key}")
 ```python
 import shlex
 
-# ✅ GOOD: Sanitize shell commands
+#  GOOD: Sanitize shell commands
 command = f"kubectl get pods -n {shlex.quote(namespace)}"
 subprocess.run(command, shell=True)
 
-# ❌ BAD: Unsanitized input
+#  BAD: Unsanitized input
 command = f"kubectl get pods -n {namespace}"  # Vulnerable to injection
 subprocess.run(command, shell=True)
 ```
@@ -265,10 +265,10 @@ subprocess.run(command, shell=True)
 ```python
 import getpass
 
-# ✅ GOOD: Secure password input
+#  GOOD: Secure password input
 password = getpass.getpass("Enter password: ")
 
-# ✅ GOOD: Read from environment, not CLI args
+#  GOOD: Read from environment, not CLI args
 api_key = os.getenv("API_KEY")
 if not api_key:
     print("Error: API_KEY environment variable not set", file=sys.stderr)

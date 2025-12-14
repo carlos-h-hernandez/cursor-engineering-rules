@@ -5,7 +5,7 @@ alwaysApply: true
 priority: 50
 ---
 
-# ⚠️ GOLDEN RULES (READ FIRST)
+#  GOLDEN RULES (READ FIRST)
 
 **YOU MUST FOLLOW THIS THREE-PHASE APPROACH FOR ALL NON-TRIVIAL WORK:**
 
@@ -13,14 +13,14 @@ priority: 50
 2. **IMPLEMENT** → Code ONLY what was approved → **STOP** when agreed scope is complete
 3. **REVIEW** → Verify results → Suggest improvements → Return to PLAN phase
 
-**🚨 CRITICAL VIOLATIONS TO AVOID:**
+** CRITICAL VIOLATIONS TO AVOID:**
 
 ```diff
-❌ DON'T DO THIS:
+ DON'T DO THIS:
 User: "Can you add authentication?"
 AI: [Immediately starts coding without discussion]
 
-✅ DO THIS INSTEAD:
+ DO THIS INSTEAD:
 User: "Can you add authentication?"
 AI: "Let me design a solution first. Key decisions needed:
      - OAuth 2.0 vs local authentication?
@@ -32,9 +32,9 @@ AI: "Let me design a solution first. Key decisions needed:
 ```
 
 **WHY THIS MATTERS:**
-- ❌ Skipping planning → Wasted time, wrong solutions, scope creep
-- ❌ Implementing unplanned features → Breaking existing code, technical debt
-- ❌ Not stopping after agreed scope → Confusion, frustration, rework
+-  Skipping planning → Wasted time, wrong solutions, scope creep
+-  Implementing unplanned features → Breaking existing code, technical debt
+-  Not stopping after agreed scope → Confusion, frustration, rework
 
 ---
 
@@ -46,7 +46,7 @@ AI: "Let me design a solution first. Key decisions needed:
 
 ---
 
-## 📚 Just-in-Time Rule Loading
+##  Just-in-Time Rule Loading
 
 **DON'T READ ALL 35 RULES AT ONCE!** Load rules as needed:
 
@@ -64,13 +64,13 @@ AI: "Let me design a solution first. Key decisions needed:
 
 ---
 
-## 🎯 Core Workflow: Plan / Implement / Review
+##  Core Workflow: Plan / Implement / Review
 
 You MUST follow this three-phase approach for all non-trivial changes:
 
-### Phase 1: Planning ⚙️
+### Phase 1: Planning
 
-⚠️ **CRITICAL:** You MUST NOT begin implementation until:
+ **CRITICAL:** You MUST NOT begin implementation until:
 - [ ] User has explicitly approved the plan
 - [ ] All clarifying questions have been answered
 - [ ] The scope is clearly defined and agreed upon
@@ -110,7 +110,7 @@ You MUST follow this three-phase approach for all non-trivial changes:
 
 ---
 
-### Phase 2: QA Validation ✅ (Level 2+ Tasks)
+### Phase 2: QA Validation  (Level 2+ Tasks)
 
 **When:** Before Implementation phase for Level 2+ tasks. Can be called explicitly with "QA" command.
 
@@ -142,9 +142,9 @@ You MUST follow this three-phase approach for all non-trivial changes:
 
 ---
 
-### Phase 3: Implementation 🔨
+### Phase 3: Implementation
 
-⚠️ **IMPLEMENTATION GATE CHECKS:**
+ **IMPLEMENTATION GATE CHECKS:**
 
 **You MUST NOT start implementation until:**
 - [ ] Explicit user approval received in Planning phase
@@ -160,25 +160,25 @@ You MUST follow this three-phase approach for all non-trivial changes:
 5. **Complete the agreed scope** - Then STOP and wait for review
 
 **Constraints:**
-- ✅ Implement only what was planned
-- ✅ Follow all coding standards from `100-core.mdc` and language-specific rules
-- ✅ Include error handling, logging, and security considerations
-- ❌ Don't refactor unrelated code
-- ❌ Don't add features not in the plan
-- ❌ Don't optimize prematurely
+-  Implement only what was planned
+-  Follow all coding standards from `100-core.mdc` and language-specific rules
+-  Include error handling, logging, and security considerations
+-  Don't refactor unrelated code
+-  Don't add features not in the plan
+-  Don't optimize prematurely
 
 **If you encounter issues:**
 - Trivial fixes (typos, obvious bugs): OK to fix immediately
 - Substantial changes needed: STOP, document in Review phase, discuss in next Planning phase
 
-**❌ Common Implementation Violations:**
+** Common Implementation Violations:**
 
 ```diff
-❌ BAD: Adding unplanned features
+ BAD: Adding unplanned features
 User: "Add a login form"
 AI: [Adds login form + password reset + 2FA + OAuth integration]
 
-✅ GOOD: Implementing only what was agreed
+ GOOD: Implementing only what was agreed
 User: "Add a login form"
 AI: [Adds only login form as specified]
      "Login form complete. For next phase, we could discuss:
@@ -189,7 +189,7 @@ AI: [Adds only login form as specified]
 
 ---
 
-### Phase 4: Review 🔍
+### Phase 4: Review
 
 **When:** After implementation is complete.
 
@@ -218,7 +218,7 @@ AI: [Adds only login form as specified]
 
 ---
 
-## 📁 Context File Management
+##  Context File Management
 
 **IMPORTANT**: Context files are **workspace-specific** and should be in the **extras/** directory in the project root, NOT in the rules directory. This allows each workspace to have its own context while sharing rules via symlinks.
 
@@ -290,7 +290,7 @@ Create one per significant task:
 
 ---
 
-## 🎚️ Complexity Levels
+##  Complexity Levels
 
 Adapt workflow based on task complexity:
 
@@ -320,7 +320,7 @@ Adapt workflow based on task complexity:
 
 ---
 
-## 🔄 Workflow Integration
+##  Workflow Integration
 
 ### For Simple Tasks (Level 1)
 ```
@@ -339,26 +339,26 @@ User Request → Planning Phase (WAIT) → Creative Phase (MANDATORY) → QA Val
 
 ---
 
-## 🎨 Creative Phase (Level 3-4 Tasks)
+##  Creative Phase (Level 3-4 Tasks)
 
-**⚠️ ENFORCEMENT:** Creative Phase is **MANDATORY** for Level 3-4 tasks before Implementation.
+** ENFORCEMENT:** Creative Phase is **MANDATORY** for Level 3-4 tasks before Implementation.
 
 **When Required:**
 - Level 3: Complex multi-module features requiring design decisions
 - Level 4: Architectural changes, multiple valid approaches exist
 - Design decisions affect multiple components
 
-**🚨 IMPLEMENTATION BLOCK:**
+** IMPLEMENTATION BLOCK:**
 If Creative Phase is required but not completed:
 ```
-🚨 IMPLEMENTATION BLOCKED
+ IMPLEMENTATION BLOCKED
 Creative phases MUST be completed before implementation.
 
 Required Creative Phases:
 - [ ] [Creative Phase 1]
 - [ ] [Creative Phase 2]
 
-⛔ This is a HARD BLOCK
+ This is a HARD BLOCK
 Implementation CANNOT proceed until all creative phases are completed.
 ```
 
@@ -395,8 +395,8 @@ Implementation CANNOT proceed until all creative phases are completed.
 
 | Option | Pros | Cons | Decision |
 |--------|------|------|----------|
-| Option A | ... | ... | ✅ Chosen |
-| Option B | ... | ... | ❌ Rejected |
+| Option A | ... | ... |  Chosen |
+| Option B | ... | ... |  Rejected |
 
 ## Rationale
 [Why Option A was chosen]
@@ -407,7 +407,7 @@ Implementation CANNOT proceed until all creative phases are completed.
 
 ---
 
-## ✅ QA Validation System (Detailed)
+##  QA Validation System (Detailed)
 
 **Purpose:** Technical validation to prevent implementation failures due to missing dependencies, configuration issues, or environment problems.
 
@@ -418,7 +418,7 @@ Implementation CANNOT proceed until all creative phases are completed.
 
 **Four-Point Validation Process:**
 
-### 1️⃣ Dependency Verification
+### 1⃣ Dependency Verification
 
 **Check:**
 - All required packages/tools installed
@@ -440,7 +440,7 @@ Implementation CANNOT proceed until all creative phases are completed.
 - Compatibility status
 - Missing or incompatible dependencies (if any)
 
-### 2️⃣ Configuration Validation
+### 2⃣ Configuration Validation
 
 **Check:**
 - Configuration files exist and are valid
@@ -463,7 +463,7 @@ Implementation CANNOT proceed until all creative phases are completed.
 - Platform compatibility status
 - Missing or invalid configurations (if any)
 
-### 3️⃣ Environment Validation
+### 3⃣ Environment Validation
 
 **Check:**
 - Build tools available (npm, pip, make, etc.)
@@ -486,7 +486,7 @@ Implementation CANNOT proceed until all creative phases are completed.
 - Environment readiness
 - Missing tools or permission issues (if any)
 
-### 4️⃣ Minimal Build Test
+### 4⃣ Minimal Build Test
 
 **Check:**
 - Build process works
@@ -511,38 +511,38 @@ Implementation CANNOT proceed until all creative phases are completed.
 
 **Success Report:**
 ```
-╔═════════════════ ✅ QA VALIDATION STATUS ═════════════════╗
-│ ✓ Dependencies       │ All required packages installed    │
-│ ✓ Configurations     │ Format verified for platform       │
-│ ✓ Environment        │ Suitable for implementation        │
-│ ✓ Build Test         │ Core functionality verified         │
-╚════════════════════════════════════════════════════════════╝
-✅ VERIFIED - Clear to proceed to Implementation phase
+  QA VALIDATION STATUS
+  Dependencies        All required packages installed
+  Configurations      Format verified for platform
+  Environment         Suitable for implementation
+  Build Test          Core functionality verified
+
+ VERIFIED - Clear to proceed to Implementation phase
 ```
 
 **Failure Report:**
 ```
-⚠️⚠️⚠️ QA VALIDATION FAILED ⚠️⚠️⚠️
+ QA VALIDATION FAILED
 
 The following issues must be resolved before proceeding:
 
-1️⃣ DEPENDENCY ISSUES:
+1⃣ DEPENDENCY ISSUES:
 - [Detailed description]
 - [Recommended fix]
 
-2️⃣ CONFIGURATION ISSUES:
+2⃣ CONFIGURATION ISSUES:
 - [Detailed description]
 - [Recommended fix]
 
-3️⃣ ENVIRONMENT ISSUES:
+3⃣ ENVIRONMENT ISSUES:
 - [Detailed description]
 - [Recommended fix]
 
-4️⃣ BUILD TEST ISSUES:
+4⃣ BUILD TEST ISSUES:
 - [Detailed description]
 - [Recommended fix]
 
-⚠️ IMPLEMENTATION BLOCKED until these issues are resolved.
+ IMPLEMENTATION BLOCKED until these issues are resolved.
 Type 'QA' after fixing issues to re-validate.
 ```
 
@@ -556,7 +556,7 @@ Type 'QA' after fixing issues to re-validate.
 
 **QA Override Message:**
 ```
-⚠️ QA OVERRIDE ACTIVATED
+ QA OVERRIDE ACTIVATED
 All other processes paused
 QA validation checks now running...
 Any issues found MUST be remediated before continuing
@@ -586,7 +586,7 @@ Any issues found MUST be remediated before continuing
 
 ---
 
-## 🌐 Platform Awareness
+##  Platform Awareness
 
 **Automatic Platform Detection:**
 - Detect operating system (Windows/macOS/Linux)
@@ -627,7 +627,7 @@ Command Adaptation: Required
 
 ---
 
-## 🚀 Quick Start Commands
+##  Quick Start Commands
 
 Users can trigger phases explicitly:
 
@@ -639,7 +639,7 @@ Users can trigger phases explicitly:
 
 ---
 
-## 🔗 Integration with Other Rules
+##  Integration with Other Rules
 
 This workflow rule integrates with:
 
@@ -650,7 +650,7 @@ This workflow rule integrates with:
 
 ---
 
-## 📝 Best Practices
+##  Best Practices
 
 1. **Always check context files** before starting work
 2. **Update context files** as you progress
@@ -665,15 +665,15 @@ This workflow rule integrates with:
 
 ---
 
-## ❌ Common Workflow Violations (Learn from These)
+##  Common Workflow Violations (Learn from These)
 
 ### Violation 1: Starting Without Planning
 ```diff
-❌ BAD:
+ BAD:
 User: "Refactor the authentication system"
 AI: [Immediately rewrites auth code]
 
-✅ GOOD:
+ GOOD:
 User: "Refactor the authentication system"
 AI: "Let me analyze the current system first:
      - Current: Session-based with cookies
@@ -686,11 +686,11 @@ AI: "Let me analyze the current system first:
 
 ### Violation 2: Adding Unplanned Features
 ```diff
-❌ BAD:
+ BAD:
 User: "Add a search bar to the header"
 AI: [Adds search bar + autocomplete + search history + filters + advanced search]
 
-✅ GOOD:
+ GOOD:
 User: "Add a search bar to the header"
 AI: [Adds only basic search bar as requested]
      "Search bar complete. Would you like to discuss:
@@ -701,11 +701,11 @@ AI: [Adds only basic search bar as requested]
 
 ### Violation 3: Not Stopping at Agreed Scope
 ```diff
-❌ BAD:
+ BAD:
 User: "Fix the login button styling"
 AI: [Fixes button + refactors entire CSS + updates all components]
 
-✅ GOOD:
+ GOOD:
 User: "Fix the login button styling"
 AI: [Fixes only the login button]
      "Login button fixed. I noticed other styling issues:
@@ -716,7 +716,7 @@ AI: [Fixes only the login button]
 
 ---
 
-## ⚠️ Important Notes
+##  Important Notes
 
 - **Simple tasks** (Level 1) can skip formal phases, but still follow coding standards
 - **Context files are optional** for simple projects but highly recommended for complex ones

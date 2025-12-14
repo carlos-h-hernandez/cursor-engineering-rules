@@ -146,11 +146,11 @@ metadata:
 ```
 
 **Benefits of Pod Identity over IRSA:**
-- ✅ Simpler setup (no OIDC provider configuration)
-- ✅ AWS-managed (less operational overhead)
-- ✅ Better security (AWS handles token management)
-- ✅ Works with EKS 1.24+
-- ✅ No need for OIDC provider
+-  Simpler setup (no OIDC provider configuration)
+-  AWS-managed (less operational overhead)
+-  Better security (AWS handles token management)
+-  Works with EKS 1.24+
+-  No need for OIDC provider
 
 #### IRSA (Legacy, Still Supported)
 
@@ -202,11 +202,11 @@ resource "aws_iam_role" "app_role" {
 **VPC Lattice** provides service-to-service networking with built-in authentication, authorization, and traffic management across VPCs, accounts, and on-premises.
 
 **Benefits:**
-- ✅ Cross-VPC resource access without VPC peering
-- ✅ Built-in authentication and authorization
-- ✅ Traffic management and observability
-- ✅ Works across accounts and regions
-- ✅ No VPC peering or transit gateway required
+-  Cross-VPC resource access without VPC peering
+-  Built-in authentication and authorization
+-  Traffic management and observability
+-  Works across accounts and regions
+-  No VPC peering or transit gateway required
 
 **Service Network:**
 ```hcl

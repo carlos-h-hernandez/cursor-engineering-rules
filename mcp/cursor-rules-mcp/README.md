@@ -4,12 +4,12 @@
 
 ## Features
 
-- ✅ **35+ Engineering Rules** covering languages, infrastructure, cloud platforms, and DevOps
-- ✅ **15+ Languages:** Python, Go, Rust, TypeScript, JavaScript, Bash, and more
-- ✅ **Multi-Cloud:** AWS, Azure, GCP, Cloudflare
-- ✅ **Infrastructure as Code:** Terraform, CloudFormation, Kubernetes, Docker, Ansible, Helm
-- ✅ **Production-Grade:** Security (OWASP), testing, observability, API design
-- ✅ **Workflow Philosophy:** Plan/Implement/Review with Golden Rules
+- **35+ Engineering Rules** covering languages, infrastructure, cloud platforms, and DevOps
+- **15+ Languages:** Python, Go, Rust, TypeScript, JavaScript, Bash, and more
+- **Multi-Cloud:** AWS, Azure, GCP, Cloudflare
+- **Infrastructure as Code:** Terraform, CloudFormation, Kubernetes, Docker, Ansible, Helm
+- **Production-Grade:** Security (OWASP), testing, observability, API design
+- **Workflow Philosophy:** Plan/Implement/Review with Golden Rules
 
 ## Installation
 
@@ -237,15 +237,15 @@ npm start
 
 ```
 mcp/cursor-rules-mcp/
-├── src/
-│   ├── api/
-│   │   └── client.ts          # API client for reading rules
-│   ├── server/
-│   │   └── mcp-server.ts      # MCP server implementation
-│   └── index.ts               # Entry point
-├── package.json
-├── tsconfig.json
-└── README.md
+ src/
+    api/
+       client.ts          # API client for reading rules
+    server/
+       mcp-server.ts      # MCP server implementation
+    index.ts               # Entry point
+ package.json
+ tsconfig.json
+ README.md
 ```
 
 ## Comparison with AI Developer Guide

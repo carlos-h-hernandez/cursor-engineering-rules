@@ -18,7 +18,7 @@ files:
 **Audience**: engineers writing and reviewing Go code
 **Goal**: secure, idiomatic, efficient, and highly maintainable Go - without over-engineering
 
-**Core Philosophy**: Correctness & Safety ➔ Simplicity & Maintainability ➔ Evidence-Based Performance
+**Core Philosophy**: Correctness & Safety  Simplicity & Maintainability  Evidence-Based Performance
 
 ---
 
@@ -51,7 +51,7 @@ dlv debug                               # Start delve debugger
 // 1. Always check errors
 result, err := someFunc()
 if err != nil {
-    return fmt.Errorf("operation failed: %w", err)  // ✅ Wrap with context
+    return fmt.Errorf("operation failed: %w", err)  //  Wrap with context
 }
 
 // 2. Use context for cancellation
@@ -59,7 +59,7 @@ func processData(ctx context.Context, data []string) error {
     for _, item := range data {
         select {
         case <-ctx.Done():
-            return ctx.Err()  // ✅ Respect cancellation
+            return ctx.Err()  //  Respect cancellation
         default:
             // Process item
         }
@@ -71,7 +71,7 @@ func processData(ctx context.Context, data []string) error {
 var wg sync.WaitGroup
 wg.Add(1)
 go func() {
-    defer wg.Done()  // ✅ Always defer Done()
+    defer wg.Done()  //  Always defer Done()
     // work here
 }()
 wg.Wait()
@@ -81,7 +81,7 @@ file, err := os.Open("file.txt")
 if err != nil {
     return err
 }
-defer file.Close()  // ✅ Defer right after open
+defer file.Close()  //  Defer right after open
 
 // 5. Use table-driven tests
 func TestAdd(t *testing.T) {
@@ -110,10 +110,10 @@ func TestAdd(t *testing.T) {
 ### Error Handling
 
 ```go
-// ✅ GOOD: Sentinel errors
+//  GOOD: Sentinel errors
 var ErrNotFound = errors.New("not found")
 
-// ✅ GOOD: Custom error types
+//  GOOD: Custom error types
 type ValidationError struct {
     Field string
     Issue string
@@ -123,7 +123,7 @@ func (e *ValidationError) Error() string {
     return fmt.Sprintf("validation failed on %s: %s", e.Field, e.Issue)
 }
 
-// ✅ GOOD: Error wrapping
+//  GOOD: Error wrapping
 func processUser(id string) error {
     user, err := fetchUser(id)
     if err != nil {
@@ -132,7 +132,7 @@ func processUser(id string) error {
     // ...
 }
 
-// ✅ GOOD: Error checking
+//  GOOD: Error checking
 if errors.Is(err, ErrNotFound) { /* handle */ }
 var valErr *ValidationError
 if errors.As(err, &valErr) { /* handle */ }
@@ -141,13 +141,13 @@ if errors.As(err, &valErr) { /* handle */ }
 ### Context & Cancellation
 
 ```go
-// ✅ GOOD: Context as first parameter
+//  GOOD: Context as first parameter
 func fetchUser(ctx context.Context, id string) (*User, error) {
     req, err := http.NewRequestWithContext(ctx, "GET", "/users/"+id, nil)
     // ...
 }
 
-// ✅ GOOD: Check context in loops
+//  GOOD: Check context in loops
 func processItems(ctx context.Context, items []Item) error {
     for _, item := range items {
         select {
@@ -166,19 +166,19 @@ func processItems(ctx context.Context, items []Item) error {
 ### Security
 
 ```go
-// ✅ GOOD: Input validation
+//  GOOD: Input validation
 func CreateUser(email string) error {
     if !isValidEmail(email) {
         return fmt.Errorf("invalid email: %w", ErrInvalidInput)
     }
 }
 
-// ✅ GOOD: TLS configuration
+//  GOOD: TLS configuration
 tlsConfig := &tls.Config{
     MinVersion: tls.VersionTLS13,
 }
 
-// ✅ GOOD: Parameterized queries
+//  GOOD: Parameterized queries
 _, err := db.ExecContext(ctx, "INSERT INTO users (email) VALUES ($1)", email)
 ```
 
@@ -194,12 +194,12 @@ _, err := db.ExecContext(ctx, "INSERT INTO users (email) VALUES ($1)", email)
 - **Composition First**: Prefer composing types
 
 ```go
-// ✅ GOOD: Small interface at consumer
+//  GOOD: Small interface at consumer
 type UserStore interface {
     GetUser(ctx context.Context, id string) (*User, error)
 }
 
-// ✅ GOOD: Function options pattern
+//  GOOD: Function options pattern
 type ServerOption func(*ServerOptions)
 
 func WithPort(port int) ServerOption {
@@ -219,16 +219,16 @@ func NewServer(opts ...ServerOption) *Server {
 
 ```
 project/
-├── cmd/
-│   ├── server/main.go
-│   └── cli/main.go
-├── internal/
-│   ├── auth/
-│   └── handler/
-├── pkg/
-│   └── models/
-├── go.mod
-└── go.sum
+ cmd/
+    server/main.go
+    cli/main.go
+ internal/
+    auth/
+    handler/
+ pkg/
+    models/
+ go.mod
+ go.sum
 ```
 
 ### Naming
@@ -246,7 +246,7 @@ project/
 ### Choose the Simplest Correct Primitive
 
 ```go
-// ✅ GOOD: Mutex for protecting shared state
+//  GOOD: Mutex for protecting shared state
 type SafeCounter struct {
     mu    sync.Mutex
     count int
@@ -258,14 +258,14 @@ func (c *SafeCounter) Increment() {
     c.mu.Unlock()
 }
 
-// ✅ GOOD: Channel for communication
+//  GOOD: Channel for communication
 func worker(jobs <-chan Job, results chan<- Result) {
     for job := range jobs {
         results <- process(job)
     }
 }
 
-// ✅ GOOD: sync.Once for initialization
+//  GOOD: sync.Once for initialization
 var (
     instance *Singleton
     once     sync.Once
@@ -282,7 +282,7 @@ func GetInstance() *Singleton {
 ### Goroutine Management
 
 ```go
-// ✅ GOOD: errgroup for error propagation
+//  GOOD: errgroup for error propagation
 import "golang.org/x/sync/errgroup"
 
 func processFiles(ctx context.Context, files []string) error {
@@ -326,10 +326,10 @@ func BenchmarkProcessData(b *testing.B) {
 ### Memory Management
 
 ```go
-// ✅ GOOD: Preallocate slice
+//  GOOD: Preallocate slice
 users := make([]User, 0, expectedCount)
 
-// ✅ GOOD: strings.Builder for concatenation
+//  GOOD: strings.Builder for concatenation
 var sb strings.Builder
 sb.Grow(estimatedSize)
 for _, part := range parts {
@@ -345,7 +345,7 @@ result := sb.String()
 ### Test Structure
 
 ```go
-// ✅ GOOD: Table-driven test
+//  GOOD: Table-driven test
 func TestAdd(t *testing.T) {
     tests := []struct {
         name string
@@ -368,7 +368,7 @@ func TestAdd(t *testing.T) {
     }
 }
 
-// ✅ GOOD: Fuzz test
+//  GOOD: Fuzz test
 func FuzzParseURL(f *testing.F) {
     f.Add("https://acme.com")
 
@@ -397,14 +397,14 @@ govulncheck ./...
 ### 1. Using Goroutines Without WaitGroup
 
 ```go
-// ❌ BAD: Fire-and-forget
+//  BAD: Fire-and-forget
 func processItems(items []Item) {
     for _, item := range items {
         go process(item)  // No way to wait!
     }
 }
 
-// ✅ GOOD: Use WaitGroup
+//  GOOD: Use WaitGroup
 func processItems(items []Item) {
     var wg sync.WaitGroup
     for _, item := range items {
@@ -421,10 +421,10 @@ func processItems(items []Item) {
 ### 2. Not Checking Error Returns
 
 ```go
-// ❌ BAD: Ignoring errors
+//  BAD: Ignoring errors
 result, _ := someFunc()
 
-// ✅ GOOD: Check errors
+//  GOOD: Check errors
 result, err := someFunc()
 if err != nil {
     return fmt.Errorf("someFunc failed: %w", err)
@@ -434,13 +434,13 @@ if err != nil {
 ### 3. Shadowing Variables with `:=`
 
 ```go
-// ❌ BAD: Shadowing err
+//  BAD: Shadowing err
 result, err := step1()
 if result.NeedsStep2 {
     result, err := step2()  // Shadows outer err!
 }
 
-// ✅ GOOD: Reuse err
+//  GOOD: Reuse err
 result, err := step1()
 if result.NeedsStep2 {
     result, err = step2()  // Reuses outer err
@@ -450,7 +450,7 @@ if result.NeedsStep2 {
 ### 4. Closing Channels from Receiver Side
 
 ```go
-// ❌ BAD: Receiver closes channel
+//  BAD: Receiver closes channel
 func receiver(ch <-chan int) {
     for v := range ch {
         process(v)
@@ -458,7 +458,7 @@ func receiver(ch <-chan int) {
     close(ch)  // WRONG! Only sender should close
 }
 
-// ✅ GOOD: Sender closes channel
+//  GOOD: Sender closes channel
 func sender(ch chan<- int, values []int) {
     defer close(ch)
     for _, v := range values {
@@ -470,14 +470,14 @@ func sender(ch chan<- int, values []int) {
 ### 5. Global Mutable State
 
 ```go
-// ❌ BAD: Global mutable state
+//  BAD: Global mutable state
 var cache = make(map[string]interface{})
 
 func Get(key string) interface{} {
     return cache[key]  // Race!
 }
 
-// ✅ GOOD: Encapsulated with mutex
+//  GOOD: Encapsulated with mutex
 type Cache struct {
     mu    sync.RWMutex
     items map[string]interface{}
@@ -685,18 +685,18 @@ func GetUser(ctx context.Context, id string) (*User, error) {
 ## Anti-Patterns (Automatic Rejection)
 
 ### Critical
-- ❌ Panic/recover as control flow
-- ❌ Goroutines without lifecycle management
-- ❌ Swallowed errors
-- ❌ Global mutable state
-- ❌ Logging secrets/PII
+-  Panic/recover as control flow
+-  Goroutines without lifecycle management
+-  Swallowed errors
+-  Global mutable state
+-  Logging secrets/PII
 
 ### Code Smells
-- ⚠️ Channels for simple mutual exclusion
-- ⚠️ Reflection/unsafe without benchmarks
-- ⚠️ "God" interfaces
-- ⚠️ Premature abstraction
-- ⚠️ Missing context propagation
+-  Channels for simple mutual exclusion
+-  Reflection/unsafe without benchmarks
+-  "God" interfaces
+-  Premature abstraction
+-  Missing context propagation
 
 ---
 

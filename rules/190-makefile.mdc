@@ -138,12 +138,12 @@ lint: # Lint all services
 Makefile recipes should be very small - a few commands only. Complex logic should be in scripts:
 
 ```make
-# ✅ GOOD: Simple recipe calling a script
+#  GOOD: Simple recipe calling a script
 .PHONY: init
 init: # Setup development environment
 	./scripts/init.sh
 
-# ❌ BAD: Complex logic in makefile
+#  BAD: Complex logic in makefile
 init:
 	@if [ ! -f .env ]; then \
 		cp .env.example .env; \
@@ -159,12 +159,12 @@ init:
 Makefiles are not shell scripts. Don't use color codes or fancy formatting:
 
 ```make
-# ✅ GOOD: Simple output
+#  GOOD: Simple output
 .PHONY: test
 test: # Run tests
 	pytest
 
-# ❌ BAD: Color codes and formatting
+#  BAD: Color codes and formatting
 test:
 	@echo "\033[1;32mRunning tests...\033[0m"
 	pytest

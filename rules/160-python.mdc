@@ -218,7 +218,7 @@ uv sync
 
 - **Domain Boundary Exception Handling:** Always re-raise exceptions with context at system boundaries. Never swallow errors by returning empty/default data.
   ```python
-  # ❌ BAD: Masks failure and returns empty data
+  #  BAD: Masks failure and returns empty data
   def load_database() -> dict:
       try:
           # Load database data...
@@ -227,7 +227,7 @@ uv sync
           logger.error(f"Error loading YAML database: {str(e)}")
           return {"books": [], "library": []}  # BAD! Silent failure
 
-  # ✅ GOOD: Re-raises with context, fails fast
+  #  GOOD: Re-raises with context, fails fast
   def load_database() -> dict:
       try:
           # Load database data...
@@ -328,7 +328,7 @@ import boto3
 import os
 from botocore.config import Config
 
-# ✅ CORRECT: Create clients in global scope (outside handler)
+#  CORRECT: Create clients in global scope (outside handler)
 boto_config = Config(
     retries={"max_attempts": 10, "mode": "adaptive"},
     connect_timeout=5,
@@ -345,14 +345,14 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     return {"statusCode": 200, "body": "Success"}
 ```
 
-**❌ Anti-Patterns:**
+** Anti-Patterns:**
 ```python
-# ❌ WRONG: Creates new client on every invocation (cold start penalty)
+#  WRONG: Creates new client on every invocation (cold start penalty)
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     s3_client = boto3.client("s3")  # Bad: Recreated every time
     return {"statusCode": 200}
 
-# ❌ WRONG: Ties client lifecycle to class instance
+#  WRONG: Ties client lifecycle to class instance
 class S3Manager:
     def __init__(self):
         self.s3_client = boto3.client("s3")  # Bad
@@ -360,7 +360,7 @@ class S3Manager:
 
 **Cold Start Optimization:**
 ```python
-# ✅ Lazy initialization for rarely-used clients
+#  Lazy initialization for rarely-used clients
 _sns_client: Any = None
 
 def get_sns_client() -> Any:
@@ -370,7 +370,7 @@ def get_sns_client() -> Any:
         _sns_client = boto3.client("sns")
     return _sns_client
 
-# ✅ Always-needed clients in global scope
+#  Always-needed clients in global scope
 s3_client = boto3.client("s3")  # Frequently used
 
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
@@ -584,14 +584,14 @@ class DeploymentContext:
 **Basic Package Structure:**
 ```
 my_utils/
-├── my_utils/
-│   ├── __init__.py
-│   ├── aws_helper.py
-│   └── validators.py
-├── tests/
-│   └── test_aws_helper.py
-├── README.md
-└── pyproject.toml
+ my_utils/
+    __init__.py
+    aws_helper.py
+    validators.py
+ tests/
+    test_aws_helper.py
+ README.md
+ pyproject.toml
 ```
 
 **Modern Approach: pyproject.toml (Recommended):**

@@ -215,13 +215,13 @@ async def read_file(file_path: str) -> str:
 ### Use Descriptive Names
 
 ```python
-# ✅ GOOD: Descriptive name
+#  GOOD: Descriptive name
 @mcp.tool
 async def get_kubernetes_pods(namespace: str = "default") -> str:
     """Get list of pods in a Kubernetes namespace."""
     pass
 
-# ❌ BAD: Vague name
+#  BAD: Vague name
 @mcp.tool
 async def get_pods(ns: str = "default") -> str:
     """Get pods."""
@@ -553,7 +553,7 @@ The [MCP Registry](https://github.com/modelcontextprotocol/registry) provides di
 ### MCP Server Security Checklist
 
 ```python
-# ✅ GOOD: Secure MCP server implementation
+#  GOOD: Secure MCP server implementation
 import secrets
 from typing import Optional
 

@@ -30,7 +30,7 @@ files:
 
 ### Resource Naming
 ```
-✅ GOOD - Plural nouns, lowercase
+ GOOD - Plural nouns, lowercase
 GET    /api/v1/users
 GET    /api/v1/users/{id}
 POST   /api/v1/users
@@ -40,7 +40,7 @@ DELETE /api/v1/users/{id}
 GET    /api/v1/users/{id}/posts
 GET    /api/v1/users/{id}/posts/{postId}
 
-❌ BAD - Verbs, mixed case
+ BAD - Verbs, mixed case
 GET    /api/v1/getUsers
 POST   /api/v1/createUser
 GET    /api/v1/Users

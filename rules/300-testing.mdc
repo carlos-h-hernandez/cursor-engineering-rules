@@ -33,27 +33,27 @@ files:
 ## Test Pyramid
 
 ```
-         ╱╲
-        ╱  ╲          E2E Tests (Few)
-       ╱────╲         - Slow, brittle, expensive
-      ╱      ╲        - Test critical user journeys
-     ╱ E2E    ╲       - 5-10% of tests
-    ╱──────────╲
-   ╱            ╲     Integration Tests (Some)
-  ╱ Integration ╲    - Medium speed
- ╱────────────────╲   - Test component interactions
-╱                  ╲  - 20-30% of tests
-────────────────────
-╲                  ╱  Unit Tests (Many)
- ╲      Unit      ╱   - Fast, focused, reliable
-  ╲──────────────╱    - Test individual functions/classes
-   ╲            ╱     - 60-70% of tests
-    ╲──────────╱
-     ╲        ╱
-      ╲      ╱
-       ╲────╱
-        ╲  ╱
-         ╲╱
+
+                    E2E Tests (Few)
+                - Slow, brittle, expensive
+                    - Test critical user journeys
+      E2E           - 5-10% of tests
+
+                    Integration Tests (Some)
+   Integration     - Medium speed
+    - Test component interactions
+                    - 20-30% of tests
+
+                    Unit Tests (Many)
+       Unit         - Fast, focused, reliable
+      - Test individual functions/classes
+                    - 60-70% of tests
+
+
+
+
+
+
 ```
 
 ---
@@ -108,7 +108,7 @@ describe('UserService', () => {
 
 #### Table-Driven Tests
 ```typescript
-// ✅ GOOD - Test multiple cases efficiently
+//  GOOD - Test multiple cases efficiently
 describe('calculateDiscount', () => {
   it.each([
     [100, 0.1, 10],
@@ -228,7 +228,7 @@ class TestUserService:
 
 #### Parametrized Tests
 ```python
-# ✅ GOOD - Test multiple cases efficiently
+#  GOOD - Test multiple cases efficiently
 import pytest
 
 @pytest.mark.parametrize("amount,rate,expected", [
@@ -333,7 +333,7 @@ func TestCreateUser(t *testing.T) {
 
 #### Table-Driven Tests
 ```go
-// ✅ GOOD - Idiomatic Go testing
+//  GOOD - Idiomatic Go testing
 func TestCalculateDiscount(t *testing.T) {
     tests := []struct {
         name     string
@@ -834,7 +834,7 @@ jobs:
 
 ### Test Naming Conventions
 ```typescript
-// ✅ GOOD - Descriptive test names
+//  GOOD - Descriptive test names
 describe('UserService', () => {
   describe('createUser', () => {
     it('should create user with valid data', () => { /* ... */ });
@@ -843,7 +843,7 @@ describe('UserService', () => {
   });
 });
 
-// ❌ BAD - Vague test names
+//  BAD - Vague test names
 describe('UserService', () => {
   it('test1', () => { /* ... */ });
   it('works', () => { /* ... */ });
@@ -870,7 +870,7 @@ it('should calculate total price with discount', () => {
 
 ### Test Independence
 ```typescript
-// ✅ GOOD - Each test is independent
+//  GOOD - Each test is independent
 describe('UserService', () => {
   let service: UserService;
 
@@ -882,7 +882,7 @@ describe('UserService', () => {
   it('test 2', () => { /* ... */ });
 });
 
-// ❌ BAD - Tests depend on each other
+//  BAD - Tests depend on each other
 describe('UserService', () => {
   const service = new UserService(); // Shared instance
   let userId: string;

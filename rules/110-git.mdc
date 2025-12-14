@@ -5,7 +5,7 @@ alwaysApply: true
 priority: 110
 ---
 
-# 🧾 Commit Message Standards
+#  Commit Message Standards
 
 **Goal:** clean, conventional, descriptive commits that communicate intent and feed changelogs.
 
@@ -84,7 +84,7 @@ perf(python): cache IAM role lookups
 
 ---
 
-# 🔐 Commit Approval & User Confirmation
+#  Commit Approval & User Confirmation
 
 **CRITICAL:** AI agents must **NEVER** commit or push code without explicit user approval.
 
@@ -150,7 +150,7 @@ Should I proceed with this commit? (yes/no)
 
 ---
 
-# 🔀 Branch & Merge Policy
+#  Branch & Merge Policy
 
 ## Branch Naming
 
@@ -175,7 +175,7 @@ docs/upgrade-guide-3-8
 
 ---
 
-# 🧩 Pull Request Standards
+#  Pull Request Standards
 
 **PR Title** mirrors commit header:
 
@@ -195,7 +195,7 @@ docs/upgrade-guide-3-8
 
 ---
 
-# 🛡️ Sign-off & Security
+#  Sign-off & Security
 
 * Signed commits if mandated by project
 * DCO sign-off if required
@@ -204,7 +204,7 @@ docs/upgrade-guide-3-8
 
 ---
 
-# 🧱 Repository Scaffolding & Hygiene
+#  Repository Scaffolding & Hygiene
 
 Every repo **must** contain the following foundational files with project-appropriate content:
 
@@ -242,7 +242,7 @@ Every repo **must** contain the following foundational files with project-approp
 
 ---
 
-# 🧪 Commit Examples
+#  Commit Examples
 
 ```
 feat(terraform): add lattice service network module
@@ -274,7 +274,7 @@ refactor(go): extract S3 client init
 
 ---
 
-# 📌 Optional Tooling
+#  Optional Tooling
 
 * **commitlint** for CI validation of headers
 * **auto-changelog** from conventional commits
@@ -282,7 +282,7 @@ refactor(go): extract S3 client init
 
 ---
 
-# ✅ Reviewer Checklist (copy/paste into PR)
+#  Reviewer Checklist (copy/paste into PR)
 
 * [ ] Correct type(scope) in title
 * [ ] Summary ≤72 chars, imperative mood
