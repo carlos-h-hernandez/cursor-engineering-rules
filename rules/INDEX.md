@@ -6,10 +6,10 @@ Quick lookup table for all cursor rules files.
 
 | File | Description | Priority | Always Apply |
 |------|-------------|----------|--------------|
-| [050-workflow.mdc](050-workflow.mdc) | Workflow orchestration (Plan/Implement/Review) | 50 | Context-aware |
+| [050-workflow.mdc](050-workflow.mdc) | Workflow orchestration (Plan/Implement/Review) | 50 | Yes |
 | [060-agent-audit.mdc](060-agent-audit.mdc) | Agent workflow + audit requirements (no remote writes, verification gate, audit report) | 60 | Yes |
 | [100-core.mdc](100-core.mdc) | Core coding standards and best practices | 100 | Yes |
-| [110-git.mdc](110-git.mdc) | Git standards and workflows | 110 | Context-aware |
+| [110-git.mdc](110-git.mdc) | Git standards and workflows | 110 | Yes |
 
 ## Language Standards (100-199)
 
@@ -19,13 +19,16 @@ Quick lookup table for all cursor rules files.
 | [120-gha.mdc](120-gha.mdc) | GitHub Actions workflows and CI/CD | 120 | No |
 | [130-bash.mdc](130-bash.mdc) | Bash scripting standards | 130 | No |
 | [140-terraform.mdc](140-terraform.mdc) | Terraform Infrastructure as Code | 140 | No |
+| [145-ansible.mdc](145-ansible.mdc) | Ansible playbooks, roles, linting, and idempotency | 145 | No |
 | [150-cloudformation.mdc](150-cloudformation.mdc) | AWS CloudFormation standards | 150 | No |
 | [155-docker.mdc](155-docker.mdc) | Docker & container best practices | 155 | No |
 | [160-python.mdc](160-python.mdc) | Python development standards | 160 | No |
 | [165-typescript.mdc](165-typescript.mdc) | TypeScript patterns and type safety | 165 | No |
 | [170-javascript.mdc](170-javascript.mdc) | JavaScript/Node.js standards | 170 | No |
 | [180-go.mdc](180-go.mdc) | Go programming standards | 180 | No |
+| [185-rust.mdc](185-rust.mdc) | Rust programming best practices | 185 | No |
 | [190-makefile.mdc](190-makefile.mdc) | Makefile patterns | 190 | No |
+| [195-helm.mdc](195-helm.mdc) | Helm & Kubernetes package management | 195 | No |
 
 ## Development Tools (200-299)
 
@@ -35,7 +38,7 @@ Quick lookup table for all cursor rules files.
 | [210-open-source.mdc](210-open-source.mdc) | Open source project patterns | 210 | No |
 | [220-documentation.mdc](220-documentation.mdc) | Documentation engineering | 220 | No |
 | [230-mcp-servers.mdc](230-mcp-servers.mdc) | MCP server patterns | 230 | No |
-| [240-configuration.mdc](240-configuration.mdc) | Configuration management | 240 | No |
+| [240-configuration.mdc](240-configuration.mdc) | Configuration management | 240 | Yes |
 
 ## Cloud & Infrastructure (250-299)
 
@@ -45,6 +48,9 @@ Quick lookup table for all cursor rules files.
 | [260-kubernetes.mdc](260-kubernetes.mdc) | Kubernetes & EKS patterns | 260 | No |
 | [270-postgresql.mdc](270-postgresql.mdc) | PostgreSQL database patterns | 270 | No |
 | [280-aws.mdc](280-aws.mdc) | AWS platform engineering | 280 | No |
+| [285-azure.mdc](285-azure.mdc) | Azure best practices | 285 | No |
+| [290-gcp.mdc](290-gcp.mdc) | GCP best practices | 290 | No |
+| [295-ai-ml.mdc](295-ai-ml.mdc) | AI/ML & LLM integration best practices | 295 | No |
 
 ## Testing & Security (300-399)
 
@@ -52,6 +58,8 @@ Quick lookup table for all cursor rules files.
 |------|-------------|----------|--------------|
 | [300-testing.mdc](300-testing.mdc) | Testing strategies (Unit/Integration/E2E) | 300 | No |
 | [310-security.mdc](310-security.mdc) | Security best practices & OWASP Top 10 | 310 | Yes |
+| [320-api-design.mdc](320-api-design.mdc) | API design best practices | 320 | No |
+| [330-observability.mdc](330-observability.mdc) | Monitoring & observability best practices | 330 | No |
 
 ## Documentation Standards (800-899)
 
@@ -137,15 +145,12 @@ These rules are automatically applied to all projects:
 
 ## Setup & Configuration
 
-- **[README.md](README.md)** - Overview and quick start
-- **[NEW_REPO_CHECKLIST.md](NEW_REPO_CHECKLIST.md)** - Step-by-step checklist
-- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete setup guide
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history
-- **[setup-workspace.sh](setup-workspace.sh)** - Setup script
-- **[setup-all-repos.sh](setup-all-repos.sh)** - Batch setup script
+- **[README.md](../README.md)** - Overview and quick start
+- **[docs/HOW-TO-USE.md](../docs/HOW-TO-USE.md)** - Installation and configuration guide
+- **[CHANGELOG.md](../CHANGELOG.md)** - Version history
 
 ---
 
 **Last Updated**: December 2025  
-**Total Rules**: 24 files  
-**Lines of Code**: ~11,716 lines
+**Total Rules**: 36 files  
+**Lines of Code**: ~22,517 lines

@@ -88,7 +88,8 @@ perf(python): cache IAM role lookups
 
 **CRITICAL:** AI agents must **NEVER** commit code without explicit user approval.
 
-**Remote writes are forbidden:** Do **not** `git push`, open PRs, or take any action that modifies remote state. See `060-agent-audit.mdc`.
+**Remote writes (default-deny):** By default, do **not** `git push`, open PRs, or take any action that modifies remote state.
+Only perform remote writes when the user explicitly authorizes the specific operation, and record the authorization + commands + results in the audit report (see `060-agent-audit.mdc`).
 
 ## Pre-Commit Workflow
 

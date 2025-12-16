@@ -277,6 +277,11 @@ docker scout cves myapp:latest
 ```
 
 ### Sign Images
+
+> [!CAUTION]
+> **Remote/stateful operations:** `docker push` publishes artifacts to a remote registry.
+> Run only with explicit approval and ensure tags/registries are correct.
+
 ```bash
 # Docker Content Trust
 export DOCKER_CONTENT_TRUST=1

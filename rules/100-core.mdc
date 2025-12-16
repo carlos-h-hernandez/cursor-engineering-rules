@@ -310,7 +310,7 @@ To refine the solution, clarify:
 
 **GitHub Actions:**
 - Use `permissions:` block to follow least privilege.
-- Pin action versions to commit SHA (e.g., `actions/checkout@a81bbbf8298c0fa03ea29cdc473d45769f953675`).
+- Use the latest stable action major version tag (e.g., `actions/checkout@v4`) and update periodically.
 - Never use `GITHUB_TOKEN` with `write` permissions unless necessary.
 - Use `workflow_dispatch` for manual triggers.
 - Run security scans (gitleaks, dependency scanning) on PRs.

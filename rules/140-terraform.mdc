@@ -24,6 +24,11 @@ files:
 ## Quick Reference
 
 ### Essential Commands
+
+> [!CAUTION]
+> **Remote/stateful operations:** `terraform apply` / `terraform destroy` change real infrastructure and state.
+> Run only with explicit approval; prefer `terraform plan` and review output first.
+
 ```bash
 # Initialization & Planning
 terraform init                          # Initialize working directory
