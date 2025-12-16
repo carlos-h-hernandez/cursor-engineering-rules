@@ -19,6 +19,16 @@ Choose the right tool for the job. For documentation reading, prefer fast text-b
 
 ---
 
+## Read-Only Tooling Policy (Agents)
+
+Use tools available on the device as needed (e.g., `lynx`, `curl`, `jq`, `httpie`, `rg`, browser renderers like LightPanda/Puppeteer, plus platform CLIs like `gh`, `aws`, `kubectl`, `terraform`, `helm`) **as long as operations are read-only** (inspect, list, describe, view, fetch).
+
+> [!CAUTION]
+> Any operation that **changes** remote or local infrastructure/state (e.g., `apply`, `upgrade`, `delete`, `create`, `push`, deployments) requires **explicit user approval** first.
+> See `060-agent-audit.mdc` for the audit/authorization workflow.
+
+---
+
 ## Documentation Reading: Tool Selection
 
 ### Default Tool: Lynx (Use 95% of the time)

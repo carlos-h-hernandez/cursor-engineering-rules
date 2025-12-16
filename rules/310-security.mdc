@@ -614,6 +614,8 @@ cosign sign --key cosign.key acme.com/app:v1.0.0
 cosign verify --key cosign.pub acme.com/app:v1.0.0
 
 # Sign Git commits and tags
+# NOTE (agents): do not change user/global git config unless explicitly requested.
+# Prefer documenting these commands for the user, or using repo-local configuration where appropriate.
 git config --global user.signingkey YOUR_GPG_KEY
 git config --global commit.gpgsign true
 git config --global tag.gpgsign true

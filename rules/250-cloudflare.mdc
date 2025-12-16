@@ -21,6 +21,11 @@ files:
 ##  Quick Reference
 
 ### Essential Commands
+
+> [!CAUTION]
+> **Remote/stateful operations:** `terraform apply` and `wrangler publish` modify remote infrastructure/state.
+> Run only with explicit approval and prefer `terraform plan` / `wrangler dev` first.
+
 ```bash
 # Terraform
 terraform plan                                    # Preview
@@ -670,4 +675,4 @@ curl -X PATCH \
 
 **Last Updated**: December 2025
 **Cloudflare API Version**: v4
-**Terraform Provider Version**: >= 4.20
+**Terraform Provider Version**: >= 5.14

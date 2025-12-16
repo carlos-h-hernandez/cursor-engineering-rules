@@ -348,6 +348,11 @@ gcloud run services delete webapp --region us-central1
 ```
 
 ### Container Registry
+
+> [!CAUTION]
+> **Remote/stateful operations:** `docker push` and image deletions modify remote registries/artifacts.
+> Run only with explicit approval and verify the target project/registry/tag.
+
 ```bash
 # Authenticate Docker to GCR
 gcloud auth configure-docker

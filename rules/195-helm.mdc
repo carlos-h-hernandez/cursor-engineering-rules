@@ -164,6 +164,10 @@ postgresql:
 
 ## Common Helm Commands
 
+> [!CAUTION]
+> **Remote/stateful operations:** `helm install` / `helm upgrade` / `helm uninstall` modify a live cluster.
+> Run only with explicit approval; prefer `helm template` (dry-run) first.
+
 ```bash
 # Create new chart
 helm create mychart
