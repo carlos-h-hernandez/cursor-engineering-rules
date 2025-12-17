@@ -17,6 +17,14 @@ This guide explains how to integrate Cursor Engineering Rules into your projects
 
 ## Installation Methods
 
+### Setup script (convenience)
+
+If you keep this repo as a shared checkout (or as a submodule), you can run:
+
+```bash
+/path/to/cursor-engineering-rules/setup-workspace.sh -S -l .
+```
+
 ### Method 1: Symlink (Recommended for Multiple Projects)
 
 **Advantages:**

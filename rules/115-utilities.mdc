@@ -49,13 +49,13 @@ Examples:
 
 ```bash
 # Fetch HTML
-curl -fsSL "https://example.com/page" -o page.html
+curl -fsSL "https://acme.com/page" -o page.html
 
 # Fetch JSON and shape it
-curl -fsSL "https://api.example.com/v1/items" | jq '.items[] | {id, name, updated_at}'
+curl -fsSL "https://api.acme.com/v1/items" | jq '.items[] | {id, name, updated_at}'
 
 # Extract readable text quickly
-lynx -dump -nolist "https://example.com/page" > page.txt
+lynx -dump -nolist "https://acme.com/page" > page.txt
 ```
 
 When to stop here:
@@ -213,29 +213,29 @@ Instead:
 ### lynx
 
 ```bash
-lynx -dump -nolist "https://example.com"
-lynx -source "https://example.com" > page.html
+lynx -dump -nolist "https://acme.com"
+lynx -source "https://acme.com" > page.html
 ```
 
 ### curl
 
 ```bash
-curl -fsSL "https://example.com" -o page.html
-curl -I "https://example.com"
+curl -fsSL "https://acme.com" -o page.html
+curl -I "https://acme.com"
 ```
 
 ### jq
 
 ```bash
 cat payload.json | jq '.'
-curl -fsSL "https://api.example.com" | jq '.items[] | {id, name}'
+curl -fsSL "https://api.acme.com" | jq '.items[] | {id, name}'
 ```
 
 ### httpie
 
 ```bash
-http GET "https://api.example.com/v1/items"
-http GET "https://api.example.com/v1/items" Authorization:"Bearer $TOKEN"
+http GET "https://api.acme.com/v1/items"
+http GET "https://api.acme.com/v1/items" Authorization:"Bearer $TOKEN"
 ```
 
 ### ripgrep

@@ -124,6 +124,14 @@ mkdir -p .cursor/rules/templates
 cp path/to/cursor-engineering-rules/rules/templates/*.template .cursor/rules/templates/
 ```
 
+### Option 1.5: Use Setup Scripts (Convenience)
+
+If you keep a shared checkout of this repo, you can bootstrap a workspace with:
+
+```bash
+/path/to/cursor-engineering-rules/setup-workspace.sh -S -l .
+```
+
 Add to your `.cursorrules` file:
 
 ```yaml
