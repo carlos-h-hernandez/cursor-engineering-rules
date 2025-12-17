@@ -1,0 +1,29 @@
+# Creative: [Component/Feature Name]
+
+**Date:** [Date]
+**Task:** [Related task reference]
+
+## Design Challenge
+[What design decision needs to be made]
+
+## Options Considered
+
+| Option | Pros | Cons | Complexity | Decision |
+|--------|------|------|------------|----------|
+| Option A | ... | ... | Low/Med/High | ✅ Chosen / ❌ Rejected |
+| Option B | ... | ... | Low/Med/High | ✅ Chosen / ❌ Rejected |
+| Option C | ... | ... | Low/Med/High | ✅ Chosen / ❌ Rejected |
+
+## Rationale
+[Why the chosen option was selected]
+
+## Trade-offs Accepted
+- [Trade-off 1]: [Why it's acceptable]
+- [Trade-off 2]: [Why it's acceptable]
+
+## Implementation Notes
+[Key considerations for implementing the chosen option]
+
+## References
+- [Link to relevant docs/patterns]
+- [Related decisions]

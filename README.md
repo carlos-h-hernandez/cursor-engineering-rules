@@ -118,6 +118,10 @@ mkdir -p .cursor/rules
 # Copy specific rules you need
 cp path/to/cursor-engineering-rules/rules/160-python.mdc .cursor/rules/
 cp path/to/cursor-engineering-rules/rules/280-aws.mdc .cursor/rules/
+
+# (Optional) Copy workflow templates (tasks, active-context, etc.)
+mkdir -p .cursor/rules/templates
+cp path/to/cursor-engineering-rules/rules/templates/*.template .cursor/rules/templates/
 ```
 
 Add to your `.cursorrules` file:
