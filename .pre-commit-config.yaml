@@ -46,6 +46,21 @@ repos:
         args: ['--fix', '--config', '.markdownlint.yaml']
         exclude: 'CHANGELOG.md'  # Changelog has specific format
 
+  # Link checking (manual - can be slow/flaky depending on network)
+  - repo: https://github.com/lycheeverse/lychee
+    rev: lychee-v0.22.0
+    hooks:
+      - id: lychee
+        name: Lychee (link checker)
+        stages: [manual]
+        files: '\.(md|mdc)$'
+        args:
+          - --no-progress
+          - --max-retries
+          - '2'
+          - --timeout
+          - '20'
+
   # Markdown link checking (optional - can be slow)
   # Uncomment if you want to check for broken links
   # - repo: https://github.com/tcort/markdown-link-check
