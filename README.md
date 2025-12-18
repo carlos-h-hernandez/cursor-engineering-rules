@@ -205,7 +205,7 @@ See [rules/INDEX.md](rules/INDEX.md) for complete categorization.
 ### Comprehensive Coverage
 
 - **9 programming languages** (Python, Go, TypeScript, JavaScript, Rust, Bash, SQL, etc.)
-- **3 major cloud platforms** (AWS, Azure, GCP)
+- **4 major cloud platforms** (AWS, Azure, GCP, Cloudflare)
 - **15+ DevOps tools** (Terraform, K8s, Docker, Ansible, Helm, GitHub Actions)
 - **AI/ML integration** (OpenAI, Claude, Bedrock, Vertex AI)
 

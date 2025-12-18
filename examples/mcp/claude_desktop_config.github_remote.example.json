@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "github-remote": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_MCP_PAT}"
+      },
+      "metadata": {
+        "title": "GitHub MCP (remote)",
+        "description": "Repos, PRs, issues, Actions (remote hosted)"
+      }
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "mcpServers": {
+    "aws-ccapi": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "awslabs.ccapi-mcp-server@latest"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "${env:FASTMCP_LOG_LEVEL}",
+        "DEFAULT_TAGS": "${env:DEFAULT_TAGS}",
+        "SECURITY_SCANNING": "${env:SECURITY_SCANNING}"
+      },
+      "metadata": {
+        "title": "AWS CCAPI MCP",
+        "description": "Provision/plan AWS infra via Cloud Control API"
+      }
+    },
+    "aws-docs": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "awslabs.aws-documentation-mcp-server@latest"
+      ],
+      "metadata": {
+        "title": "AWS Documentation MCP",
+        "description": "Search & retrieve AWS docs"
+      }
+    },
+    "iam-policy-autopilot": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "iam-policy-autopilot",
+        "mcp-server"
+      ],
+      "env": {
+        "AWS_REGION": "${env:AWS_REGION}"
+      },
+      "metadata": {
+        "title": "AWS IAM Policy Autopilot",
+        "description": "Generate baseline IAM policies from code analysis (Python, Go, TypeScript)"
+      }
+    },
+    "cloudflare-docs": {
+      "type": "http",
+      "url": "https://docs.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare Docs MCP",
+        "description": "Read-only Cloudflare documentation"
+      }
+    },
+    "cloudflare-workers-bindings": {
+      "type": "http",
+      "url": "https://bindings.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare Workers Bindings MCP",
+        "description": "Inspect/manage Workers bindings (KV, D1, Vectorize, AI)"
+      }
+    },
+    "cloudflare-observability": {
+      "type": "http",
+      "url": "https://observability.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare Observability MCP",
+        "description": "Query Workers logs & analytics"
+      }
+    },
+    "cloudflare-dns-analytics": {
+      "type": "http",
+      "url": "https://dns-analytics.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare DNS Analytics MCP",
+        "description": "Explore DNS performance/errors analytics"
+      }
+    },
+    "cloudflare-dex": {
+      "type": "http",
+      "url": "https://dex.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare DEX MCP",
+        "description": "Digital Experience Monitoring for WARP/Zero Trust"
+      }
+    },
+    "cloudflare-auditlogs": {
+      "type": "http",
+      "url": "https://auditlogs.mcp.cloudflare.com/mcp",
+      "metadata": {
+        "title": "Cloudflare Audit Logs MCP",
+        "description": "Query account audit events"
+      }
+    }
+  }
+}
