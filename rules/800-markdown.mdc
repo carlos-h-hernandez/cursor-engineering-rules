@@ -8,7 +8,7 @@ files:
     - "**/*.md"
     - "**/*.mdx"
     - "README.md"
-    - "CONTRIBUTING.md"
+    - ".github/CONTRIBUTING.md"
     - "CHANGELOG.md"
     - "docs/**/*.md"
     - ".github/**/*.md"

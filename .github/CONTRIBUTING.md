@@ -146,7 +146,7 @@ cursor-engineering-rules/
  docs/              # Additional documentation
  examples/          # Example configurations
  README.md          # Main documentation
- CONTRIBUTING.md    # This file
+ .github/CONTRIBUTING.md    # This file
  LICENSE            # MIT License
 ```
 

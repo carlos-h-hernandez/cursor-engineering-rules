@@ -530,7 +530,7 @@ cat .cursorrules
 ### Documentation
 
 - [README.md](../README.md) - Overview
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contributing guidelines
+- [CONTRIBUTING.md](../.github/CONTRIBUTING.md) - Contributing guidelines
 - [rules/INDEX.md](../rules/INDEX.md) - Rule catalog
 
 ---

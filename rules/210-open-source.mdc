@@ -5,7 +5,7 @@ priority: 210
 alwaysApply: false
 files:
   include:
-    - "CONTRIBUTING.md"
+    - ".github/CONTRIBUTING.md"
     - "CONTRIBUTORS.md"
     - ".all-contributorsrc"
     - "LICENSE"
@@ -18,7 +18,7 @@ files:
 
 ## Essential Files
 
-### CONTRIBUTING.md
+### .github/CONTRIBUTING.md
 
 **MUST** include:
 
@@ -451,7 +451,7 @@ repos:
 
 When reviewing open source projects, check:
 
-- [ ] CONTRIBUTING.md exists and is comprehensive
+- [ ] .github/CONTRIBUTING.md exists and is comprehensive
 - [ ] LICENSE file is present
 - [ ] README.md is clear and helpful
 - [ ] CHANGELOG.md is maintained

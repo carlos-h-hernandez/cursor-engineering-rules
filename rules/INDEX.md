@@ -147,6 +147,5 @@ These rules are automatically applied to all projects:
 
 - **[README.md](../README.md)** - Overview and quick start
 - **[docs/HOW-TO-USE.md](../docs/HOW-TO-USE.md)** - Installation and configuration guide
-- **[CHANGELOG.md](../CHANGELOG.md)** - Version history
 
 ---

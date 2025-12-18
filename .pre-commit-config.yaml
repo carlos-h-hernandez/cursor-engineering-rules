@@ -44,7 +44,6 @@ repos:
       - id: markdownlint
         name: Lint Markdown files
         args: ['--fix', '--config', '.markdownlint.yaml']
-        exclude: 'CHANGELOG.md'  # Changelog has specific format
 
   # Link checking (manual - can be slow/flaky depending on network)
   - repo: https://github.com/lycheeverse/lychee

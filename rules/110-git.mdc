@@ -219,7 +219,7 @@ Every repo **must** contain the following foundational files with project-approp
 | `.markdownlint.yaml`               | Align with workspace Markdown rules                                   |
 | `.commitlintrc.yaml`               | Enforce commit conventions                                            |
 | `.dependabot.yaml`                 | Automated dependency update checks                                    |
-| `CODEOWNERS`                       | Assign ownership to enforce review policy                             |
+| `.github/CODEOWNERS`               | Assign ownership to enforce review policy                             |
 | `.github/PULL_REQUEST_TEMPLATE.md` | Enforce PR format above                                               |
 
 > [!TIP]
