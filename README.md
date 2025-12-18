@@ -74,7 +74,7 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 
 ## MCP Server
 
-**NEW:** Model Context Protocol (MCP) server for Claude Desktop and other MCP-compatible AI clients!
+Model Context Protocol (MCP) server for Cursor and other MCP-compatible AI clients.
 
 ```bash
 # Install
@@ -197,7 +197,6 @@ See [rules/INDEX.md](rules/INDEX.md) for complete categorization.
 
 ### Production Quality
 
-- **22,000+ lines** of curated best practices
 - **Battle-tested** patterns from real-world projects
 - **Security-first** approach (OWASP Top 10, secret scanning)
 - **Performance-focused** (benchmarks, optimization patterns)
