@@ -39,7 +39,7 @@ When providing code assistance, follow these guardrails:
   - Include workflow with numbered steps if applicable.
   - Add usage syntax guide with command-line examples (not needed for Lambda).
   - Inline comments for complex logic.
-- **Type Hints:** Strict typing required. Use Python 3.12 built-in types:
+- **Type Hints:** Strict typing required. Use Python 3.14 built-in types:
     - `Dict` → `dict`
     - `List` → `list`
     - `Tuple` → `tuple`
@@ -80,7 +80,7 @@ uv sync
 ## 3) Modern Python & Advanced Features
 
 ### Core Language Features
-- **f-strings:** Use `f"User: {user_name}"` for formatting. Python 3.12: `f"{text!r}"` for debugging.
+- **f-strings:** Use `f"User: {user_name}"` for formatting. Python 3.14: `f"{text!r}"` for debugging.
 - **Exception Handling:** Use `try-except-else-finally` for complex flows.
 - **Assertions:** Use `assert stock >= 0, "Stock cannot be negative"` for development—not production.
 - **Comprehensions:** Use `[price * 2 for price in prices]` where clear—avoid if it reduces readability.
@@ -980,7 +980,7 @@ Where appropriate, use these techniques:
 - `f-strings` (with `!r` for debugging), Context managers, Comprehensions, Tuple unpacking
 
 **Type Safety & Validation:**
-- Type annotations (Python 3.12 built-ins), `Literal` types, `Pydantic` models, `dataclasses`, `protocols`, `ABC`
+- Type annotations (Python 3.14 built-ins), `Literal` types, `Pydantic` models, `dataclasses`, `protocols`, `ABC`
 
 **Functions & Decorators:**
 - `*args`/`**kwargs`, `@property`/`getter`/`setter`, Custom decorators with `functools.wraps`, `functools.cache`, `functools.partial`, `functools.singledispatch`, `functools.total_ordering`

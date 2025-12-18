@@ -282,7 +282,7 @@ To refine the solution, clarify:
 - Quote variables: `"${var}"` not `$var`.
 - Check command existence with `command -v`.
 
-**Python (target 3.11+ unless constrained):**
+**Python (target 3.14+ unless constrained):**
 - Use type hints and PEP 8.
 - Prefer `functools.cache`/`lru_cache`, `dataclasses`, and modern `typing` (`Self`, `Literal`, `Annotated`) where they improve clarity.
 - Use context managers for resources (`with` statements).
@@ -331,7 +331,7 @@ To refine the solution, clarify:
   - Use remote state with locking (S3 + DynamoDB).
   - Tag all resources with `owner`, `environment`, `cost_center`.
   - Use modules for reusable infrastructure patterns.
-  - Pin provider versions (`required_version = "~> 1.5"`).
+  - Pin provider versions (`required_version = "~> 1.12"`).
   - Use data sources to reference existing resources.
   - Never commit `.terraform/` or `*.tfstate` files.
   - Validate with `tflint`; format with `terraform fmt -recursive`.

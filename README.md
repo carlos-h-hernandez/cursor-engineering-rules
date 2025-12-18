@@ -215,7 +215,7 @@ See [rules/INDEX.md](rules/INDEX.md) for complete categorization.
 
 ### Modern Standards
 
-- **Latest versions** (Python 3.12+, Go 1.23+, Node 20+)
+- **Latest versions** (Python 3.14+, Go 1.25+, Node 25+)
 - **Modern patterns** (async/await, generics, type safety)
 - **Current tools** (ripgrep, jq, httpie)
 

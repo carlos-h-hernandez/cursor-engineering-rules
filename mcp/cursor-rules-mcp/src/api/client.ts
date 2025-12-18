@@ -155,7 +155,7 @@ export class ApiClient {
 
       // Languages
       { category: 'languages', topic: 'bash', title: 'Bash/Shell Scripting', description: 'POSIX compliance, ShellCheck, safety patterns', priority: 130, content: '' },
-      { category: 'languages', topic: 'python', title: 'Python', description: 'Python 3.12+, type hints, AWS Lambda patterns', priority: 160, content: '' },
+      { category: 'languages', topic: 'python', title: 'Python', description: 'Python 3.14+, type hints, AWS Lambda patterns', priority: 160, content: '' },
       { category: 'languages', topic: 'typescript', title: 'TypeScript', description: 'Strict mode, ESM, modern patterns', priority: 165, content: '' },
       { category: 'languages', topic: 'javascript', title: 'JavaScript', description: 'ES modules, async/await, Node.js patterns', priority: 170, content: '' },
       { category: 'languages', topic: 'go', title: 'Go', description: 'Idiomatic Go, error handling, concurrency', priority: 180, content: '' },

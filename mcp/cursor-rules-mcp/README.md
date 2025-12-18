@@ -15,7 +15,7 @@
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 25+
 - npm or yarn
 
 ### Install from npm (when published)
@@ -169,7 +169,7 @@ list_available_rules()
 ### Languages (Priority 130-185)
 
 - **Bash** (130): POSIX compliance, ShellCheck, safety patterns
-- **Python** (160): Python 3.12+, type hints, AWS Lambda patterns
+- **Python** (160): Python 3.14+, type hints, AWS Lambda patterns
 - **TypeScript** (165): Strict mode, ESM, modern patterns
 - **JavaScript** (170): ES modules, async/await, Node.js
 - **Go** (180): Idiomatic Go, error handling, concurrency

@@ -72,11 +72,11 @@ resource "aws_subnet" "private" {
 
 # 2. Pin provider versions
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.12.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.60"
+      version = "~> 6.0"
     }
   }
 }
@@ -180,12 +180,12 @@ resource "aws_subnet" "private" {
 
 ```hcl
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.12.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.60"
+      version = "~> 6.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -438,11 +438,11 @@ terraform {
 
 #  GOOD: Pin to major version
 terraform {
-  required_version = ">= 1.6.0"
+  required_version = ">= 1.12.0"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.60"  # Allow 5.60.x, but not 6.x
+      version = "~> 6.0"  # Allow 6.x, but not 7.x
     }
   }
 }
@@ -821,5 +821,5 @@ resource "aws_instance" "app" {
 
 ---
 
-**Terraform Version**: 1.6.x
-**AWS Provider Version**: 5.x
+**Terraform Version**: 1.12.x
+**AWS Provider Version**: 6.x
