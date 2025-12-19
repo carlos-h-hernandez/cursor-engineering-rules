@@ -188,7 +188,7 @@ const logger = {
 
 ## 9) Imports & Organization
 
-* Group imports: **std/core → third-party → local** (blank lines between)
+* Group imports: **std/core -> third-party -> local** (blank lines between)
 * Keep modules cohesive; avoid "god" modules
 * Export small, testable units
 * Avoid circular deps; factor shared utilities lower

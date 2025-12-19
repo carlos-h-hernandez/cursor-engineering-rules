@@ -9,9 +9,9 @@ priority: 50
 
 **YOU MUST FOLLOW THIS THREE-PHASE APPROACH FOR ALL NON-TRIVIAL WORK:**
 
-1. **PLAN** → Design solution → Document approach → **WAIT FOR EXPLICIT APPROVAL**
-2. **IMPLEMENT** → Code ONLY what was approved → **STOP** when agreed scope is complete
-3. **REVIEW** → Verify results → Suggest improvements → Return to PLAN phase
+1. **PLAN** -> Design solution -> Document approach -> **WAIT FOR EXPLICIT APPROVAL**
+2. **IMPLEMENT** -> Code ONLY what was approved -> **STOP** when agreed scope is complete
+3. **REVIEW** -> Verify results -> Suggest improvements -> Return to PLAN phase
 
 **AGENT AUDIT REQUIREMENTS (ADDITIONAL):**
 - Follow `060-agent-audit.mdc` for **no remote writes**, **local branch discipline**, **mandatory checkpoints**, **local verification**, and a **verifiable audit report**.
@@ -35,9 +35,9 @@ AI: "Let me design a solution first. Key decisions needed:
 ```
 
 **WHY THIS MATTERS:**
--  Skipping planning → Wasted time, wrong solutions, scope creep
--  Implementing unplanned features → Breaking existing code, technical debt
--  Not stopping after agreed scope → Confusion, frustration, rework
+-  Skipping planning -> Wasted time, wrong solutions, scope creep
+-  Implementing unplanned features -> Breaking existing code, technical debt
+-  Not stopping after agreed scope -> Confusion, frustration, rework
 
 ---
 
@@ -258,25 +258,25 @@ Create one per significant task:
 Adapt workflow based on task complexity:
 
 ### Level 1: Simple (Quick Fixes)
-- **Workflow:** Direct implementation → Quick review
+- **Workflow:** Direct implementation -> Quick review
 - **Context Files:** Optional
 - **Example:** Fix typo, update comment, simple bug fix
 - **Skip Planning:** Yes, for obvious fixes
 
 ### Level 2: Moderate (Single Feature)
-- **Workflow:** Brief plan → QA Validation → Implement → Review
+- **Workflow:** Brief plan -> QA Validation -> Implement -> Review
 - **Context Files:** `tasks.md` recommended
 - **Example:** Add new function, update single module
 - **Skip Planning:** No
 
 ### Level 3: Complex (Multi-Module)
-- **Workflow:** Full Plan → Creative Phase → QA Validation → Implement → Review → Archive
+- **Workflow:** Full Plan -> Creative Phase -> QA Validation -> Implement -> Review -> Archive
 - **Context Files:** `tasks.md`, `active-context.md`, `progress.md`
 - **Example:** New feature spanning multiple files, API changes
 - **Skip Planning:** Never
 
 ### Level 4: Very Complex (Architectural)
-- **Workflow:** Detailed Plan → Creative Phase (MANDATORY) → QA Validation → Implement → Review → Archive
+- **Workflow:** Detailed Plan -> Creative Phase (MANDATORY) -> QA Validation -> Implement -> Review -> Archive
 - **Context Files:** All files, including `creative-*.md` for design decisions
 - **Example:** Major refactoring, new subsystem, architectural changes
 - **Skip Planning:** Never
@@ -287,17 +287,17 @@ Adapt workflow based on task complexity:
 
 ### For Simple Tasks (Level 1)
 ```
-User Request → Quick Implementation → Brief Review → Done
+User Request -> Quick Implementation -> Brief Review -> Done
 ```
 
 ### For Moderate Tasks (Level 2)
 ```
-User Request → Brief Planning (WAIT) → QA Validation → Implementation → Review → Done
+User Request -> Brief Planning (WAIT) -> QA Validation -> Implementation -> Review -> Done
 ```
 
 ### For Complex Tasks (Level 3-4)
 ```
-User Request → Planning Phase (WAIT) → Creative Phase (MANDATORY) → QA Validation → Implementation Phase → Review Phase → Archive
+User Request -> Planning Phase (WAIT) -> Creative Phase (MANDATORY) -> QA Validation -> Implementation Phase -> Review Phase -> Archive
 ```
 
 ---
@@ -580,11 +580,11 @@ Command Adaptation: Required
 
 Users can trigger phases explicitly:
 
-- **"Plan this:"** → Enter Planning phase
-- **"QA"** → Run QA Validation (can interrupt any process)
-- **"Implement:"** → Enter Implementation phase (requires plan + QA pass for Level 2+)
-- **"Review:"** → Enter Review phase
-- **"What's the status?"** → Check context files and current phase
+- **"Plan this:"** -> Enter Planning phase
+- **"QA"** -> Run QA Validation (can interrupt any process)
+- **"Implement:"** -> Enter Implementation phase (requires plan + QA pass for Level 2+)
+- **"Review:"** -> Enter Review phase
+- **"What's the status?"** -> Check context files and current phase
 
 ---
 

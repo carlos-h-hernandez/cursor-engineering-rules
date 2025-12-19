@@ -95,9 +95,9 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 **Workflow:**
 
 ```
-Simple:   /build → /review
-Moderate: /plan → /qa → /build → /review
-Complex:  /plan → /creative → /qa → /build → /review
+Simple:   /build -> /review
+Moderate: /plan -> /qa -> /build -> /review
+Complex:  /plan -> /creative -> /qa -> /build -> /review
 ```
 
 See [commands/README.md](commands/README.md) for detailed documentation.
@@ -326,7 +326,7 @@ Thanks to [@DaKaZ](https://github.com/DaKaZ) for suggesting the commands-based w
 ## Related Projects
 
 - [dotcursorrules.com](https://dotcursorrules.com/) - Community directory of framework-specific cursor rules (Next.js, Laravel, React, etc.). Use dotcursorrules for **framework recipes** and this repo for **engineering discipline**.
-- [ACE-FCA](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents) - Advanced Context Engineering for Coding Agents. Excellent methodology on context management, "frequent intentional compaction", and Research → Plan → Implement workflows.
+- [ACE-FCA](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents) - Advanced Context Engineering for Coding Agents. Excellent methodology on context management, "frequent intentional compaction", and Research -> Plan -> Implement workflows.
 - [Cursor Memory Bank](https://github.com/vanzan01/cursor-memory-bank) - Command-based workflow system using Cursor's `/commands` feature for progressive rule loading.
 - [eslint-config-airbnb](https://github.com/airbnb/javascript) - JavaScript style guide
 - [google-styleguides](https://github.com/google/styleguide) - Google's style guides

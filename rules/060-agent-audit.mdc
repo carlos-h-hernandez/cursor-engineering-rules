@@ -134,8 +134,8 @@ Disallowed (non-exhaustive):
 
 ## 8) Method to the Madness (Required Sequence)
 
-Understand task → propose plan → create minimal change set → take checkpoints →
-run verification → produce audit report → propose commit(s) → wait for approval
+Understand task -> propose plan -> create minimal change set -> take checkpoints ->
+run verification -> produce audit report -> propose commit(s) -> wait for approval
 
 ---
 

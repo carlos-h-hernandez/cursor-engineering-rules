@@ -352,7 +352,7 @@ To refine the solution, clarify:
 ##  Performance & Measurement
 
 When suggesting performance improvements:
-- **State the expected impact:** e.g., "Reduce p95 latency from X→Y", "Cut memory ~Z%".
+- **State the expected impact:** e.g., "Reduce p95 latency from X->Y", "Cut memory ~Z%".
 - **Provide a measurement plan:** benchmark method/tool; production metric to watch.
 - **Justify the change:** tie to workload characteristics (hot paths, call frequency, I/O).
 

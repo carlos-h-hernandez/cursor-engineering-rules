@@ -343,11 +343,11 @@ data "aws_iam_policy_document" "lambda_policy" {
 
 ## 9) Utility Providers (Use Judiciously)
 
-- `random`: ids/suffixes → OK
-- `time`: delays/rotation → OK
-- `tls`: ephemeral keys → ensure state handling; avoid embedding long-lived private keys in state
+- `random`: ids/suffixes -> OK
+- `time`: delays/rotation -> OK
+- `tls`: ephemeral keys -> ensure state handling; avoid embedding long-lived private keys in state
 - **Avoid `null_resource`** unless truly necessary (it's an anti-pattern and often indicates missing abstraction)
-- Data sources: `http`, `external`, `terraform_remote_state` → ensure reliability, caching, and failure modes
+- Data sources: `http`, `external`, `terraform_remote_state` -> ensure reliability, caching, and failure modes
 
 ---
 

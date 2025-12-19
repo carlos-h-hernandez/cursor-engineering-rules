@@ -334,7 +334,7 @@ rules:
 
 Open Cursor and check:
 
-1. Go to Settings → Rules & Memories
+1. Go to Settings -> Rules & Memories
 2. Verify your rules appear in the list
 3. Check that `alwaysApply` rules are marked
 
@@ -399,7 +399,7 @@ Check that generated code follows patterns:
    - Reopen project
 
 4. **Check Cursor settings**
-   - Settings → Rules & Memories
+   - Settings -> Rules & Memories
    - Ensure rules are enabled
 
 ### Rules Conflict

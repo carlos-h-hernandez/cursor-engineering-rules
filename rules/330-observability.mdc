@@ -47,7 +47,7 @@ files:
 ### 3. Distributed Tracing
 **What**: End-to-end request flow across services
 **When**: Debugging latency, understanding dependencies
-**Example**: "Request took 523ms: API Gateway (5ms) → Auth (50ms) → Database (450ms) → Response (18ms)"
+**Example**: "Request took 523ms: API Gateway (5ms) -> Auth (50ms) -> Database (450ms) -> Response (18ms)"
 
 ---
 

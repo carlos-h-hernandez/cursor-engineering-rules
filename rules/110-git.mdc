@@ -28,7 +28,7 @@ priority: 110
 ### Canonical Example
 
 ```
-docs(upgrade): reorganize and enhance v3.4→v3.8 upgrade guide
+docs(upgrade): reorganize and enhance v3.4->v3.8 upgrade guide
 
 - Prioritize ANF-disabled path (Path A)
 - Add rationale for route table rotation logic
@@ -202,7 +202,7 @@ docs/upgrade-guide-3-8
 * Signed commits if mandated by project
 * DCO sign-off if required
 * No secrets in commits, diffs, PRs, or screenshots
-* Large binaries → artifacts, not git
+* Large binaries -> artifacts, not git
 
 ---
 

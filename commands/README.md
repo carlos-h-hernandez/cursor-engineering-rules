@@ -32,19 +32,19 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 ### Simple Tasks (Level 1)
 
 ```
-/build → /review
+/build -> /review
 ```
 
 ### Moderate Tasks (Level 2)
 
 ```
-/plan → /qa → /build → /review
+/plan -> /qa -> /build -> /review
 ```
 
 ### Complex Tasks (Level 3-4)
 
 ```
-/plan → /creative → /qa → /build → /review
+/plan -> /creative -> /qa -> /build -> /review
 ```
 
 ## Usage

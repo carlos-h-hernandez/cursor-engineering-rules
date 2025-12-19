@@ -72,7 +72,7 @@ Check:
 3️⃣ Environment: Build tools ready
 4️⃣ Build Test: Core functionality verified
 
-→ Clear to proceed to /build
+-> Clear to proceed to /build
 ```
 
 ### Failure Report

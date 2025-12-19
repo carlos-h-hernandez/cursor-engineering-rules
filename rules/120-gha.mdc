@@ -965,7 +965,7 @@ runs-on:
 
 ### Protected Environments
 
-**Settings → Environments → New environment**
+**Settings -> Environments -> New environment**
 
 Protection rules:
 - Required reviewers (1-6 people/teams)

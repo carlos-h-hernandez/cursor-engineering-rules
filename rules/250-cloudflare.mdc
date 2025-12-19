@@ -318,7 +318,7 @@ curl -X POST \
 ```
 
 ### 18) Staged Rollout (Prompt)
-> Log-only → Managed Challenge → Block; narrow by path/geo; define rollback triggers & SLOs.
+> Log-only -> Managed Challenge -> Block; narrow by path/geo; define rollback triggers & SLOs.
 
 **Rollout Phases:**
 ```
@@ -566,12 +566,12 @@ curl -X PATCH \
 
 **Blocking Legitimate Traffic:**
 1. Add bypass for verified bots
-2. Change Block → Managed Challenge
+2. Change Block -> Managed Challenge
 3. Add allowlist for known IPs
 4. Use case-insensitive matching
 
 **Performance Issues:**
-1. Reorder conditions (fast → slow)
+1. Reorder conditions (fast -> slow)
 2. Replace regex with simpler operators
 3. Remove body inspection (use Workers)
 4. Split complex rule into multiple
@@ -642,14 +642,14 @@ curl -X PATCH \
 
 - [ ] Stakeholder/requirement sign-off
 - [ ] Bypass analysis complete
-- [ ] Perf order verified (cheap → expensive)
+- [ ] Perf order verified (cheap -> expensive)
 - [ ] UX risk assessed + mitigations
 - [ ] Tests (pos/neg/edge/security) pass
 - [ ] Monitoring queries + dashboard ready
 - [ ] Rollout plan + rollback ready
 - [ ] Runbook updated
 - [ ] Cost impact understood
-- [ ] Multi-environment tested (dev → staging → prod)
+- [ ] Multi-environment tested (dev -> staging -> prod)
 - [ ] CI/CD pipeline validated
 - [ ] Terraform state configured
 - [ ] Security scanning passed
@@ -661,9 +661,9 @@ curl -X PATCH \
 
 - **Front-matter** with `priority: 250` and focused `files`
 - **Phase names** mapped to Cloudflare Ruleset phases
-- **Perf guidance** (cheap→expensive) and **AND-before-OR** reminder
+- **Perf guidance** (cheap->expensive) and **AND-before-OR** reminder
 - **IaC examples** using `cloudflare_ruleset` with heredocs
-- **Emergency → permanent** workflow
+- **Emergency -> permanent** workflow
 - **Workers integration** for complex logic
 - **Multi-environment** management with feature flags
 - **CI/CD** automation with GitHub Actions

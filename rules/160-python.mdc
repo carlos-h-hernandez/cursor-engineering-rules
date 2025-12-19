@@ -40,12 +40,12 @@ When providing code assistance, follow these guardrails:
   - Add usage syntax guide with command-line examples (not needed for Lambda).
   - Inline comments for complex logic.
 - **Type Hints:** Strict typing required. Use Python 3.14 built-in types:
-    - `Dict` → `dict`
-    - `List` → `list`
-    - `Tuple` → `tuple`
-    - `Set` → `set`
-    - `Union[X, Y]` → `X | Y`
-    - `Optional[X]` → `X | None`
+    - `Dict` -> `dict`
+    - `List` -> `list`
+    - `Tuple` -> `tuple`
+    - `Set` -> `set`
+    - `Union[X, Y]` -> `X | Y`
+    - `Optional[X]` -> `X | None`
 - **Type Checking:** Use `ty` (recommended), `mypy --strict`, or `pyright`.
   - **ty** (recommended): Astral's Rust-based type checker, 10-60x faster than mypy with excellent diagnostics. Install: `uv tool install ty@latest`, run: `ty check .`
   - **mypy**: Stable, widely adopted. Run with `--strict` for full coverage.
