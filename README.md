@@ -70,6 +70,40 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 
 ---
 
+## Cursor Commands
+
+Workflow commands for explicit phase transitions. Type `/command` in Cursor chat to trigger.
+
+| Command | Purpose |
+|---------|---------|
+| `/plan` | Enter planning phase - analyze, design, document approach |
+| `/build` | Enter implementation phase - write code following approved plan |
+| `/review` | Enter review phase - verify implementation, suggest improvements |
+| `/creative` | Enter creative phase - explore design options for complex tasks |
+| `/qa` | Run QA validation - check dependencies, config, environment |
+
+**Installation:**
+
+```bash
+# Copy to your project
+cp -r /path/to/cursor-engineering-rules/commands .cursor/commands
+
+# Or symlink
+ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
+```
+
+**Workflow:**
+
+```
+Simple:   /build → /review
+Moderate: /plan → /qa → /build → /review
+Complex:  /plan → /creative → /qa → /build → /review
+```
+
+See [commands/README.md](commands/README.md) for detailed documentation.
+
+---
+
 ## MCP Server
 
 Model Context Protocol (MCP) server for Cursor and other MCP-compatible AI clients.
@@ -285,6 +319,8 @@ This project was inspired by and incorporates patterns from:
 - **AI Developer Guide**: <https://github.com/dwmkerr/ai-developer-guide> - Workflow patterns and context management
 - **Cursor Memory Bank**: <https://github.com/vanzan01/cursor-memory-bank> - Context file management patterns
 
+Thanks to [@DaKaZ](https://github.com/DaKaZ) for suggesting the commands-based workflow approach.
+
 ---
 
 ## Related Projects
@@ -297,4 +333,10 @@ This project was inspired by and incorporates patterns from:
 - [uber-go-guide](https://github.com/uber-go/guide) - Uber's Go style guide
 
 > [!NOTE]
-> **On Cursor Commands:** This repo uses `.mdc` rules with `alwaysApply` flags and an MCP server for on-demand loading. We don't currently use Cursor's `/commands` feature (like `/plan`, `/build`). Commands offer better "progressive disclosure" - loading context only when explicitly triggered. See [Cursor Memory Bank](https://github.com/vanzan01/cursor-memory-bank) for a command-based approach that complements these rules.
+> **Three Ways to Load Context:** This repo supports multiple approaches:
+>
+> 1. **Rules** (`.mdc` files) - Auto-load based on `alwaysApply` flags and file patterns
+> 2. **Commands** (`/plan`, `/build`, etc.) - Explicit phase transitions for progressive disclosure
+> 3. **MCP Server** - On-demand rule loading via tool calls
+>
+> Use all three together for maximum flexibility, or pick what works for your workflow.
