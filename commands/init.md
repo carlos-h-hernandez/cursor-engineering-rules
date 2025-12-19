@@ -4,7 +4,7 @@ description: Initialize task - analyze project, detect complexity, set up contex
 
 # INITIALIZATION MODE ACTIVATED
 
-You are now in **VAN** (initialization) phase.
+You are now in **INIT** (initialization) phase.
 
 ## Purpose
 

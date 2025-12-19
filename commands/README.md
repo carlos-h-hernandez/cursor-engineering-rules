@@ -21,7 +21,7 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
-| `/van` | Initialize task | Starting new work, detecting complexity |
+| `/init` | Initialize task | Starting new work, detecting complexity |
 | `/plan` | Enter planning phase | Designing solution, documenting approach |
 | `/creative` | Enter creative/design phase | Complex tasks requiring design decisions |
 | `/qa` | Run QA validation | Before implementation (Level 2+ tasks) |
@@ -34,19 +34,19 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 ### Simple Tasks (Level 1)
 
 ```
-/van -> /build -> /review
+/init -> /build -> /review
 ```
 
 ### Moderate Tasks (Level 2)
 
 ```
-/van -> /plan -> /qa -> /build -> /review
+/init -> /plan -> /qa -> /build -> /review
 ```
 
 ### Complex Tasks (Level 3-4)
 
 ```
-/van -> /plan -> /creative -> /qa -> /build -> /review -> /archive
+/init -> /plan -> /creative -> /qa -> /build -> /review -> /archive
 ```
 
 ## Usage

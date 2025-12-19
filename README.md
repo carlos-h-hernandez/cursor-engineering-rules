@@ -76,7 +76,7 @@ Workflow commands for explicit phase transitions. Type `/command` in Cursor chat
 
 | Command | Purpose |
 |---------|---------|
-| `/van` | Initialize task - analyze project, detect complexity |
+| `/init` | Initialize task - analyze project, detect complexity |
 | `/plan` | Enter planning phase - analyze, design, document approach |
 | `/creative` | Enter creative phase - explore design options for complex tasks |
 | `/qa` | Run QA validation - check dependencies, config, environment |
@@ -97,9 +97,9 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 **Workflow:**
 
 ```
-Simple:   /van -> /build -> /review
-Moderate: /van -> /plan -> /qa -> /build -> /review
-Complex:  /van -> /plan -> /creative -> /qa -> /build -> /review -> /archive
+Simple:   /init -> /build -> /review
+Moderate: /init -> /plan -> /qa -> /build -> /review
+Complex:  /init -> /plan -> /creative -> /qa -> /build -> /review -> /archive
 ```
 
 See [commands/README.md](commands/README.md) for detailed documentation.
