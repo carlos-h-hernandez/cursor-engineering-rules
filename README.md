@@ -290,6 +290,11 @@ This project was inspired by and incorporates patterns from:
 ## Related Projects
 
 - [dotcursorrules.com](https://dotcursorrules.com/) - Community directory of framework-specific cursor rules (Next.js, Laravel, React, etc.). Use dotcursorrules for **framework recipes** and this repo for **engineering discipline**.
+- [ACE-FCA](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents) - Advanced Context Engineering for Coding Agents. Excellent methodology on context management, "frequent intentional compaction", and Research → Plan → Implement workflows.
+- [Cursor Memory Bank](https://github.com/vanzan01/cursor-memory-bank) - Command-based workflow system using Cursor's `/commands` feature for progressive rule loading.
 - [eslint-config-airbnb](https://github.com/airbnb/javascript) - JavaScript style guide
 - [google-styleguides](https://github.com/google/styleguide) - Google's style guides
 - [uber-go-guide](https://github.com/uber-go/guide) - Uber's Go style guide
+
+> [!NOTE]
+> **On Cursor Commands:** This repo uses `.mdc` rules with `alwaysApply` flags and an MCP server for on-demand loading. We don't currently use Cursor's `/commands` feature (like `/plan`, `/build`). Commands offer better "progressive disclosure" - loading context only when explicitly triggered. See [Cursor Memory Bank](https://github.com/vanzan01/cursor-memory-bank) for a command-based approach that complements these rules.
