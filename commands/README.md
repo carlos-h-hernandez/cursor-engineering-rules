@@ -21,30 +21,32 @@ ln -s /path/to/cursor-engineering-rules/commands .cursor/commands
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
-| `/plan` | Enter planning phase | Starting a new task, designing solution |
-| `/build` | Enter implementation phase | After plan is approved |
-| `/review` | Enter review phase | After implementation complete |
+| `/van` | Initialize task | Starting new work, detecting complexity |
+| `/plan` | Enter planning phase | Designing solution, documenting approach |
 | `/creative` | Enter creative/design phase | Complex tasks requiring design decisions |
 | `/qa` | Run QA validation | Before implementation (Level 2+ tasks) |
+| `/build` | Enter implementation phase | After plan is approved |
+| `/review` | Enter review phase | After implementation complete |
+| `/archive` | Archive completed task | Document lessons learned (Level 3-4) |
 
 ## Workflow
 
 ### Simple Tasks (Level 1)
 
 ```
-/build -> /review
+/van -> /build -> /review
 ```
 
 ### Moderate Tasks (Level 2)
 
 ```
-/plan -> /qa -> /build -> /review
+/van -> /plan -> /qa -> /build -> /review
 ```
 
 ### Complex Tasks (Level 3-4)
 
 ```
-/plan -> /creative -> /qa -> /build -> /review
+/van -> /plan -> /creative -> /qa -> /build -> /review -> /archive
 ```
 
 ## Usage
