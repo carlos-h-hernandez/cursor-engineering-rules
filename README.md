@@ -68,6 +68,22 @@ Comprehensive, battle-tested Cursor IDE rules for professional software engineer
 - **[115-utilities.mdc](rules/115-utilities.mdc)** - CLI utilities (lynx, curl, jq, ripgrep)
 - **[800-markdown.mdc](rules/800-markdown.mdc)** - Markdown & Mermaid diagrams
 
+### Scripts
+
+Utility scripts for Cursor maintenance:
+
+- **[cursor-maintenance.sh](scripts/cursor-maintenance.sh)** - Clean cache, logs, and temp files to reclaim disk space
+
+```bash
+# Preview cleanup
+./scripts/cursor-maintenance.sh --dry-run
+
+# Run cleanup
+./scripts/cursor-maintenance.sh
+```
+
+See [scripts/README.md](scripts/README.md) for details.
+
 ---
 
 ## Cursor Commands
