@@ -233,10 +233,11 @@ Ensure all code examples:
 
 ### Test in Cursor
 
-1. Copy your rule to a test project
-2. Configure `.cursorrules` to include it
-3. Ask Cursor to generate code using the rule
-4. Verify Cursor follows the patterns correctly
+1. Copy your rule to a test project's `.cursor/rules/` directory
+2. If using `alwaysApply: true`, the rule loads automatically
+3. Otherwise, add it to `.cursorrules` or reference it explicitly
+4. Ask Cursor to generate code using the rule
+5. Verify Cursor follows the patterns correctly
 
 ---
 

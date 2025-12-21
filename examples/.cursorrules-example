@@ -1,5 +1,23 @@
 # Example .cursorrules Configuration
 # Copy this file to your project root as .cursorrules and customize
+#
+# NOTE: This file is OPTIONAL. Rules with alwaysApply: true in their
+# frontmatter load automatically without needing this file.
+#
+# Use .cursorrules when you want:
+#   - Explicit control over which rules load
+#   - Version-controlled configuration for team projects
+#   - Project-specific rule subsets
+#
+# Rules that auto-load (alwaysApply: true):
+#   - 050-workflow.mdc     (Plan/Build/Review workflow)
+#   - 060-agent-audit.mdc  (Agent audit requirements)
+#   - 100-core.mdc         (Core coding standards)
+#   - 110-git.mdc          (Git conventions)
+#   - 115-utilities.mdc    (CLI tools)
+#   - 240-configuration.mdc (Configuration management)
+#   - 310-security.mdc     (Security best practices)
+#   - 800-markdown.mdc     (Markdown formatting)
 
 # ═══════════════════════════════════════════════════════════════
 # OPTION 1: Use All Rules (Recommended for consistency)
@@ -111,8 +129,9 @@ rulesDirectory: .cursor/rules
 # Notes
 # ═══════════════════════════════════════════════════════════════
 
-# 1. Rules are applied in order - later rules override earlier ones
-# 2. Use 999-local-overrides.mdc for project-specific exceptions
-# 3. Some rules have alwaysApply: true (automatically loaded)
-# 4. See rules/INDEX.md for complete rule catalog
-# 5. Test your configuration by asking Cursor to generate code
+# 1. This file is OPTIONAL - rules with alwaysApply: true load automatically
+# 2. Rules are applied in order - later rules override earlier ones
+# 3. alwaysApply rules load even when using explicit rule lists (cannot be disabled)
+# 4. Use 999-local-overrides.mdc for project-specific exceptions
+# 5. See rules/INDEX.md for complete rule catalog
+# 6. Test your configuration by asking Cursor to generate code

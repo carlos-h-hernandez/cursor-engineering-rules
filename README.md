@@ -155,6 +155,65 @@ See [mcp/cursor-rules-mcp/README.md](mcp/cursor-rules-mcp/README.md) for full do
 
 ---
 
+## Configuration Approaches
+
+Cursor supports two ways to load rules. Choose based on your needs:
+
+### Approach A: Frontmatter-based (No `.cursorrules` needed)
+
+Rules with `alwaysApply: true` in their frontmatter load automatically when placed in `.cursor/rules/`.
+
+**Best for:** Personal setup, global rules across all projects
+
+```bash
+# Symlink to your home directory (applies to all projects)
+mkdir -p ~/.cursor
+ln -s /path/to/cursor-engineering-rules/rules ~/.cursor/rules
+
+# Or symlink per-project
+mkdir -p .cursor
+ln -s /path/to/cursor-engineering-rules/rules .cursor/rules
+```
+
+**Rules that auto-load (`alwaysApply: true`):**
+
+| Rule | Purpose |
+|------|---------|
+| `050-workflow.mdc` | Plan/Build/Review workflow |
+| `060-agent-audit.mdc` | Agent audit requirements |
+| `100-core.mdc` | Core coding standards |
+| `110-git.mdc` | Git conventions |
+| `115-utilities.mdc` | CLI tools |
+| `240-configuration.mdc` | Configuration management |
+| `310-security.mdc` | Security best practices |
+| `800-markdown.mdc` | Markdown formatting |
+
+Other rules load based on file patterns or explicit request.
+
+### Approach B: Explicit `.cursorrules` file
+
+Use a `.cursorrules` file for explicit control over which rules load.
+
+**Best for:** Team projects, project-specific subsets, version-controlled config
+
+```yaml
+# .cursorrules - Option 1: Load all rules from directory
+rulesDirectory: .cursor/rules
+
+# .cursorrules - Option 2: Explicit rule list
+rules:
+  - .cursor/rules/100-core.mdc
+  - .cursor/rules/160-python.mdc
+  - .cursor/rules/280-aws.mdc
+```
+
+> [!NOTE]
+> When using `.cursorrules`, rules with `alwaysApply: true` still load automatically in addition to your explicit list.
+
+See [examples/.cursorrules-example](examples/.cursorrules-example) for tech-stack templates.
+
+---
+
 ## Quick Start
 
 ### Option 1: Use Individual Rules
