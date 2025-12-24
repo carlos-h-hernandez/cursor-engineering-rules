@@ -87,9 +87,9 @@ Shellwright enables AI agents to automate terminal sessions, capture screenshots
 }
 ```
 
-2. Restart Cursor to load the MCP server.
+1. Restart Cursor to load the MCP server.
 
-3. Use prompts like:
+2. Use prompts like:
 
    - "Open Vim. Write a message saying how to close Vim. Close Vim. Give me a screenshot of each step and a GIF recording."
    - "Open htop and show the most resource intensive process. Take a screenshot."

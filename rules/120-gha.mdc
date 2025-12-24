@@ -74,6 +74,37 @@ files:
 
 - Pin actions to specific versions like `@v4`, `@v3` for stability
 
+**For AI Agents Authoring Workflows:**
+
+When initially creating GitHub Actions workflows, **for every action** you add, use `gh api` to fetch the latest release tag and pin to that specific version:
+
+```bash
+# Get latest tag for any action (replace OWNER/REPO with the action's repository)
+gh api repos/OWNER/REPO/releases/latest --jq .tag_name
+# Returns: v6
+
+# Use in workflow with the fetched version
+- uses: OWNER/REPO@v6
+```
+
+**Rationale:**
+- AI agents should use the most current stable version when initially authoring workflows
+- This applies to **all actions**, not just common ones
+- After initial creation, Dependabot will handle keeping actions updated automatically
+- This ensures workflows start with recent versions while maintaining reproducibility
+
+**Examples for common actions:**
+```bash
+# Checkout
+gh api repos/actions/checkout/releases/latest --jq .tag_name
+
+# Setup Node
+gh api repos/actions/setup-node/releases/latest --jq .tag_name
+
+# GitHub Script
+gh api repos/actions/github-script/releases/latest --jq .tag_name
+```
+
 - Use `@main` only for experiments
 
 - Review [https://docs.github.com/en/actions](https://docs.github.com/en/actions) and adopt relevant best practices
