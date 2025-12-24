@@ -13,6 +13,7 @@ files:
 ---
 
 ## Guiding Principle
+
 Apply features only when they add clarity, correctness, performance, or security. Prefer simple, intentional solutions (DRY, KISS, YAGNI, Fail Fast).
 
 ## 0) AI Assistant Guidelines
@@ -30,9 +31,10 @@ When providing code assistance, follow these guardrails:
 - **Shebang:** `#!/usr/bin/env -S uv run` (required for new scripts). Use `uv` for modern Python tooling.
 - **Python Version:** ≥ 3.12.
 - **Formatting:** 4-space indents; soft wrap at 120 chars (adhere to PEP 8, PEP 257, PEP 484).
-- **Linting:** Run `black`, `ruff`, and `pylint`. Aim for a score of ≥9.0 on `pylint`.
+- **Linting:** Run `black`, `ruff`, `isort`, and `pylint`. Aim for a score of ≥9.0 on `pylint`.
+- **Security Scanning:** Run `bandit` to detect common security issues in Python code.
 - **String Formatting:** Use double quotes `"` unless the string contains double quotes (use `'` then). `black` handles this.
-- **Imports:** Grouped: stdlib / third-party / local. Sorted alphabetically within groups. Separate groups with blank lines.
+- **Imports:** Grouped: stdlib / third-party / local. Sorted alphabetically within groups. Separate groups with blank lines. Use `isort` to automatically sort imports.
 - **Documentation:**
   - Google-style docstrings for all functions, classes, methods.
   - Module docstring immediately below shebang (leave space between shebang and docstring).
@@ -40,12 +42,12 @@ When providing code assistance, follow these guardrails:
   - Add usage syntax guide with command-line examples (not needed for Lambda).
   - Inline comments for complex logic.
 - **Type Hints:** Strict typing required. Use Python 3.14 built-in types:
-    - `Dict` -> `dict`
-    - `List` -> `list`
-    - `Tuple` -> `tuple`
-    - `Set` -> `set`
-    - `Union[X, Y]` -> `X | Y`
-    - `Optional[X]` -> `X | None`
+  - `Dict` -> `dict`
+  - `List` -> `list`
+  - `Tuple` -> `tuple`
+  - `Set` -> `set`
+  - `Union[X, Y]` -> `X | Y`
+  - `Optional[X]` -> `X | None`
 - **Type Checking:** Use `ty` (recommended), `mypy --strict`, or `pyright`.
   - **ty** (recommended): Astral's Rust-based type checker, 10-60x faster than mypy with excellent diagnostics. Install: `uv tool install ty@latest`, run: `ty check .`
   - **mypy**: Stable, widely adopted. Run with `--strict` for full coverage.
@@ -60,17 +62,96 @@ When providing code assistance, follow these guardrails:
 **Prefer `uv` for new projects** - Fast, modern Python package installer and resolver.
 
 **Installation:**
+
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
 **Project Setup:**
+
 ```bash
 uv init my-project
 uv sync
 ```
 
 **Benefits:** 10-100x faster, deterministic resolution, drop-in pip replacement.
+
+## 1b) Import Sorting (isort)
+
+**Use `isort` to automatically sort imports** - Ensures consistent import ordering across projects.
+
+**Installation:**
+
+```bash
+uv add --dev isort
+# or
+pip install isort
+```
+
+**Configuration (pyproject.toml):**
+
+```toml
+[tool.isort]
+profile = "black"  # Compatible with black formatting
+line_length = 120
+multi_line_output = 3  # Vertical hanging indent
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+skip_glob = ["*/migrations/*", "*/venv/*", "*/.venv/*"]
+
+# Import sections: stdlib, third-party, local
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+known_first_party = ["my_package"]
+```
+
+**Usage:**
+
+```bash
+# Check import order
+isort --check-only .
+
+# Auto-fix import order
+isort .
+
+# Check specific file
+isort --check-only src/main.py
+
+# Auto-fix specific file
+isort src/main.py
+```
+
+**Integration with pre-commit:**
+
+```yaml
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+```
+
+**Import order example:**
+
+```python
+# Standard library
+import logging
+import os
+from datetime import datetime, timezone
+from typing import Any
+
+# Third-party
+import boto3
+import requests
+from pydantic import BaseModel
+
+# Local
+from utils import setup_logger
+from models import User
+```
 
 ## 2) Code Structure & Readability
 
@@ -84,12 +165,14 @@ uv sync
 ## 3) Modern Python & Advanced Features
 
 ### Core Language Features
+
 - **f-strings:** Use `f"User: {user_name}"` for formatting. Python 3.14: `f"{text!r}"` for debugging.
 - **Exception Handling:** Use `try-except-else-finally` for complex flows.
 - **Assertions:** Use `assert stock >= 0, "Stock cannot be negative"` for development - not production.
 - **Comprehensions:** Use `[price * 2 for price in prices]` where clear - avoid if it reduces readability.
 - **Walrus Operator (`:=`):** Use `if (count := len(items)) > 5:` for inline assignments - don't force it.
 - **match-case:** Simplify complex conditionals:
+
   ```python
   def handle_response(code: int) -> str:
       match code:
@@ -97,10 +180,12 @@ uv sync
           case 400 | 404: return "Client Error"
           case _: return "Unknown"
   ```
+
 - **Literal Types:** Use `status: Literal["active", "inactive"]` for fixed values.
 - **Type Safety:** Use `isinstance` and `issubclass` for safe type checks.
 
 ### Functional Programming
+
 - **`functools.wraps`:** Preserve metadata in decorators.
 - **`functools.cache`:** Use `@functools.cache` for costly, repeated calls.
 - **`functools.partial`:** Pre-specify function arguments: `partial(multiply, 2)`.
@@ -109,7 +194,9 @@ uv sync
 - **map/filter/reduce:** Use where readable - prefer comprehensions otherwise.
 
 ### Data Structures
+
 - **dataclasses:** Use for data-centric classes:
+
   ```python
   from dataclasses import dataclass, field
   @dataclass
@@ -117,12 +204,15 @@ uv sync
       product_id: int
       tags: list[str] = field(default_factory=list)
   ```
+
 - **`collections`:** Use `Counter`, `deque`, `defaultdict`, `namedtuple` where appropriate.
 - **Tuple Unpacking:** Use `x, y = get_coordinates()` for cleaner code.
 - **`enumerate`:** Use `for idx, value in enumerate(values):` for indexed loops.
 
 ### Object-Oriented Features
+
 - **`@property`:** Use for validation or computed properties:
+
   ```python
   @property
   def total(self) -> float:
@@ -132,21 +222,26 @@ uv sync
       if value < 0: raise ValueError("Total cannot be negative")
       self._total = value
   ```
+
 - **Abstract Base Classes (ABC):** Define interfaces:
+
   ```python
   from abc import ABC, abstractmethod
   class DataWriter(ABC):
       @abstractmethod
       def write(self, data: str) -> None: ...
   ```
+
 - **Protocols:** Use for structural typing (duck typing).
 - **MetaClasses:** Use for advanced class customization (e.g., Singleton pattern).
 - **`@classmethod`/`@staticmethod`:** Use for utility/factory methods.
 - **Magic Methods:** Implement `__str__`, `__repr__`, `__eq__`, etc., for Pythonic behavior.
 
 ### Context Managers
+
 - **Built-in:** Use `with` for file handling, network connections.
 - **Custom:** Create with `contextlib`:
+
   ```python
   from contextlib import contextmanager
   @contextmanager
@@ -157,7 +252,9 @@ uv sync
   ```
 
 ### Text Processing
+
 - **`dedent` from textwrap:** Remove leading whitespace for SQL queries, templates:
+
   ```python
   from textwrap import dedent
   query = dedent("""
@@ -165,12 +262,14 @@ uv sync
       WHERE age > 18
   """)
   ```
+
 - **`re` module:** Validate inputs to prevent injection attacks.
 
 ## 4) Logging & Observability
 
 - **Setup:** Use a custom logger setup function at the start of scripts.
 - **Pattern:**
+
   ```python
   import logging
   import time
@@ -196,15 +295,38 @@ uv sync
 
   logger = setup_custom_logger(__name__)
   ```
+
 - **Structured Logging:** Use `loguru` or JSON format for observability pipelines where needed.
 - **Error Logging:** Include `exc_info=True` for tracebacks: `logger.error("Error", exc_info=True)`.
 
 ## 5) Security & Validation
 
+- **Security Scanning:** Use `bandit` to detect common security issues:
+
+  ```bash
+  # Install
+  uv add --dev bandit
+  # or
+  pip install bandit
+
+  # Scan codebase
+  bandit -r .                    # Recursive scan
+  bandit -r . -f json -o report.json  # JSON output
+  bandit -r . -ll                # Low severity and above
+  bandit -r . -ii                # Medium confidence and above
+
+  # Exclude paths
+  bandit -r . -x tests/,venv/
+
+  # Use config file (.bandit)
+  bandit -r . -c .bandit
+  ```
+
 - **Input Validation:** Sanitize early with `re.match(r"^\w+$", user_input)`.
 - **SQL Injection:** Use parameterized queries: `cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))`.
 - **Shell Sanitization:** Use `shlex.quote(user_input)` for shell commands.
 - **Pydantic:** Use for structured data validation:
+
   ```python
   from pydantic import BaseModel, field_validator
   class User(BaseModel):
@@ -216,11 +338,13 @@ uv sync
           if v < 0 or v > 150: raise ValueError("Invalid age")
           return v
   ```
+
 - **Avoid Broad Exceptions:** Catch specific exceptions (`ValueError`, `KeyError`) instead of bare `except Exception`.
 
 ## 6) Error Handling & Resilience
 
 - **Domain Boundary Exception Handling:** Always re-raise exceptions with context at system boundaries. Never swallow errors by returning empty/default data.
+
   ```python
   #  BAD: Masks failure and returns empty data
   def load_database() -> dict:
@@ -240,7 +364,9 @@ uv sync
           logger.error(f"Error loading YAML database: {str(e)}")
           raise RuntimeError(f"Failed to load database: {str(e)}") from e
   ```
+
 - **Exception Groups:** For batch operations:
+
   ```python
   from exceptiongroup import ExceptionGroup
   errors = []
@@ -252,12 +378,15 @@ uv sync
   if errors:
       raise ExceptionGroup("Batch failed", errors)
   ```
+
 - **Retry Libraries:** Use `tenacity`, `backoff`, or `retrying` for transient failures:
+
   ```python
   from tenacity import retry, stop_after_attempt, wait_exponential
   @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
   def fetch_data(): ...
   ```
+
 - **Custom Exceptions:** Define `class FileProcessingError(Exception): pass` for clarity.
 - **Warnings Module:** Use for non-critical issues: `warnings.warn("Deprecated", DeprecationWarning)`.
 
@@ -278,7 +407,9 @@ uv sync
 ## 8) AWS & Boto3 Best Practices
 
 ### Client Configuration
+
 - **Global Initialization:** In Lambda, create `boto3` clients globally (outside handler) to reuse across invocations:
+
   ```python
   import boto3
   from botocore.config import Config
@@ -291,8 +422,10 @@ uv sync
 
   s3_client = boto3.client("s3", config=boto_config, region_name="us-east-1")
   ```
+
 - **Region Handling:** Retrieve from `AWS_REGION` env var, default to `us-east-1`, allow override via parameter.
 - **Client Factory:** Create reusable factory function:
+
   ```python
   def create_boto3_client(service_name: str, region_name: str, **kwargs) -> boto3.client:
       try:
@@ -306,19 +439,24 @@ uv sync
   ```
 
 ### Error Handling
+
 - **Specific Exceptions:** Catch `botocore.exceptions.ClientError`, `ResourceNotFoundError`, etc.
 - **Error Codes:** Check `e.response['Error']['Code']` for specific AWS errors.
 
 ### Pagination & Waiters
+
 - **Paginators:** Use for large result sets:
+
   ```python
   paginator = s3_client.get_paginator("list_objects_v2")
   for page in paginator.paginate(Bucket="my-bucket"):
       for obj in page.get("Contents", []):
           process(obj)
   ```
+
 - **NextToken:** Handle manually if paginator unavailable.
 - **Waiters:** Pause until resource is ready:
+
   ```python
   waiter = ec2_client.get_waiter("instance_running")
   waiter.wait(InstanceIds=["i-123456"])
@@ -327,6 +465,7 @@ uv sync
 ### Lambda Patterns
 
 **Global Scope Pattern (Recommended):**
+
 ```python
 import boto3
 import os
@@ -349,7 +488,8 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
     return {"statusCode": 200, "body": "Success"}
 ```
 
-** Anti-Patterns:**
+**Anti-Patterns:**
+
 ```python
 #  WRONG: Creates new client on every invocation (cold start penalty)
 def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
@@ -363,6 +503,7 @@ class S3Manager:
 ```
 
 **Cold Start Optimization:**
+
 ```python
 #  Lazy initialization for rarely-used clients
 _sns_client: Any = None
@@ -388,6 +529,7 @@ def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
 ```
 
 **AWS Lambda Powertools (Observability):**
+
 ```python
 from aws_lambda_powertools import Logger, Tracer, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
@@ -415,6 +557,7 @@ def process_items(items: list[str]) -> str:
 ```
 
 **Lambda Best Practices:**
+
 - **Handler Placement:** Place `lambda_handler` at end of file.
 - **Clients as Parameters:** Pass clients to functions (don't recreate inside functions).
 - **Correlation ID:** Use `context.aws_request_id` for tracing.
@@ -422,6 +565,7 @@ def process_items(items: list[str]) -> str:
 - **Dry-Run Mode:** Add flag to preview actions: `if event.get("dry_run"): logger.info(f"Would perform: {action}")`.
 
 ### Region Validation
+
 ```python
 def validate_region(region: str) -> str:
     """Validate AWS region against allowed list."""
@@ -438,14 +582,71 @@ def validate_region(region: str) -> str:
 ## 9) Testing & Quality
 
 - **pytest:** Write tests for reliability:
+
   ```python
   def test_parse():
       assert parse_input("123") == 123
   ```
+
 - **Mocking:** Use `unittest.mock.patch` or `pytest-mock` for external dependencies.
 - **Parameterized Tests:** Use `@pytest.mark.parametrize` for multiple inputs.
 - **Test-Driven Development (TDD):** Write tests before implementation where appropriate.
 - **Type Checking:** Run `ty check .` (fast, recommended) or `mypy --strict` (stable) to catch type errors.
+- **tox:** Use for testing automation across Python versions and environments:
+
+  ```bash
+  # Install
+  uv add --dev tox
+  # or
+  pip install tox
+
+  # Run all test environments
+  tox
+
+  # Run specific environment
+  tox -e py312
+  tox -e lint
+  tox -e format
+
+  # List available environments
+  tox -l
+
+  # Run in parallel
+  tox -p auto
+  ```
+
+  **Configuration (tox.ini or pyproject.toml):**
+
+  ```ini
+  # tox.ini
+  [tox]
+  envlist = py312,py313,lint,format
+  isolated_build = true
+
+  [testenv]
+  deps = pytest
+  commands = pytest
+
+  [testenv:lint]
+  deps = ruff,black,isort,bandit
+  commands =
+      ruff check .
+      black --check .
+      isort --check-only .
+      bandit -r . -ll
+
+  [testenv:format]
+  deps = black,isort
+  commands =
+      black .
+      isort .
+  ```
+
+  **Benefits:**
+  - Test across multiple Python versions automatically
+  - Run linting, formatting, and security checks in isolated environments
+  - CI/CD integration (runs same commands locally and in CI)
+  - Parallel execution for faster feedback
 
 ## 10) Data Handling & Integration
 
@@ -469,11 +670,13 @@ def validate_region(region: str) -> str:
 - **Separation of Concerns:** Use service/repository/handler pattern for layers.
 - **Dependency Injection:** Pass dependencies as parameters for testability.
 - **Plugin Architecture:** Enable extensions via registration:
+
   ```python
   plugins: dict[str, Callable] = {}
   def register_plugin(name: str, func: Callable) -> None:
       plugins[name] = func
   ```
+
 - **Configuration Management:** Use `configparser`, `os.environ`, or `.env` files.
 - **Feature Flags:** Implement toggles for gradual rollout.
 
@@ -482,6 +685,7 @@ def validate_region(region: str) -> str:
 Design patterns provide reusable solutions to common problems. Use them where they add clarity and maintainability - avoid forcing patterns where simple code suffices.
 
 ### Factory Method Pattern
+
 Creates objects without specifying their exact class. Useful when object creation logic is complex or varies based on input.
 
 ```python
@@ -510,6 +714,7 @@ class DatabaseFactory:
 ```
 
 ### Singleton Pattern
+
 Ensures a class has only one instance. Useful for managing shared resources like boto3 clients, database connections, or configuration objects.
 
 ```python
@@ -541,6 +746,7 @@ s3_client = aws_clients.get_client("s3", "us-east-1")
 ```
 
 ### Strategy Pattern
+
 Defines a family of interchangeable algorithms. Useful for multi-region AWS operations or varying behaviors based on environment.
 
 ```python
@@ -568,18 +774,22 @@ class DeploymentContext:
 ## 12) CLI & User Experience
 
 - **argparse:** Add CLI options:
+
   ```python
   parser = argparse.ArgumentParser()
   parser.add_argument("--dry-run", action="store_true")
   parser.add_argument("-v", "--verbose", action="count", default=0)
   ```
+
 - **typer:** Modern CLI framework (alternative to argparse).
 - **rich:** Rich text and progress bars:
+
   ```python
   from rich.console import Console
   console = Console()
   console.print("[bold green]Success![/bold green]")
   ```
+
 - **tqdm:** Progress bars: `for item in tqdm(items): process(item)`.
 - **colorama:** Colored output for diffs or status messages.
 
@@ -588,6 +798,7 @@ class DeploymentContext:
 ### Creating Installable Packages
 
 **Basic Package Structure:**
+
 ```
 my_utils/
  my_utils/
@@ -601,6 +812,7 @@ my_utils/
 ```
 
 **Modern Approach: pyproject.toml (Recommended):**
+
 ```toml
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
@@ -626,6 +838,7 @@ where = ["."]
 ```
 
 **Installation Commands (with uv):**
+
 ```bash
 # Initialize new project
 uv init my-project
@@ -651,6 +864,7 @@ uv publish
 ```
 
 **Legacy pip commands (if uv unavailable):**
+
 ```bash
 # Development mode (editable install)
 pip install -e .
@@ -663,6 +877,7 @@ pip install -e ".[dev]"
 ```
 
 **Best Practices:**
+
 - **Version Management**: Use semantic versioning (MAJOR.MINOR.PATCH)
 - **Dependencies**: Pin major versions, allow minor/patch updates (`boto3>=1.28.0,<2.0.0`)
 - **Entry Points**: Add CLI commands via `[project.scripts]` in `pyproject.toml`
@@ -672,6 +887,7 @@ pip install -e ".[dev]"
 ### Docker & CI/CD
 
 - **Docker:** Use multi-stage builds with `uv`:
+
   ```dockerfile
   FROM ghcr.io/astral-sh/uv:python3.12 AS builder
   WORKDIR /app
@@ -686,12 +902,14 @@ pip install -e ".[dev]"
   ENV PATH="/app/.venv/bin:$PATH"
   CMD ["python", "main.py"]
   ```
+
 - **Executables:** Use `PyInstaller` or `cx_Freeze` for standalone apps.
 - **CI/CD:** Automate with GitHub Actions, GitLab CI, etc.
 
 ## 14) Timestamps
 
 Use UTC-aware timestamps:
+
 ```python
 from datetime import datetime, timezone
 timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -700,6 +918,7 @@ timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 ## 15) Dry-Run Mode
 
 Simulate operations without executing:
+
 ```python
 def update_records(records: dict, dry_run: bool = False) -> None:
     if dry_run:
@@ -957,18 +1176,20 @@ if __name__ == "__main__":
 ## 19) Quick Reference Checklist
 
 Before finalizing code, verify:
+
 - [ ] Shebang line present with `uv`
 - [ ] Type hints on all functions/variables
 - [ ] Google-style docstrings
-- [ ] Imports grouped and sorted
+- [ ] Imports grouped and sorted (`isort` passes)
 - [ ] `if __name__ == "__main__":` guard
 - [ ] Logging configured
 - [ ] Input validation
 - [ ] Error handling (specific exceptions)
 - [ ] Security checks (SQL/shell sanitization)
 - [ ] Tests written (if applicable)
-- [ ] `black` and `ruff` pass
+- [ ] `black`, `isort`, and `ruff` pass
 - [ ] `pylint` score ≥ 9.0
+- [ ] `bandit` security scan passes (no high-severity issues)
 - [ ] Dry-run mode (if applicable)
 - [ ] No mutable default arguments
 - [ ] No bare `except:` clauses
@@ -980,40 +1201,51 @@ Before finalizing code, verify:
 Where appropriate, use these techniques:
 
 **Control Flow & Error Handling:**
+
 - `try-except-else-finally`, `match-case`, Custom exceptions, `exceptiongroup`, Assertions
 
 **String & Data Formatting:**
+
 - `f-strings` (with `!r` for debugging), Context managers, Comprehensions, Tuple unpacking
 
 **Type Safety & Validation:**
+
 - Type annotations (Python 3.14 built-ins), `Literal` types, `Pydantic` models, `dataclasses`, `protocols`, `ABC`
 
 **Functions & Decorators:**
+
 - `*args`/`**kwargs`, `@property`/`getter`/`setter`, Custom decorators with `functools.wraps`, `functools.cache`, `functools.partial`, `functools.singledispatch`, `functools.total_ordering`
 
 **Object-Oriented Programming:**
+
 - Classes with encapsulation, `dataclasses`, `MetaClasses`, `@classmethod`/`@staticmethod`, Magic methods, Inheritance/composition
 
 **Data Structures & Collections:**
+
 - `defaultdict`, `Counter`, `deque`, `enum`, Generators (`yield`), Deep/shallow copying
 
 **Performance & Concurrency:**
+
 - `itertools`, `asyncio`, `threading`, `multiprocessing`, `requests.Session()`
 
 **CLI & Configuration:**
+
 - `argparse`, `os.environ`, `configparser`, Dry-run mode
 
 **AWS & Cloud:**
+
 - `boto3` client configuration, Global scope for Lambda, Paginators/waiters, Error handling (`ClientError` codes), `aws_lambda_powertools`
 
 **Design Patterns:**
+
 - Factory method, Singleton, Strategy, Decorator
 
 **Testing & Quality:**
+
 - `pytest`, `unittest.mock`, Profiling (`cProfile`, `memory_profiler`)
 
 **Deployment:**
+
 - Package creation (`pyproject.toml`), Docker multi-stage builds, CI/CD automation
 
 ---
-

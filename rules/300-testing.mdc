@@ -63,6 +63,7 @@ files:
 ### Jest (JavaScript/TypeScript)
 
 #### Basic Test Structure
+
 ```typescript
 // user.test.ts
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
@@ -107,6 +108,7 @@ describe('UserService', () => {
 ```
 
 #### Table-Driven Tests
+
 ```typescript
 //  GOOD - Test multiple cases efficiently
 describe('calculateDiscount', () => {
@@ -122,6 +124,7 @@ describe('calculateDiscount', () => {
 ```
 
 #### Mocking
+
 ```typescript
 import { jest } from '@jest/globals';
 import { UserService } from './user-service';
@@ -159,6 +162,7 @@ describe('UserService with mocks', () => {
 ```
 
 #### Spy on Functions
+
 ```typescript
 import { jest } from '@jest/globals';
 
@@ -188,6 +192,7 @@ describe('Spy examples', () => {
 ### pytest (Python)
 
 #### Basic Test Structure
+
 ```python
 # test_user_service.py
 import pytest
@@ -227,6 +232,7 @@ class TestUserService:
 ```
 
 #### Parametrized Tests
+
 ```python
 #  GOOD - Test multiple cases efficiently
 import pytest
@@ -243,6 +249,7 @@ def test_calculate_discount(amount, rate, expected):
 ```
 
 #### Mocking with pytest
+
 ```python
 from unittest.mock import Mock, patch
 import pytest
@@ -284,11 +291,118 @@ class TestUserServiceWithMocks:
         assert user["created_at"] == fixed_time
 ```
 
+#### Testing Automation with tox
+
+`tox` automates testing across multiple Python versions and environments:
+
+**Installation:**
+
+```bash
+uv add --dev tox
+# or
+pip install tox
+```
+
+**Basic Usage:**
+
+```bash
+# Run all test environments
+tox
+
+# Run specific environment
+tox -e py312        # Python 3.12
+tox -e py313        # Python 3.13
+tox -e lint         # Linting checks
+tox -e format       # Formatting checks
+
+# List available environments
+tox -l
+
+# Run in parallel (faster)
+tox -p auto
+```
+
+**Configuration (tox.ini):**
+
+```ini
+[tox]
+envlist = py312,py313,lint,format,security
+isolated_build = true
+
+[testenv]
+deps =
+    pytest>=7.0
+    pytest-cov
+commands =
+    pytest --cov=src --cov-report=html
+
+[testenv:lint]
+deps =
+    ruff>=0.1.0
+    black>=23.0.0
+    isort>=5.13.0
+commands =
+    ruff check .
+    black --check .
+    isort --check-only .
+
+[testenv:format]
+deps =
+    black>=23.0.0
+    isort>=5.13.0
+commands =
+    black .
+    isort .
+
+[testenv:security]
+deps =
+    bandit>=1.7.0
+commands =
+    bandit -r src -ll
+```
+
+**Configuration (pyproject.toml):**
+
+```toml
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py312,py313,lint,format
+
+[testenv]
+deps = pytest
+commands = pytest
+
+[testenv:lint]
+deps = ruff,black,isort
+commands = ruff check . && black --check . && isort --check-only .
+"""
+```
+
+**Benefits:**
+
+- Test across multiple Python versions automatically
+- Isolated environments prevent dependency conflicts
+- Run linting, formatting, and security checks consistently
+- Same commands work locally and in CI/CD
+- Parallel execution speeds up test runs
+
+**CI/CD Integration:**
+
+```yaml
+# GitHub Actions example
+- name: Run tox
+  run: |
+    pip install tox
+    tox -p auto
+```
+
 ---
 
 ### Go Testing
 
 #### Basic Test Structure
+
 ```go
 // user_test.go
 package user
@@ -332,6 +446,7 @@ func TestCreateUser(t *testing.T) {
 ```
 
 #### Table-Driven Tests
+
 ```go
 //  GOOD - Idiomatic Go testing
 func TestCalculateDiscount(t *testing.T) {
@@ -357,6 +472,7 @@ func TestCalculateDiscount(t *testing.T) {
 ```
 
 #### Mocking with Interfaces
+
 ```go
 // Define interface for dependency
 type EmailService interface {
@@ -396,6 +512,7 @@ func TestCreateUserSendsWelcomeEmail(t *testing.T) {
 ### Database Integration Tests
 
 #### PostgreSQL with Testcontainers (Node.js)
+
 ```typescript
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
 import { Client } from 'pg';
@@ -452,6 +569,7 @@ describe('UserRepository Integration', () => {
 ```
 
 #### Python with pytest-postgresql
+
 ```python
 import pytest
 from user_repository import UserRepository
@@ -484,6 +602,7 @@ def test_insert_and_retrieve_user(user_repository):
 ### API Integration Tests
 
 #### FastAPI (Python)
+
 ```python
 from fastapi.testclient import TestClient
 from main import app
@@ -527,6 +646,7 @@ def test_get_nonexistent_user_returns_404():
 ```
 
 #### Express (Node.js)
+
 ```typescript
 import request from 'supertest';
 import { app } from './app';
@@ -585,6 +705,7 @@ describe('User API Integration', () => {
 ## End-to-End (E2E) Testing
 
 ### Playwright (Modern, Recommended)
+
 ```typescript
 // e2e/user-flow.spec.ts
 import { test, expect } from '@playwright/test';
@@ -636,6 +757,7 @@ test('homepage should look correct', async ({ page }) => {
 ```
 
 ### Playwright Configuration
+
 ```typescript
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
@@ -675,6 +797,7 @@ export default defineConfig({
 ## Test Coverage
 
 ### Jest Coverage
+
 ```json
 {
   "jest": {
@@ -699,6 +822,7 @@ export default defineConfig({
 ```
 
 ### pytest Coverage
+
 ```ini
 # pytest.ini
 [pytest]
@@ -710,6 +834,7 @@ addopts =
 ```
 
 ### Go Coverage
+
 ```bash
 # Run tests with coverage
 go test -cover ./...
@@ -728,6 +853,7 @@ go test -coverprofile=coverage.out ./... && \
 ## CI/CD Integration
 
 ### GitHub Actions - Full Test Suite
+
 ```yaml
 name: Test Suite
 
@@ -833,6 +959,7 @@ jobs:
 ## Best Practices
 
 ### Test Naming Conventions
+
 ```typescript
 //  GOOD - Descriptive test names
 describe('UserService', () => {
@@ -852,6 +979,7 @@ describe('UserService', () => {
 ```
 
 ### AAA Pattern (Arrange, Act, Assert)
+
 ```typescript
 it('should calculate total price with discount', () => {
   // Arrange
@@ -869,6 +997,7 @@ it('should calculate total price with discount', () => {
 ```
 
 ### Test Independence
+
 ```typescript
 //  GOOD - Each test is independent
 describe('UserService', () => {

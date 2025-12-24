@@ -32,9 +32,11 @@ files:
 ### A01: Broken Access Control
 
 #### Problem
+
 Users can access resources they shouldn't be able to access.
 
 #### Prevention
+
 ```typescript
 //  BAD - No authorization check
 app.get('/api/users/:id', async (req, res) => {
@@ -70,6 +72,7 @@ app.get('/api/users/:id',
 ```
 
 #### Python Example
+
 ```python
 from functools import wraps
 from flask import abort, g
@@ -97,11 +100,13 @@ def get_user(user_id):
 ### A02: Cryptographic Failures
 
 #### Problem
+
 Sensitive data exposed due to weak or missing encryption.
 
 #### Prevention
 
 **Store Passwords Securely**
+
 ```typescript
 import bcrypt from 'bcrypt';
 
@@ -120,6 +125,7 @@ const user = { email: 'user@acme.com', password: 'secretPassword' };
 ```
 
 **Encrypt Sensitive Data at Rest**
+
 ```typescript
 import crypto from 'crypto';
 
@@ -154,6 +160,7 @@ function decrypt(encryptedData: string, key: string): string {
 ```
 
 **Use HTTPS Everywhere**
+
 ```typescript
 //  GOOD - Force HTTPS
 import helmet from 'helmet';
@@ -172,9 +179,11 @@ app.use(helmet.hsts({
 ### A03: Injection
 
 #### Problem
+
 Untrusted data sent to interpreter as part of command or query.
 
 #### SQL Injection Prevention
+
 ```typescript
 //  BAD - SQL injection vulnerability
 app.get('/api/users', async (req, res) => {
@@ -207,6 +216,7 @@ app.get('/api/users', async (req, res) => {
 ```
 
 #### Python SQL Injection Prevention
+
 ```python
 import psycopg2
 
@@ -231,6 +241,7 @@ def get_user_by_name(session: Session, name: str):
 ```
 
 #### Command Injection Prevention
+
 ```typescript
 //  BAD - Command injection vulnerability
 import { exec } from 'child_process';
@@ -272,11 +283,13 @@ app.post('/api/ping', (req, res) => {
 ### A04: Insecure Design
 
 #### Problem
+
 Missing or ineffective security controls by design.
 
 #### Prevention
 
 **Rate Limiting**
+
 ```typescript
 import rateLimit from 'express-rate-limit';
 
@@ -303,6 +316,7 @@ app.use('/api/', globalLimiter);
 ```
 
 **Input Validation**
+
 ```typescript
 import { z } from 'zod';
 
@@ -336,11 +350,13 @@ app.post('/api/users', async (req, res) => {
 ### A05: Security Misconfiguration
 
 #### Problem
+
 Insecure default configurations, incomplete configurations, open cloud storage.
 
 #### Prevention
 
 **Security Headers**
+
 ```typescript
 import helmet from 'helmet';
 
@@ -380,6 +396,7 @@ app.use(cors({
 ```
 
 **Disable Debug Mode in Production**
+
 ```typescript
 //  GOOD - Environment-based configuration
 const app = express();
@@ -420,11 +437,13 @@ app.use((err, req, res, next) => {
 ### A06: Vulnerable and Outdated Components
 
 #### Problem
+
 Using components with known vulnerabilities.
 
 #### Prevention
 
 **Regular Dependency Updates**
+
 ```bash
 # Check for vulnerabilities
 npm audit
@@ -445,6 +464,7 @@ updates:
 ```
 
 **Lock File Scanning**
+
 ```yaml
 # GitHub Actions - Vulnerability scanning
 name: Security Scan
@@ -479,11 +499,13 @@ jobs:
 ### A07: Identification and Authentication Failures
 
 #### Problem
+
 Weak authentication, session management issues.
 
 #### Prevention
 
 **Strong Password Requirements**
+
 ```typescript
 import { z } from 'zod';
 
@@ -501,6 +523,7 @@ function validatePassword(password: string): boolean {
 ```
 
 **Secure Session Management**
+
 ```typescript
 import session from 'express-session';
 import RedisStore from 'connect-redis';
@@ -526,6 +549,7 @@ app.use(session({
 ```
 
 **Multi-Factor Authentication**
+
 ```typescript
 import speakeasy from 'speakeasy';
 import QRCode from 'qrcode';
@@ -585,11 +609,13 @@ app.post('/api/login', async (req, res) => {
 ### A08: Software and Data Integrity Failures
 
 #### Problem
+
 Code and infrastructure that does not protect against integrity violations.
 
 #### Prevention
 
 **Verify Package Integrity**
+
 ```bash
 # Use package lock files
 npm ci  # Install exact versions from package-lock.json
@@ -606,6 +632,7 @@ npm install --ignore-scripts  # Prevent post-install scripts
 ```
 
 **Sign Releases**
+
 ```bash
 # Sign Docker images with Cosign
 cosign sign --key cosign.key acme.com/app:v1.0.0
@@ -626,11 +653,13 @@ git config --global tag.gpgsign true
 ### A09: Security Logging and Monitoring Failures
 
 #### Problem
+
 Insufficient logging and monitoring, inadequate response to incidents.
 
 #### Prevention
 
 **Comprehensive Logging**
+
 ```typescript
 import winston from 'winston';
 
@@ -683,6 +712,7 @@ app.post('/api/login', async (req, res) => {
 ```
 
 **Monitor for Suspicious Activity**
+
 ```typescript
 // Track failed login attempts
 const failedAttempts = new Map<string, number>();
@@ -715,9 +745,11 @@ function clearFailedAttempts(email: string) {
 ### A10: Server-Side Request Forgery (SSRF)
 
 #### Problem
+
 Application fetches remote resource without validating user-supplied URL.
 
 #### Prevention
+
 ```typescript
 import { URL } from 'url';
 
@@ -792,6 +824,7 @@ app.post('/api/fetch', async (req, res) => {
 ## Secret Management
 
 ### Environment Variables
+
 ```bash
 # .env (NEVER commit this file)
 DATABASE_URL=postgresql://user:password@localhost:5432/mydb
@@ -807,6 +840,7 @@ AWS_SECRET_ACCESS_KEY=your-aws-secret-key
 ```
 
 ### AWS Secrets Manager
+
 ```typescript
 import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 
@@ -830,6 +864,7 @@ const dbPassword = await getSecret('prod/database/password');
 ```
 
 ### HashiCorp Vault
+
 ```typescript
 import vault from 'node-vault';
 
@@ -858,6 +893,7 @@ const dbPassword = secrets.password;
 ## Security Scanning Tools
 
 ### Pre-Commit Hooks
+
 ```yaml
 # .pre-commit-config.yaml
 repos:
@@ -882,6 +918,7 @@ repos:
 ```
 
 ### CI/CD Security Scanning
+
 ```yaml
 # .github/workflows/security.yml
 name: Security Scan
@@ -916,6 +953,8 @@ jobs:
         run: |
           pip install bandit
           bandit -r . -f json -o bandit-report.json
+          # Or with severity/confidence filters:
+          # bandit -r . -ll -ii  # Low severity, medium confidence
 ```
 
 ---
