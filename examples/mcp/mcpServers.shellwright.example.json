@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "shellwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@dwmkerr/shellwright"],
+      "env": {
+        "THEME": "${env:THEME}",
+        "FONT_SIZE": "${env:FONT_SIZE}",
+        "FONT_FAMILY": "${env:FONT_FAMILY}",
+        "TEMP_DIR": "${env:TEMP_DIR}"
+      },
+      "metadata": {
+        "title": "Shellwright",
+        "description": "Terminal automation, screenshots, and GIF recording for AI agents"
+      }
+    }
+  }
+}

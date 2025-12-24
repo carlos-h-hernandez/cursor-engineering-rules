@@ -91,7 +91,7 @@ See [scripts/README.md](scripts/README.md) for details.
 Workflow commands for explicit phase transitions. Type `/command` in Cursor chat to trigger.
 
 | Command | Purpose |
-|---------|---------|
+| --- | --- |
 | `/init` | Initialize task - analyze project, detect complexity |
 | `/plan` | Enter planning phase - analyze, design, document approach |
 | `/creative` | Enter creative phase - explore design options for complex tasks |
@@ -178,7 +178,7 @@ ln -s /path/to/cursor-engineering-rules/rules .cursor/rules
 **Rules that auto-load (`alwaysApply: true`):**
 
 | Rule | Purpose |
-|------|---------|
+| --- | --- |
 | `050-workflow.mdc` | Plan/Build/Review workflow |
 | `060-agent-audit.mdc` | Agent audit requirements |
 | `100-core.mdc` | Core coding standards |
@@ -401,6 +401,7 @@ This project was inspired by and incorporates patterns from:
 
 - **AI Developer Guide**: <https://github.com/dwmkerr/ai-developer-guide> - Workflow patterns and context management
 - **Cursor Memory Bank**: <https://github.com/vanzan01/cursor-memory-bank> - Context file management patterns
+- **Shellwright**: <https://github.com/dwmkerr/shellwright> - Terminal automation MCP server patterns and PTY session management
 
 Thanks to [@DaKaZ](https://github.com/DaKaZ) for suggesting the commands-based workflow approach.
 
@@ -411,6 +412,7 @@ Thanks to [@DaKaZ](https://github.com/DaKaZ) for suggesting the commands-based w
 - [dotcursorrules.com](https://dotcursorrules.com/) - Community directory of framework-specific cursor rules (Next.js, Laravel, React, etc.). Use dotcursorrules for **framework recipes** and this repo for **engineering discipline**.
 - [ACE-FCA](https://github.com/humanlayer/advanced-context-engineering-for-coding-agents) - Advanced Context Engineering for Coding Agents. Excellent methodology on context management, "frequent intentional compaction", and Research -> Plan -> Implement workflows.
 - [Cursor Memory Bank](https://github.com/vanzan01/cursor-memory-bank) - Command-based workflow system using Cursor's `/commands` feature for progressive rule loading.
+- [Shellwright](https://github.com/dwmkerr/shellwright) - Playwright for the shell. MCP server for terminal automation, screenshots, and GIF recording. Excellent example of MCP server implementation with PTY session management.
 - [eslint-config-airbnb](https://github.com/airbnb/javascript) - JavaScript style guide
 - [google-styleguides](https://github.com/google/styleguide) - Google's style guides
 - [uber-go-guide](https://github.com/uber-go/guide) - Uber's Go style guide

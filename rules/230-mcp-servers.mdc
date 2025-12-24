@@ -692,6 +692,10 @@ When reviewing MCP tool code, check:
 - [MCP joins Linux Foundation](https://github.blog/open-source/maintainers/mcp-joins-the-linux-foundation-what-this-means-for-developers-building-the-next-era-of-ai-tools-and-agents/)
 - [MCP SDK (TypeScript/Python)](https://github.com/modelcontextprotocol/sdk)
 
+### Reference Implementations
+
+- **[Shellwright](https://github.com/dwmkerr/shellwright)** (`@dwmkerr/shellwright`) - Terminal automation MCP server demonstrating PTY session management, terminal rendering (SVG/PNG/GIF), HTTP file serving, and comprehensive tool documentation patterns. Excellent example of building MCP servers that interact with system processes.
+
 ---
 
 **Purpose**: MCP server patterns, OAuth, long-running tasks, security, and registry publishing
