@@ -16,6 +16,90 @@ files:
 
 **Goal:** Build secure, scalable, maintainable AWS infrastructure following best practices for Platform Engineering, Zero Trust, and EKS.
 
+## AWS Engineering Philosophy
+
+**Guiding Principles:**
+
+- **Security First**: Zero Trust architecture, least privilege, defense in depth, encryption everywhere
+- **Infrastructure as Code**: All infrastructure defined in code (Terraform, CloudFormation, CDK); no manual changes
+- **Observability**: Comprehensive logging, metrics, and tracing; monitor everything
+- **Cost Optimization**: Right-sizing, reserved instances, spot instances; measure and optimize continuously
+- **Disaster Recovery**: Multi-region, backups, failover strategies; test regularly
+- **Automation**: Automate everything possible; reduce toil, increase reliability
+- **Scalability**: Design for growth; horizontal scaling preferred over vertical
+
+**Core Tenets:**
+
+1. **Zero Trust**: Never trust, always verify. Every request authenticated and authorized
+2. **Least Privilege**: Grant minimum permissions necessary; review regularly
+3. **Defense in Depth**: Multiple security layers; don't rely on single controls
+4. **Fail Securely**: Default deny; explicit allow; fail closed, not open
+5. **Immutable Infrastructure**: Replace, don't patch; version everything
+6. **Idempotency**: Operations should be safe to repeat; infrastructure as code ensures this
+
+**Applying AWS Philosophy:**
+
+```hcl
+# BAD: Trusting network boundaries
+resource "aws_security_group" "app" {
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Trusting all IPs
+  }
+}
+
+# GOOD: Zero Trust - explicit allowlist
+resource "aws_security_group" "app" {
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.lb.id]  # Only from load balancer
+  }
+}
+
+# BAD: Overly permissive IAM
+resource "aws_iam_role_policy" "app" {
+  policy = jsonencode({
+    Statement = [{
+      Effect   = "Allow"
+      Action   = "s3:*"  # Too broad
+      Resource = "*"
+    }]
+  })
+}
+
+# GOOD: Least privilege
+resource "aws_iam_role_policy" "app" {
+  policy = jsonencode({
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ]
+      Resource = [
+        aws_s3_bucket.data.arn,
+        "${aws_s3_bucket.data.arn}/*"
+      ]
+    }]
+  })
+}
+
+# BAD: Manual changes (not idempotent)
+# Manual: Created RDS instance via console
+
+# GOOD: Infrastructure as Code (idempotent)
+resource "aws_db_instance" "main" {
+  identifier     = "app-db"
+  engine         = "postgres"
+  instance_class = "db.t3.medium"
+  # ... Terraform manages state
+}
+```
+
 ## Core Principles
 
 - **Security First**: Zero Trust architecture, least privilege, defense in depth
@@ -1033,6 +1117,899 @@ resource "aws_db_instance" "main" {
 }
 ```
 
+## Advanced Patterns
+
+### Multi-Account Architecture
+
+**Pattern:** Organize resources across multiple AWS accounts for isolation and security.
+
+```hcl
+# Organization structure
+# - Management Account (billing, SSO)
+# - Security Account (centralized logging, security tools)
+# - Network Account (shared VPC, Transit Gateway)
+# - Application Accounts (dev, staging, prod)
+
+# Cross-account access with VPC Lattice
+resource "aws_ram_resource_share" "lattice" {
+  name                      = "cross-account-lattice"
+  allow_external_principals = false
+}
+
+resource "aws_ram_principal_association" "app_account" {
+  principal          = "123456789012"  # Application account
+  resource_share_arn = aws_ram_resource_share.lattice.arn
+}
+```
+
+### Service Mesh Integration
+
+**Pattern:** Use AWS App Mesh or Istio for service-to-service communication.
+
+```hcl
+# App Mesh Virtual Service
+resource "aws_appmesh_virtual_service" "api" {
+  name      = "api-service"
+  mesh_name = aws_appmesh_mesh.main.name
+
+  spec {
+    provider {
+      virtual_node {
+        virtual_node_name = aws_appmesh_virtual_node.api.name
+      }
+    }
+  }
+}
+```
+
+### Event-Driven Architecture
+
+**Pattern:** Use EventBridge for decoupled, event-driven workflows.
+
+```hcl
+# EventBridge Rule
+resource "aws_cloudwatch_event_rule" "order_created" {
+  name        = "order-created"
+  description  = "Trigger on order creation"
+
+  event_pattern = jsonencode({
+    source      = ["order-service"]
+    detail-type = ["Order Created"]
+  })
+}
+
+resource "aws_cloudwatch_event_target" "process_order" {
+  rule      = aws_cloudwatch_event_rule.order_created.name
+  target_id = "ProcessOrder"
+  arn       = aws_lambda_function.process_order.arn
+}
+```
+
+### Blue-Green Deployments
+
+**Pattern:** Zero-downtime deployments with ECS/EKS.
+
+```hcl
+# ECS Blue-Green Deployment
+resource "aws_codedeploy_app" "ecs_app" {
+  compute_platform = "ECS"
+  name             = "my-ecs-app"
+}
+
+resource "aws_codedeploy_deployment_group" "ecs" {
+  app_name              = aws_codedeploy_app.ecs_app.name
+  deployment_group_name = "production"
+  service_role_arn      = aws_iam_role.codedeploy.arn
+
+  ecs_service {
+    cluster_name = aws_ecs_cluster.main.name
+    service_name = aws_ecs_service.main.name
+  }
+
+  blue_green_deployment_config {
+    deployment_ready_option {
+      action_on_timeout = "CONTINUE_DEPLOYMENT"
+    }
+
+    green_fleet_provisioning_option {
+      action = "COPY_AUTO_SCALING_GROUP"
+    }
+
+    terminate_blue_instances_on_deployment_success {
+      action = "TERMINATE"
+      termination_wait_time_in_minutes = 5
+    }
+  }
+}
+```
+
+### Multi-Region Active-Active
+
+**Pattern:** Deploy applications across multiple regions for high availability.
+
+```hcl
+# Primary region
+module "app_us_east_1" {
+  source = "./modules/app"
+  providers = {
+    aws = aws.us_east_1
+  }
+  region = "us-east-1"
+}
+
+# Secondary region
+module "app_us_west_2" {
+  source = "./modules/app"
+  providers = {
+    aws = aws.us_west_2
+  }
+  region = "us-west-2"
+}
+
+# Route53 health checks for failover
+resource "aws_route53_health_check" "primary" {
+  fqdn              = "app-primary.acme.com"
+  port              = 443
+  type              = "HTTPS"
+  resource_path     = "/health"
+  failure_threshold = 3
+  request_interval  = 30
+}
+
+resource "aws_route53_record" "app" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "app.acme.com"
+  type    = "A"
+
+  failover_routing_policy {
+    type = "PRIMARY"
+  }
+
+  set_identifier = "primary"
+  health_check_id = aws_route53_health_check.primary.id
+  records        = [module.app_us_east_1.alb_dns_name]
+}
+```
+
+## Performance Optimization
+
+### EKS Cluster Optimization
+
+**Optimize cluster performance:**
+
+```hcl
+# Use Fargate for serverless workloads
+resource "aws_eks_fargate_profile" "app" {
+  cluster_name           = aws_eks_cluster.main.name
+  fargate_profile_name   = "app"
+  pod_execution_role_arn = aws_iam_role.fargate.arn
+  subnet_ids             = aws_subnet.private[*].id
+
+  selector {
+    namespace = "app"
+    labels = {
+      workload = "serverless"
+    }
+  }
+}
+
+# Use Karpenter for dynamic node provisioning
+resource "aws_eks_addon" "karpenter" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name  = "karpenter"
+}
+```
+
+### Database Optimization
+
+**Optimize RDS performance:**
+
+```hcl
+# Read replicas for read-heavy workloads
+resource "aws_db_instance" "replica" {
+  identifier              = "app-db-replica"
+  replicate_source_db     = aws_db_instance.main.identifier
+  instance_class          = "db.t3.medium"
+  publicly_accessible    = false
+  vpc_security_group_ids  = [aws_security_group.db.id]
+  db_subnet_group_name    = aws_db_subnet_group.db.name
+
+  performance_insights_enabled = true
+  performance_insights_retention_period = 7
+}
+
+# Connection pooling with RDS Proxy
+resource "aws_db_proxy" "main" {
+  name                   = "app-db-proxy"
+  engine_family          = "POSTGRESQL"
+  vpc_subnet_ids         = aws_subnet.private[*].id
+  vpc_security_group_ids = [aws_security_group.db_proxy.id]
+
+  auth {
+    auth_scheme = "SECRETS"
+    secret_arn  = aws_secretsmanager_secret.db_credentials.arn
+  }
+}
+```
+
+### S3 Performance Optimization
+
+**Optimize S3 access patterns:**
+
+```hcl
+# S3 Transfer Acceleration
+resource "aws_s3_bucket" "data" {
+  bucket = "app-data-${var.environment}"
+}
+
+resource "aws_s3_bucket_accelerate_configuration" "data" {
+  bucket = aws_s3_bucket.data.id
+  status = "Enabled"
+}
+
+# S3 Intelligent-Tiering for cost optimization
+resource "aws_s3_bucket_intelligent_tiering_configuration" "data" {
+  bucket = aws_s3_bucket.data.id
+  name   = "data-tiering"
+
+  filter {
+    prefix = "archive/"
+  }
+
+  tiering {
+    access_tier = "ARCHIVE_ACCESS"
+    days        = 90
+  }
+
+  tiering {
+    access_tier = "DEEP_ARCHIVE_ACCESS"
+    days        = 180
+  }
+}
+```
+
+### Lambda Optimization
+
+**Optimize Lambda performance:**
+
+```hcl
+# Provisioned concurrency for predictable workloads
+resource "aws_lambda_provisioned_concurrency_config" "api" {
+  function_name                     = aws_lambda_function.api.function_name
+  qualifier                         = aws_lambda_function.api.version
+  provisioned_concurrent_executions = 10
+}
+
+# Reserved concurrency to prevent overconsumption
+resource "aws_lambda_function" "api" {
+  function_name = "api-handler"
+  runtime       = "python3.12"
+  handler       = "index.handler"
+
+  reserved_concurrent_executions = 100  # Limit concurrent executions
+}
+
+# Use Lambda SnapStart for Java (faster cold starts)
+resource "aws_lambda_function" "java_api" {
+  function_name = "java-api"
+  runtime       = "java17"
+  handler       = "com.example.Handler"
+
+  snap_start {
+    apply_on = "PublishedVersions"
+  }
+}
+```
+
+## Testing Strategies
+
+### Infrastructure Testing with Terratest
+
+**Test Terraform modules:**
+
+```go
+package test
+
+import (
+    "testing"
+    "github.com/gruntwork-io/terratest/modules/terraform"
+    "github.com/stretchr/testify/assert"
+)
+
+func TestEKSCluster(t *testing.T) {
+    terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+        TerraformDir: "../modules/eks-cluster",
+        Vars: map[string]interface{}{
+            "cluster_name": "test-cluster",
+            "vpc_id":       "vpc-12345",
+        },
+    })
+
+    defer terraform.Destroy(t, terraformOptions)
+    terraform.InitAndApply(t, terraformOptions)
+
+    clusterName := terraform.Output(t, terraformOptions, "cluster_name")
+    assert.Equal(t, "test-cluster", clusterName)
+}
+```
+
+### Integration Testing
+
+**Test infrastructure integration:**
+
+```bash
+#!/bin/bash
+# scripts/test-infrastructure.sh
+
+set -euo pipefail
+
+# Test VPC connectivity
+aws ec2 describe-vpcs --vpc-ids "$VPC_ID" || exit 1
+
+# Test EKS cluster access
+kubectl get nodes --context "$EKS_CONTEXT" || exit 1
+
+# Test RDS connectivity
+psql -h "$RDS_ENDPOINT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1" || exit 1
+
+# Test S3 access
+aws s3 ls "s3://$S3_BUCKET" || exit 1
+
+echo "All infrastructure tests passed"
+```
+
+### Load Testing
+
+**Test application performance:**
+
+```yaml
+# k6 load test
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '2m', target: 100 },
+    { duration: '5m', target: 100 },
+    { duration: '2m', target: 200 },
+    { duration: '5m', target: 200 },
+    { duration: '2m', target: 0 },
+  ],
+};
+
+export default function () {
+  const response = http.get('https://api.acme.com/health');
+  check(response, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 500ms': (r) => r.timings.duration < 500,
+  });
+}
+```
+
+## Troubleshooting & Debugging
+
+### EKS Cluster Issues
+
+**Pod Not Starting:**
+
+```bash
+# Check pod events
+kubectl describe pod <pod-name> -n <namespace>
+
+# Check node capacity
+kubectl top nodes
+
+# Check resource quotas
+kubectl describe quota -n <namespace>
+
+# Check node group status
+aws eks describe-nodegroup \
+  --cluster-name <cluster-name> \
+  --nodegroup-name <nodegroup-name>
+```
+
+**Pod Identity Not Working:**
+
+```bash
+# Verify Pod Identity association
+aws eks describe-pod-identity-association \
+  --cluster-name <cluster-name> \
+  --association-id <association-id>
+
+# Check service account
+kubectl describe serviceaccount <sa-name> -n <namespace>
+
+# Test credentials in pod
+kubectl exec -it <pod-name> -n <namespace> -- \
+  aws sts get-caller-identity
+```
+
+### VPC Lattice Issues
+
+**Service Not Accessible:**
+
+```bash
+# Check service network association
+aws vpclattice get-service-network \
+  --service-network-identifier <network-id>
+
+# Check service association
+aws vpclattice get-service \
+  --service-identifier <service-id>
+
+# Check target group health
+aws vpclattice get-target-group \
+  --target-group-identifier <tg-id>
+
+# Test connectivity
+curl -v https://<service-dns-name>
+```
+
+### RDS Connection Issues
+
+**Connection Timeout:**
+
+```bash
+# Check security groups
+aws ec2 describe-security-groups \
+  --group-ids <sg-id>
+
+# Check subnet group
+aws rds describe-db-subnet-groups \
+  --db-subnet-group-name <subnet-group-name>
+
+# Test connectivity from EC2
+psql -h <rds-endpoint> -U <user> -d <database>
+```
+
+### Cost Optimization Issues
+
+**Unexpected Costs:**
+
+```bash
+# Analyze costs by service
+aws ce get-cost-and-usage \
+  --time-period Start=2024-01-01,End=2024-01-31 \
+  --granularity MONTHLY \
+  --metrics BlendedCost \
+  --group-by Type=SERVICE
+
+# Find unused resources
+aws ec2 describe-instances --filters "Name=instance-state-name,Values=stopped"
+aws rds describe-db-instances --query 'DBInstances[?DBInstanceStatus==`stopped`]'
+```
+
+## Comprehensive Example: Production EKS Platform
+
+**Scenario:** Build a production-ready EKS platform with Zero Trust, VPC Lattice, and comprehensive observability.
+
+### Complete Terraform Configuration
+
+```hcl
+# terraform/aws-platform/main.tf
+
+terraform {
+  required_version = ">= 1.5"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+
+  backend "s3" {
+    bucket = "terraform-state-acme"
+    key    = "platform/production/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "production"
+}
+
+variable "cluster_name" {
+  description = "EKS cluster name"
+  type        = string
+  default     = "platform-cluster"
+}
+
+variable "vpc_cidr" {
+  description = "VPC CIDR block"
+  type        = string
+  default     = "10.16.0.0/16"
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+data "aws_caller_identity" "current" {}
+
+# VPC with Zero Trust (private subnets only)
+module "vpc" {
+  source = "./modules/vpc"
+
+  name            = "${var.cluster_name}-vpc"
+  cidr            = var.vpc_cidr
+  azs             = slice(data.aws_availability_zones.available.names, 0, 3)
+  private_subnets = [for i in range(3) : cidrsubnet(var.vpc_cidr, 8, i)]
+
+  enable_nat_gateway = false  # Zero Trust - no internet gateway
+  enable_vpn_gateway = true    # VPN for access
+
+  tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+  }
+}
+
+# VPC Lattice Service Network
+resource "aws_vpclattice_service_network" "platform" {
+  name      = "platform-services"
+  auth_type = "AWS_IAM"
+
+  tags = {
+    Name        = "platform-services-network"
+    Environment = var.environment
+  }
+}
+
+# Associate VPCs to Service Network
+resource "aws_vpclattice_service_network_vpc_association" "main" {
+  service_network_identifier = aws_vpclattice_service_network.platform.id
+  vpc_identifier             = module.vpc.vpc_id
+
+  security_group_ids = [aws_security_group.lattice.id]
+}
+
+# EKS Cluster
+module "eks" {
+  source = "./modules/eks-cluster"
+
+  cluster_name    = var.cluster_name
+  vpc_id         = module.vpc.vpc_id
+  subnet_ids     = module.vpc.private_subnets
+  cluster_version = "1.28"
+
+  # Zero Trust: Private endpoint only
+  endpoint_private_access = true
+  endpoint_public_access  = false
+
+  # Enable Pod Identity
+  enable_pod_identity = true
+
+  # Encryption
+  enable_encryption = true
+  kms_key_id       = aws_kms_key.eks.arn
+
+  # Logging
+  enabled_cluster_log_types = [
+    "api",
+    "audit",
+    "authenticator",
+    "controllerManager",
+    "scheduler"
+  ]
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# KMS Key for EKS Encryption
+resource "aws_kms_key" "eks" {
+  description             = "KMS key for EKS cluster encryption"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+
+  tags = {
+    Name = "eks-encryption-key"
+  }
+}
+
+# Pod Identity for Application
+resource "aws_eks_pod_identity_association" "app" {
+  cluster_name    = module.eks.cluster_name
+  namespace       = "default"
+  service_account = "app"
+  role_arn        = aws_iam_role.app_pod_identity.arn
+}
+
+resource "aws_iam_role" "app_pod_identity" {
+  name = "${var.cluster_name}-app-pod-identity"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "pods.eks.amazonaws.com"
+      }
+      Action = "sts:AssumeRole"
+      Condition = {
+        StringEquals = {
+          "eks:cluster-name" = module.eks.cluster_name
+        }
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "app_s3_access" {
+  name = "app-s3-access"
+  role = aws_iam_role.app_pod_identity.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ]
+      Resource = [
+        aws_s3_bucket.app_data.arn,
+        "${aws_s3_bucket.app_data.arn}/*"
+      ]
+    }]
+  })
+}
+
+# S3 Bucket for Application Data
+resource "aws_s3_bucket" "app_data" {
+  bucket = "${var.cluster_name}-app-data-${data.aws_caller_identity.current.account_id}"
+
+  tags = {
+    Name        = "app-data"
+    Environment = var.environment
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "app_data" {
+  bucket = aws_s3_bucket.app_data.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.s3.arn
+    }
+  }
+}
+
+resource "aws_kms_key" "s3" {
+  description             = "KMS key for S3 encryption"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+}
+
+# VPC Endpoints for AWS Services
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = module.vpc.vpc_id
+  service_name      = "com.amazonaws.${var.aws_region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = module.vpc.private_route_table_ids
+
+  tags = {
+    Name = "s3-endpoint"
+  }
+}
+
+resource "aws_vpc_endpoint" "ecr" {
+  vpc_id              = module.vpc.vpc_id
+  service_name        = "com.amazonaws.${var.aws_region}.ecr.dkr"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = module.vpc.private_subnets
+  security_group_ids  = [aws_security_group.vpc_endpoint.id]
+
+  tags = {
+    Name = "ecr-endpoint"
+  }
+}
+
+# CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "eks_cluster" {
+  name              = "/aws/eks/${var.cluster_name}/cluster"
+  retention_in_days = 30
+  kms_key_id        = aws_kms_key.logs.arn
+}
+
+resource "aws_kms_key" "logs" {
+  description             = "KMS key for CloudWatch logs"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+}
+
+# Security Group for VPC Lattice
+resource "aws_security_group" "lattice" {
+  name_prefix = "lattice-"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "lattice-sg"
+  }
+}
+
+# Outputs
+output "cluster_name" {
+  value = module.eks.cluster_name
+}
+
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+
+output "service_network_arn" {
+  value = aws_vpclattice_service_network.platform.arn
+}
+```
+
+### Kubernetes Manifests
+
+```yaml
+# k8s/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app
+  namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/platform-cluster-app-pod-identity
+---
+# k8s/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      serviceAccountName: app
+      containers:
+      - name: app
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/app:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: S3_BUCKET
+          value: "platform-cluster-app-data-123456789012"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+# k8s/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "external"
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+    service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: api
+```
+
+### Monitoring & Alerting
+
+```hcl
+# CloudWatch Alarms
+resource "aws_cloudwatch_metric_alarm" "high_cpu" {
+  alarm_name          = "${var.cluster_name}-high-cpu"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EKS"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 80
+  alarm_description   = "Alert when CPU exceeds 80%"
+
+  dimensions = {
+    ClusterName = module.eks.cluster_name
+  }
+
+  alarm_actions = [aws_sns_topic.alerts.arn]
+}
+
+resource "aws_sns_topic" "alerts" {
+  name = "${var.cluster_name}-alerts"
+}
+
+resource "aws_sns_topic_subscription" "email" {
+  topic_arn = aws_sns_topic.alerts.arn
+  protocol  = "email"
+  endpoint  = "oncall@acme.com"
+}
+```
+
+### CI/CD Pipeline
+
+```yaml
+# .github/workflows/deploy-platform.yml
+name: Deploy AWS Platform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/aws-platform/**'
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Plan
+        run: |
+          cd terraform/aws-platform
+          terraform plan -out=tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy:
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply
+        run: |
+          cd terraform/aws-platform
+          terraform apply tfplan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+```
+
+---
+
 ## Cloudflare Integration
 
 ### DNS Management
@@ -1051,7 +2028,7 @@ resource "aws_db_instance" "main" {
 - Bot management
 - Custom rules
 
-See `250-cloudflare.mdc` for detailed Cloudflare patterns.
+See `400-cloudflare.mdc` for detailed Cloudflare patterns.
 
 ## Review Checklist
 
@@ -1065,7 +2042,6 @@ When reviewing AWS infrastructure, check:
 - [ ] EKS cluster is properly configured
 - [ ] **Pod Identity used for pod AWS access** (preferred over IRSA for EKS 1.24+)
 - [ ] **VPC Lattice configured** for cross-VPC/service communication (Zero Trust)
-- [ ] VPC Lattice configured for cross-VPC/service communication
 - [ ] Observability configured (CloudWatch, logs, metrics)
 - [ ] Cost optimization applied (right-sizing, spot instances)
 - [ ] Disaster recovery plan in place

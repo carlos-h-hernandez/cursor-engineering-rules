@@ -12,13 +12,61 @@ files:
     - "**/*.cf.mdc"
 ---
 
-#  Cloudflare Ruleset Engine Engineering Guide v2.1 - (December 2025)
+# Cloudflare Ruleset Engineering Guide
 
-*The Complete Prompt Library for Building, Optimizing, and Deploying Production-Grade Rulesets*
+**Goal:** Build secure, performant, maintainable Cloudflare rulesets that protect applications while maintaining excellent user experience.
+
+## Cloudflare Ruleset Philosophy
+
+**Guiding Principles:**
+
+- **Performance First**: Order conditions from fast to slow (IP/host/method → path/headers → body/regex)
+- **Security by Default**: Assume hostile intent; validate and sanitize all inputs
+- **Fail Securely**: Block by default, allow explicitly; log everything
+- **User Experience**: Use challenges before blocks; provide clear error messages
+- **Operational Excellence**: Test thoroughly, deploy gradually, monitor continuously
+- **Cost Awareness**: Minimize expensive operations (body inspection, regex); use Workers for complex logic
+
+**Core Tenets:**
+
+1. **Fast Evaluation Order**: Cheap checks (IP, host, method) before expensive ones (body, regex)
+2. **Defense in Depth**: Multiple layers of protection (WAF → Rate Limiting → Bot Management)
+3. **Zero Trust**: Never trust user input; validate and sanitize everything
+4. **Observability**: Log all actions; monitor effectiveness; alert on anomalies
+5. **Iterative Improvement**: Start with log-only, refine based on data, then enforce
+
+**Applying Cloudflare Philosophy:**
+
+```javascript
+// BAD: Expensive operations first
+(http.request.body.raw contains "malicious" and http.host eq "api.acme.com")
+
+// GOOD: Fast checks first, short-circuit early
+(http.host eq "api.acme.com" and http.request.body.raw contains "malicious")
+
+// BAD: Trusting user input
+http.request.uri.path contains "/admin"
+
+// GOOD: Zero trust - validate and sanitize
+(
+  lower(http.request.uri.path) contains "/admin" or
+  lower(urldecode(http.request.uri.path)) contains "/admin" or
+  lower(urldecode(urldecode(http.request.uri.path))) contains "/admin"
+)
+
+// BAD: Block immediately (poor UX)
+(http.request.uri.path contains "/api/" and rate(ip.src, 1m) > 100)
+# Action: Block
+
+// GOOD: Challenge first, then block (better UX)
+(http.request.uri.path contains "/api/" and rate(ip.src, 1m) > 100)
+# Action: Managed Challenge
+# If challenge fails → Block
+```
 
 ---
 
-##  Quick Reference
+## Quick Reference
 
 ### Essential Commands
 
@@ -153,7 +201,7 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ---
 
-##  Phase 3: Optimization
+## Phase 3: Optimization
 
 ### 7) Performance Ordering (Prompt)
 > Reorder cheap checks first (IP, host, method), then path/header, and use regex last. Short-circuit for early exits.
@@ -172,6 +220,436 @@ For each phase, show your work and provide a final production-ready rule with de
 
 ### 9) Consolidate Redundancy (Prompt)
 > Merge rules with common predicates; keep separate if operational clarity/ownership needs require it.
+
+## Advanced Patterns
+
+### Dynamic Rule Generation
+
+**Pattern:** Generate rules programmatically for multiple endpoints or environments.
+
+```hcl
+# Terraform: Generate rules for multiple API endpoints
+locals {
+  api_endpoints = [
+    "/api/v1/users",
+    "/api/v1/orders",
+    "/api/v1/payments"
+  ]
+
+  rate_limit_rules = [
+    for endpoint in local.api_endpoints : {
+      description = "Rate limit ${endpoint}"
+      expression  = "(starts_with(http.request.uri.path, \"${endpoint}\") and rate(ip.src, 1m) > 100)"
+      action      = "managed_challenge"
+    }
+  ]
+}
+
+resource "cloudflare_ruleset" "api_rate_limit" {
+  zone_id = var.zone_id
+  name    = "API Rate Limiting"
+  kind    = "zone"
+  phase   = "http_ratelimit"
+
+  dynamic "rules" {
+    for_each = local.rate_limit_rules
+    content {
+      description = rules.value.description
+      enabled     = true
+      action      = rules.value.action
+      expression  = rules.value.expression
+    }
+  }
+}
+```
+
+### Conditional Actions Based on Threat Score
+
+**Pattern:** Escalate actions based on threat intelligence.
+
+```javascript
+// Tier 1: Low threat - log only
+(cf.threat_score ge 1 and cf.threat_score lt 10)
+# Action: Log
+
+// Tier 2: Medium threat - challenge
+(cf.threat_score ge 10 and cf.threat_score lt 30)
+# Action: Managed Challenge
+
+// Tier 3: High threat - block
+(cf.threat_score ge 30)
+# Action: Block
+```
+
+### Multi-Factor Authentication Bypass
+
+**Pattern:** Allow verified bots and authenticated users to bypass rate limits.
+
+```javascript
+(
+  http.request.uri.path contains "/api/" and
+  rate(ip.src, 1m) > 100 and
+  not (
+    cf.bot_management.verified_bot or
+    http.request.headers["authorization"][0] matches "^Bearer [A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$"
+  )
+)
+# Action: Managed Challenge
+```
+
+### Geographic Rate Limiting
+
+**Pattern:** Different rate limits for different regions.
+
+```javascript
+// High-risk regions: stricter limits
+(
+  http.request.uri.path contains "/api/" and
+  ip.geoip.country in {"CN" "RU" "KP"} and
+  rate(ip.src, 1m) > 10
+)
+# Action: Block
+
+// Low-risk regions: standard limits
+(
+  http.request.uri.path contains "/api/" and
+  not ip.geoip.country in {"CN" "RU" "KP"} and
+  rate(ip.src, 1m) > 100
+)
+# Action: Managed Challenge
+```
+
+### Request Size Validation
+
+**Pattern:** Block oversized requests before they consume resources.
+
+```javascript
+(
+  http.request.method in {"POST" "PUT" "PATCH"} and
+  (
+    http.request.body.size > 10485760 or  # 10MB limit
+    http.request.headers["content-length"][0] matches "^[1-9][0-9]{7,}$"  # > 10MB
+  )
+)
+# Action: Block
+```
+
+### Header Injection Prevention
+
+**Pattern:** Prevent CRLF injection and header manipulation.
+
+```javascript
+(
+  http.request.headers["x-forwarded-for"][0] matches "[\\r\\n]" or
+  http.request.headers["user-agent"][0] matches "[\\r\\n]" or
+  http.request.uri.query contains "%0d%0a"
+)
+# Action: Block
+```
+
+## Performance Optimization
+
+### Evaluation Cost Reduction
+
+**Minimize expensive operations:**
+
+```javascript
+// BAD: Multiple regex operations
+(
+  http.request.uri.path matches "^/api/v[0-9]+/users$" and
+  http.request.uri.query matches ".*id=[0-9]+.*" and
+  http.request.body.raw matches ".*email.*"
+)
+
+// GOOD: Use faster operators when possible
+(
+  starts_with(http.request.uri.path, "/api/v") and
+  http.request.uri.path contains "/users" and
+  http.request.uri.query contains "id=" and
+  http.request.body.raw contains "email"
+)
+
+// BAD: Body inspection for simple checks
+(http.request.body.raw contains "admin")
+
+// GOOD: Use path/header checks when possible
+(http.request.uri.path contains "/admin" or http.request.headers["x-role"][0] eq "admin")
+```
+
+### Rule Consolidation
+
+**Merge similar rules to reduce evaluation overhead:**
+
+```javascript
+// BAD: Multiple separate rules
+(http.host eq "api.acme.com" and http.request.uri.path eq "/v1/users")
+(http.host eq "api.acme.com" and http.request.uri.path eq "/v1/orders")
+(http.host eq "api.acme.com" and http.request.uri.path eq "/v1/payments")
+
+// GOOD: Single consolidated rule
+(
+  http.host eq "api.acme.com" and
+  http.request.uri.path in {"/v1/users" "/v1/orders" "/v1/payments"} and
+  rate(ip.src, 1m) > 100
+)
+```
+
+### Caching Strategy
+
+**Use Workers KV for expensive lookups:**
+
+```javascript
+// Workers: Cache IP reputation lookups
+export default {
+  async fetch(request, env) {
+    const ip = request.headers.get('CF-Connecting-IP');
+
+    // Check cache first
+    const cached = await env.IP_REPUTATION_KV.get(ip);
+    if (cached) {
+      const data = JSON.parse(cached);
+      if (data.threat_score > 30) {
+        return new Response('Blocked', { status: 403 });
+      }
+    }
+
+    // Expensive lookup (external API)
+    const reputation = await checkIPReputation(ip);
+
+    // Cache for 1 hour
+    await env.IP_REPUTATION_KV.put(ip, JSON.stringify(reputation), {
+      expirationTtl: 3600
+    });
+
+    return fetch(request);
+  }
+};
+```
+
+### Workers vs Rules Decision Matrix
+
+**Use Rules when:**
+- Simple request filtering
+- Rate limiting
+- Header/path manipulation
+- IP/geo blocking
+- Bot score gating
+
+**Use Workers when:**
+- Response body inspection
+- External API calls
+- Stateful logic (KV/Durable Objects)
+- Complex JSON manipulation
+- Custom authentication flows
+- Expensive computations
+
+## Testing Strategies
+
+### Unit Testing Rules
+
+**Test rule expressions in isolation:**
+
+```bash
+# Test rule logic with curl
+# Should match (block)
+curl -X POST https://api.acme.com/admin \
+  -H "Host: admin.acme.com" \
+  -H "X-Forwarded-For: 1.1.1.1" \
+  -d "malicious=payload"
+# Expected: 403
+
+# Should not match (allow)
+curl -X GET https://api.acme.com/admin \
+  -H "Host: admin.acme.com" \
+  -H "X-Forwarded-For: 10.0.0.1" \
+  -H "Authorization: Bearer valid-token"
+# Expected: 200
+```
+
+### Integration Testing
+
+**Test rules in staging environment:**
+
+```yaml
+# GitHub Actions: Test rules before production
+name: Test Cloudflare Rules
+
+on: [pull_request]
+
+jobs:
+  test-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to staging
+        run: terraform apply -auto-approve -var-file=staging.tfvars
+
+      - name: Run test suite
+        run: |
+          ./scripts/test-rules.sh staging
+
+      - name: Validate rule effectiveness
+        run: |
+          python scripts/validate_rules.py \
+            --zone-id ${{ secrets.CF_STAGING_ZONE_ID }} \
+            --ruleset-id ${{ secrets.CF_STAGING_RULESET_ID }}
+```
+
+### Performance Testing
+
+**Measure rule evaluation time:**
+
+```bash
+# Benchmark rule performance
+for i in {1..1000}; do
+  curl -s -o /dev/null -w "%{time_total}\n" \
+    -H "Host: api.acme.com" \
+    https://edge.acme.com/api/test
+done | awk '{sum+=$1; count++} END {print "Average:", sum/count}'
+```
+
+### Security Testing
+
+**Test bypass attempts:**
+
+```bash
+# Test encoding bypasses
+curl "https://api.acme.com/%2561dmin"  # Double URL encoding
+curl "https://api.acme.com/%2Fadmin"   # Path encoding
+curl "https://api.acme.com/admin%2F"   # Trailing slash encoding
+
+# Test case sensitivity
+curl "https://api.acme.com/ADMIN"
+curl "https://api.acme.com/Admin"
+
+# Test header injection
+curl -H "X-Forwarded-For: 1.1.1.1\r\nX-Admin: true" https://api.acme.com/
+```
+
+## Troubleshooting & Debugging
+
+### Rule Not Triggering
+
+**Diagnosis Steps:**
+
+1. **Check rule order:**
+   ```bash
+   # List rules in order
+   curl -X GET \
+     "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/phases/http_request_firewall_custom/entrypoint" \
+     -H "Authorization: Bearer $CF_API_TOKEN" | jq '.result.rules[] | {id, description, enabled, action}'
+   ```
+
+2. **Verify rule is enabled:**
+   ```bash
+   # Check specific rule
+   curl -X GET \
+     "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/$RULESET_ID/rules/$RULE_ID" \
+     -H "Authorization: Bearer $CF_API_TOKEN"
+   ```
+
+3. **Test with simpler expression:**
+   ```javascript
+   // Start simple
+   (http.host eq "api.acme.com")
+
+   // Then add conditions incrementally
+   (http.host eq "api.acme.com" and http.request.method eq "POST")
+   ```
+
+4. **Check field names (case-sensitive):**
+   ```javascript
+   // BAD: Wrong case
+   http.request.uri.Path contains "/admin"
+
+   // GOOD: Correct case
+   http.request.uri.path contains "/admin"
+   ```
+
+### False Positives
+
+**Common Causes & Fixes:**
+
+1. **Missing bypass for verified bots:**
+   ```javascript
+   // BAD: Blocks legitimate bots
+   (http.request.uri.path contains "/api/" and rate(ip.src, 1m) > 100)
+
+   // GOOD: Allow verified bots
+   (
+     http.request.uri.path contains "/api/" and
+     rate(ip.src, 1m) > 100 and
+     not cf.bot_management.verified_bot
+   )
+   ```
+
+2. **Case-sensitive matching:**
+   ```javascript
+   // BAD: Case sensitive
+   http.request.uri.path contains "/Admin"
+
+   // GOOD: Case insensitive
+   lower(http.request.uri.path) contains "/admin"
+   ```
+
+3. **Missing IP allowlist:**
+   ```javascript
+   // Add allowlist for known good IPs
+   (
+     http.request.uri.path contains "/admin" and
+     not ip.src in {1.1.1.0/24 10.0.0.0/8}
+   )
+   ```
+
+### Performance Issues
+
+**Symptoms & Solutions:**
+
+1. **High evaluation time:**
+   - Reorder conditions (fast → slow)
+   - Replace regex with simpler operators
+   - Remove body inspection (use Workers)
+
+2. **Rule evaluation timeout:**
+   - Split complex rule into multiple simpler rules
+   - Move complex logic to Workers
+
+3. **High API costs:**
+   - Minimize regex operations
+   - Use `in` sets instead of multiple `or` conditions
+   - Cache expensive lookups in Workers KV
+
+### Terraform State Issues
+
+**Common Problems:**
+
+1. **State lock:**
+   ```bash
+   # Force unlock (use with caution)
+   terraform force-unlock <LOCK_ID>
+   ```
+
+2. **State drift:**
+   ```bash
+   # Refresh state
+   terraform refresh
+
+   # Import existing resources
+   terraform import cloudflare_ruleset.waf_custom <ruleset_id>
+   ```
+
+3. **State conflicts:**
+   ```bash
+   # Use remote state backend
+   terraform {
+     backend "s3" {
+       bucket = "terraform-state"
+       key    = "cloudflare/rulesets.tfstate"
+       region = "us-east-1"
+     }
+   }
+   ```
 
 ---
 
@@ -638,7 +1116,423 @@ curl -X PATCH \
 
 ---
 
-##  Final Checklist (Pre-Prod)
+## Comprehensive Example: E-Commerce Platform Protection
+
+**Scenario:** Protect an e-commerce platform with multiple layers of security.
+
+### Requirements
+
+- Protect admin panel (VPN/mTLS only)
+- Rate limit API endpoints
+- Block high-risk regions
+- Protect checkout flow from bots
+- Monitor and alert on attacks
+
+### Complete Terraform Configuration
+
+```hcl
+# terraform/cloudflare-rulesets/main.tf
+
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5.14"
+    }
+  }
+}
+
+variable "zone_id" {
+  description = "Cloudflare Zone ID"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment (dev, staging, production)"
+  type        = string
+  default     = "production"
+}
+
+locals {
+  # Environment-specific actions
+  rule_actions = {
+    dev        = "log"
+    staging    = "managed_challenge"
+    production = "block"
+  }
+
+  # Admin IP allowlist
+  admin_ips = {
+    dev        = ["10.0.0.0/8"]
+    staging    = ["10.0.0.0/8", "192.168.0.0/16"]
+    production = ["1.1.1.0/24", "10.0.0.0/8"]
+  }
+
+  # High-risk countries
+  high_risk_countries = ["CN", "RU", "KP", "IR"]
+}
+
+# WAF Custom Rules
+resource "cloudflare_ruleset" "waf_custom" {
+  zone_id = var.zone_id
+  name    = "E-Commerce WAF Rules"
+  kind    = "zone"
+  phase   = "http_request_firewall_custom"
+
+  # Rule 1: Admin Panel Protection
+  rules {
+    description = "Admin panel: VPN or mTLS only"
+    enabled     = true
+    action      = local.rule_actions[var.environment]
+    expression  = <<-EOT
+      (
+        http.host in {"admin.acme.com" "manage.acme.com"} and
+        starts_with(http.request.uri.path, "/admin/") and
+        not (
+          ip.src in ${jsonencode(local.admin_ips[var.environment])} or
+          cf.tls_client_auth.cert_verified
+        )
+      )
+    EOT
+
+    action_parameters {
+      response {
+        status_code  = 403
+        content      = "Access Denied: Admin panel requires VPN or mTLS"
+        content_type = "text/plain"
+      }
+    }
+  }
+
+  # Rule 2: API Authentication
+  rules {
+    description = "API: Require authentication"
+    enabled     = true
+    action      = "block"
+    expression  = <<-EOT
+      (
+        starts_with(http.request.uri.path, "/api/v2/") and
+        not (
+          http.request.headers["authorization"][0] matches "^Bearer [A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+\\.[A-Za-z0-9-_]+$" or
+          http.request.headers["x-api-key"][0] in {"key_abc123" "key_def456"}
+        )
+      )
+    EOT
+  }
+
+  # Rule 3: High-Risk Region Blocking
+  rules {
+    description = "Block high-risk regions"
+    enabled     = var.environment == "production"
+    action      = "block"
+    expression  = <<-EOT
+      (
+        http.request.uri.path contains "/api/" and
+        ip.geoip.country in ${jsonencode(local.high_risk_countries)} and
+        not cf.bot_management.verified_bot
+      )
+    EOT
+  }
+
+  # Rule 4: Request Size Limit
+  rules {
+    description = "Block oversized requests"
+    enabled     = true
+    action      = "block"
+    expression  = <<-EOT
+      (
+        http.request.method in {"POST" "PUT" "PATCH"} and
+        http.request.body.size > 10485760
+      )
+    EOT
+  }
+}
+
+# Rate Limiting Rules
+resource "cloudflare_ruleset" "rate_limit" {
+  zone_id = var.zone_id
+  name    = "E-Commerce Rate Limiting"
+  kind    = "zone"
+  phase   = "http_ratelimit"
+
+  # Rule 1: API Rate Limit (Per IP)
+  rules {
+    description = "API rate limit: 100 requests/minute per IP"
+    enabled     = true
+    action      = "managed_challenge"
+    expression  = <<-EOT
+      (
+        starts_with(http.request.uri.path, "/api/") and
+        rate(ip.src, 1m) > 100
+      )
+    EOT
+
+    ratelimit {
+      characteristics = ["ip.src"]
+      period          = 60
+      requests_per_period = 100
+      mitigation_timeout = 600
+    }
+  }
+
+  # Rule 2: Checkout Rate Limit (Stricter)
+  rules {
+    description = "Checkout rate limit: 10 requests/minute per IP"
+    enabled     = true
+    action      = "block"
+    expression  = <<-EOT
+      (
+        http.request.uri.path in {"/checkout" "/payment"} and
+        rate(ip.src, 1m) > 10
+      )
+    EOT
+
+    ratelimit {
+      characteristics = ["ip.src"]
+      period          = 60
+      requests_per_period = 10
+      mitigation_timeout = 300
+    }
+  }
+
+  # Rule 3: API Key Rate Limit (Distributed)
+  rules {
+    description = "API key rate limit: 5000 requests/10 minutes"
+    enabled     = true
+    action      = "block"
+    expression  = <<-EOT
+      (
+        starts_with(http.request.uri.path, "/api/") and
+        http.request.headers["x-api-key"][0] ne "" and
+        rate(http.request.headers["x-api-key"][0], 10m) > 5000
+      )
+    EOT
+
+    ratelimit {
+      characteristics = ["http.request.headers[\"x-api-key\"][0]"]
+      period          = 600
+      requests_per_period = 5000
+      mitigation_timeout = 3600
+    }
+  }
+}
+
+# Bot Management Rules
+resource "cloudflare_ruleset" "bot_management" {
+  zone_id = var.zone_id
+  name    = "E-Commerce Bot Management"
+  kind    = "zone"
+  phase   = "http_request_firewall_custom"
+
+  # Rule 1: Checkout Bot Protection
+  rules {
+    description = "Checkout: Block low bot score"
+    enabled     = true
+    action      = "managed_challenge"
+    expression  = <<-EOT
+      (
+        http.request.uri.path in {"/checkout" "/payment"} and
+        cf.bot_management.score lt 30 and
+        not cf.bot_management.verified_bot
+      )
+    EOT
+  }
+
+  # Rule 2: API Bot Protection
+  rules {
+    description = "API: Challenge suspicious bots"
+    enabled     = true
+    action      = "managed_challenge"
+    expression  = <<-EOT
+      (
+        starts_with(http.request.uri.path, "/api/") and
+        cf.bot_management.score lt 20 and
+        not cf.bot_management.verified_bot
+      )
+    EOT
+  }
+}
+```
+
+### Monitoring Dashboard
+
+```graphql
+# GraphQL: Monitor rule effectiveness
+{
+  viewer {
+    zones(filter: {zoneTag: "xxx"}) {
+      firewallEventsAdaptive(
+        filter: {
+          datetime_geq: "2024-01-01T00:00:00Z"
+          action: "block"
+        }
+        limit: 1000
+      ) {
+        action
+        clientIP
+        clientCountryName
+        ruleId
+        source
+        userAgent
+      }
+    }
+  }
+}
+```
+
+### Alerting Configuration
+
+```yaml
+# Prometheus: Alert on high block rate
+groups:
+  - name: cloudflare_rules
+    rules:
+      - alert: HighBlockRate
+        expr: |
+          rate(cloudflare_firewall_events_total{
+            action="block",
+            rule_id="admin_protection"
+          }[5m]) > 10
+        for: 5m
+        annotations:
+          summary: "High block rate on admin protection rule"
+          description: "{{ $value }} blocks/minute on admin panel"
+
+      - alert: RateLimitTriggered
+        expr: |
+          rate(cloudflare_rate_limit_events_total{
+            action="managed_challenge"
+          }[5m]) > 50
+        for: 5m
+        annotations:
+          summary: "Rate limiting frequently triggered"
+          description: "{{ $value }} rate limit challenges/minute"
+```
+
+### Deployment Workflow
+
+```yaml
+# GitHub Actions: Deploy rules with validation
+name: Deploy Cloudflare Rules
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/cloudflare-rulesets/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Validate Terraform
+        run: |
+          cd terraform/cloudflare-rulesets
+          terraform init
+          terraform validate
+          terraform fmt -check
+
+      - name: Validate Rules
+        run: |
+          python scripts/validate_rules.py \
+            --rules-dir terraform/cloudflare-rulesets/rules
+
+  plan:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Plan
+        run: |
+          cd terraform/cloudflare-rulesets
+          terraform plan -out=tfplan
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+
+  deploy-staging:
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Deploy to Staging
+        run: |
+          cd terraform/cloudflare-rulesets
+          terraform apply -auto-approve -var-file=staging.tfvars
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_STAGING_API_TOKEN }}
+
+      - name: Run Tests
+        run: ./scripts/test-rules.sh staging
+
+  deploy-production:
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Deploy to Production
+        run: |
+          cd terraform/cloudflare-rulesets
+          terraform apply -auto-approve -var-file=production.tfvars
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PROD_API_TOKEN }}
+```
+
+### Runbook
+
+```markdown
+# Admin Panel Protection Rule
+
+## Purpose
+Protect admin panel from unauthorized access. Only allows VPN IPs or mTLS clients.
+
+## Dependencies
+- VPN IP ranges configured in Terraform
+- mTLS certificates configured in Cloudflare
+
+## Normal Metrics
+- Block rate: < 5/minute
+- False positive rate: < 1%
+- Response time impact: < 10ms
+
+## Abnormal Metrics
+- Block rate > 20/minute → Possible attack
+- False positive rate > 5% → Rule too strict
+- Response time impact > 50ms → Performance issue
+
+## Common False Positives
+- Legitimate admin users not on VPN
+- Mobile admin access
+- Third-party integrations
+
+## Emergency Disable
+```bash
+curl -X PATCH \
+  "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/rulesets/$RULESET_ID/rules/$RULE_ID" \
+  -H "Authorization: Bearer $CF_API_TOKEN" \
+  -d '{"enabled": false}'
+```
+
+## Escalation
+- On-call engineer: +1-xxx-xxx-xxxx
+- Security team: security@acme.com
+```
+
+---
+
+## Final Checklist (Pre-Prod)
 
 - [ ] Stakeholder/requirement sign-off
 - [ ] Bypass analysis complete
@@ -654,22 +1548,6 @@ curl -X PATCH \
 - [ ] Terraform state configured
 - [ ] Security scanning passed
 - [ ] Deployed in business hours with on-call
-
----
-
-## Targeted Improvements
-
-- **Front-matter** with `priority: 250` and focused `files`
-- **Phase names** mapped to Cloudflare Ruleset phases
-- **Perf guidance** (cheap->expensive) and **AND-before-OR** reminder
-- **IaC examples** using `cloudflare_ruleset` with heredocs
-- **Emergency -> permanent** workflow
-- **Workers integration** for complex logic
-- **Multi-environment** management with feature flags
-- **CI/CD** automation with GitHub Actions
-- **Monitoring** with GraphQL and alerting
-- **Security scanning** tools integrated
-- **Troubleshooting** guide with common issues
 
 ---
 
