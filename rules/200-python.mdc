@@ -331,6 +331,153 @@ class Point:
 # Trade-off: No dynamic attributes, no weak references
 ```
 
+### When to Use Classes vs Functions vs Dataclasses
+
+**Decision Framework:** Choose the simplest tool that solves the problem. Avoid premature abstraction.
+
+**Use Functions When:**
+- Operation is stateless (pure input → output transformation)
+- No need to maintain state between calls
+- Simple utilities, helpers, or scripts
+- Single-purpose operations
+
+```python
+# GOOD: Stateless operation - use function
+def calculate_total(items: list[dict[str, float]]) -> float:
+    """Calculate total price from items."""
+    return sum(item['price'] * item['quantity'] for item in items)
+
+# BAD: Unnecessary class for stateless operation
+class TotalCalculator:
+    def calculate(self, items: list[dict[str, float]]) -> float:
+        return sum(item['price'] * item['quantity'] for item in items)
+```
+
+**Use Dataclasses When:**
+- Need structured data with validation
+- Want automatic `__init__`, `__repr__`, `__eq__` without boilerplate
+- Creating DTOs, configs, or data containers
+- Don't need complex behavior or inheritance
+
+```python
+# GOOD: Data container - use dataclass
+from dataclasses import dataclass
+
+@dataclass
+class User:
+    name: str
+    email: str
+    age: int
+
+# BAD: Full class for simple data container
+class User:
+    def __init__(self, name: str, email: str, age: int):
+        self.name = name
+        self.email = email
+        self.age = age
+    
+    def __repr__(self):
+        return f"User(name={self.name!r}, email={self.email!r}, age={self.age})"
+    
+    def __eq__(self, other):
+        if not isinstance(other, User):
+            return False
+        return (self.name, self.email, self.age) == (other.name, other.email, other.age)
+```
+
+**Use Classes When:**
+- Need to maintain state between method calls
+- Require polymorphism or inheritance
+- Framework requires it (Django models, FastAPI dependencies)
+- Rich behavior with mutable state
+- Need encapsulation of complex logic
+
+```python
+# GOOD: Stateful object - use class
+class ConnectionPool:
+    """Manages database connections with state."""
+    
+    def __init__(self, max_connections: int = 10):
+        self.max_connections = max_connections
+        self._connections: list[Connection] = []
+        self._active = 0
+    
+    def acquire(self) -> Connection:
+        """Acquire connection from pool."""
+        if self._active >= self.max_connections:
+            raise PoolExhaustedError("No available connections")
+        # ... connection logic
+        self._active += 1
+        return connection
+    
+    def release(self, conn: Connection) -> None:
+        """Release connection back to pool."""
+        self._active -= 1
+        # ... cleanup logic
+
+# BAD: Function trying to manage state (requires global or closure)
+_connections = []
+_active = 0
+
+def acquire_connection():
+    global _active
+    # ... problematic global state
+```
+
+**Common Anti-Patterns:**
+
+```python
+# ANTI-PATTERN: Class with single method and no state
+class EmailSender:
+    def send(self, to: str, subject: str, body: str) -> None:
+        # ... send email
+
+# BETTER: Use function
+def send_email(to: str, subject: str, body: str) -> None:
+    # ... send email
+
+# ANTI-PATTERN: Class for simple data container
+class Config:
+    def __init__(self, host: str, port: int):
+        self.host = host
+        self.port = port
+
+# BETTER: Use dataclass
+@dataclass
+class Config:
+    host: str
+    port: int
+
+# ANTI-PATTERN: Function trying to manage state
+def process_items(items: list[str]) -> list[str]:
+    processed = []  # State maintained across calls?
+    # ... unclear if this should be stateful
+
+# BETTER: Use class if state needs to persist
+class ItemProcessor:
+    def __init__(self):
+        self.processed: list[str] = []
+    
+    def process(self, items: list[str]) -> list[str]:
+        # ... process with state
+```
+
+**Decision Tree:**
+
+```
+Do you need to maintain state between calls?
+├─ Yes → Use Class
+└─ No → Is it structured data with validation?
+    ├─ Yes → Use Dataclass
+    └─ No → Use Function
+```
+
+**Framework Requirements:**
+- **Django:** Models must be classes (inheritance from `models.Model`)
+- **FastAPI:** Dependencies can be functions or classes (use classes for stateful dependencies)
+- **Pydantic:** Models are classes (but can use `@dataclass` with Pydantic v2)
+- **SQLAlchemy:** Models must be classes
+
 ### Object-Oriented Features
 
 - **`@property`:** Use for validation or computed properties:
