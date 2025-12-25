@@ -1,7 +1,7 @@
 ---
 title: Python Code Review & Enhancement Guidelines
 description: Opinionated, performance- and security-minded Python rules for generation and review.
-priority: 190
+priority: 200
 alwaysApply: false
 files:
   include:

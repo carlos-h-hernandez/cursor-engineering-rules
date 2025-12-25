@@ -2,7 +2,7 @@
 title: GitHub Actions Engineering Ruleset
 description: Secure, fast, maintainable workflows for this repo.
 alwaysApply: false         # keep false so it only targets GHA files
-priority: 150              # higher than your core.mdc (e.g., 100)
+priority: 160              # higher than your core.mdc (e.g., 100)
 files:
   include:
     - ".github/workflows/**/*.yml"

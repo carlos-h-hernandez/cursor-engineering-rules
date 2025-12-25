@@ -1,7 +1,7 @@
 ---
 title: Terraform Engineering Ruleset
 description: Secure, efficient, modular Terraform with strong validation, docs, and CI hygiene.
-priority: 170
+priority: 180
 alwaysApply: false
 files:
   include:
