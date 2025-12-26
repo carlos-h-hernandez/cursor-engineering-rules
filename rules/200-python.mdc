@@ -263,6 +263,368 @@ from models import User
 - **Tuple Unpacking:** Use `x, y = get_coordinates()` for cleaner code.
 - **`enumerate`:** Use `for idx, value in enumerate(values):` for indexed loops.
 
+### Standard Library Modules to Prefer
+
+**Principle:** Prefer standard library modules over third-party alternatives when they meet your needs. This reduces dependencies, improves portability, and leverages well-tested, maintained code.
+
+**Common Standard Library Modules:**
+
+#### File & Path Operations
+
+**`pathlib` (Preferred over `os.path`):**
+
+```python
+# BAD: os.path (old-style, string-based)
+import os
+file_path = os.path.join("data", "users", "file.txt")
+if os.path.exists(file_path):
+    with open(file_path) as f:
+        content = f.read()
+
+# GOOD: pathlib (object-oriented, cross-platform)
+from pathlib import Path
+
+file_path = Path("data") / "users" / "file.txt"
+if file_path.exists():
+    content = file_path.read_text()
+
+# Advanced pathlib features
+config_dir = Path.home() / ".config" / "app"
+config_dir.mkdir(parents=True, exist_ok=True)
+config_file = config_dir / "config.toml"
+
+# Iterate over directory
+for py_file in Path("src").rglob("*.py"):
+    print(py_file.stem)  # filename without extension
+```
+
+**`shutil` (File operations):**
+
+```python
+import shutil
+from pathlib import Path
+
+# Copy files/directories
+shutil.copy("source.txt", "dest.txt")
+shutil.copytree("src_dir", "dest_dir", dirs_exist_ok=True)
+
+# Move/rename
+shutil.move("old.txt", "new.txt")
+
+# Archive operations
+shutil.make_archive("backup", "zip", "data_dir")
+shutil.unpack_archive("backup.zip", "extract_dir")
+
+# Disk usage
+total, used, free = shutil.disk_usage("/")
+```
+
+#### Functional Programming
+
+**`functools` (Function utilities):**
+
+```python
+from functools import partial, cache, wraps, singledispatch
+
+# partial: Pre-specify function arguments
+def multiply(x: int, y: int) -> int:
+    return x * y
+
+double = partial(multiply, 2)  # Equivalent to: lambda y: multiply(2, y)
+result = double(5)  # 10
+
+# cache: Memoization for expensive functions
+@cache
+def expensive_computation(n: int) -> int:
+    # Expensive operation
+    return sum(i**2 for i in range(n))
+
+# wraps: Preserve function metadata in decorators
+def timing_decorator(func):
+    @wraps(func)  # Preserves __name__, __doc__, etc.
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} took {time.time() - start:.2f}s")
+        return result
+    return wrapper
+
+# singledispatch: Polymorphic functions based on type
+@singledispatch
+def process(data):
+    raise NotImplementedError(f"Cannot process {type(data)}")
+
+@process.register
+def _(data: dict):
+    return {k: str(v) for k, v in data.items()}
+
+@process.register
+def _(data: list):
+    return [str(item) for item in data]
+```
+
+#### Data Structures & Algorithms
+
+**`heapq` (Priority queues):**
+
+```python
+import heapq
+
+# Min-heap (default)
+heap = []
+heapq.heappush(heap, 5)
+heapq.heappush(heap, 2)
+heapq.heappush(heap, 8)
+smallest = heapq.heappop(heap)  # 2
+
+# Max-heap (negate values)
+max_heap = []
+heapq.heappush(max_heap, -10)
+heapq.heappush(max_heap, -5)
+largest = -heapq.heappop(max_heap)  # 10
+
+# Priority queue pattern
+tasks = []
+heapq.heappush(tasks, (1, "low priority task"))
+heapq.heappush(tasks, (0, "high priority task"))
+priority, task = heapq.heappop(tasks)  # Gets high priority first
+```
+
+**`graphlib` (Topological sorting, Python 3.9+):**
+
+```python
+from graphlib import TopologicalSorter
+
+# Build dependency graph
+graph = {
+    "task_a": {"task_b", "task_c"},
+    "task_b": {"task_d"},
+    "task_c": {"task_d"},
+    "task_d": set(),
+}
+
+# Get execution order
+ts = TopologicalSorter(graph)
+execution_order = list(ts.static_order())  # ['task_d', 'task_b', 'task_c', 'task_a']
+```
+
+**`secrets` (Cryptographically secure random, preferred over `random` for security):**
+
+```python
+import secrets
+import string
+
+# Generate secure random token
+token = secrets.token_urlsafe(32)  # URL-safe token
+
+# Generate secure random string
+alphabet = string.ascii_letters + string.digits
+password = ''.join(secrets.choice(alphabet) for _ in range(16))
+
+# Compare securely (constant-time)
+if secrets.compare_digest(user_input, expected_token):
+    # Secure comparison (prevents timing attacks)
+    pass
+
+# BAD: Using random for security
+import random
+token = ''.join(random.choice(alphabet) for _ in range(16))  # Not cryptographically secure!
+```
+
+#### Configuration & Data Formats
+
+**`tomllib` (TOML parsing, Python 3.11+):**
+
+```python
+import tomllib
+from pathlib import Path
+
+# Read TOML file
+with open("config.toml", "rb") as f:  # Note: binary mode required
+    config = tomllib.load(f)
+
+# Access nested values
+database_url = config["database"]["url"]
+api_key = config["api"]["key"]
+
+# BAD: Using third-party library
+# import tomli  # Don't need this if Python 3.11+
+```
+
+**`json` (JSON parsing):**
+
+```python
+import json
+from pathlib import Path
+
+# Read JSON
+with Path("data.json").open() as f:
+    data = json.load(f)
+
+# Write JSON (with formatting)
+with Path("output.json").open("w") as f:
+    json.dump(data, f, indent=2, sort_keys=True)
+
+# Parse JSON string
+config = json.loads('{"key": "value"}')
+```
+
+**`configparser` (INI-style config files):**
+
+```python
+import configparser
+
+config = configparser.ConfigParser()
+config.read("config.ini")
+
+database_host = config.get("database", "host")
+debug = config.getboolean("app", "debug", fallback=False)
+```
+
+#### Utilities
+
+**`itertools` (Iterator tools):**
+
+```python
+from itertools import chain, cycle, islice, pairwise, batched
+
+# Chain iterables
+combined = list(chain([1, 2], [3, 4]))  # [1, 2, 3, 4]
+
+# Pairwise iteration (Python 3.10+)
+for prev, curr in pairwise([1, 2, 3, 4]):
+    print(f"{prev} -> {curr}")  # 1 -> 2, 2 -> 3, 3 -> 4
+
+# Batched (Python 3.12+)
+for batch in batched(range(10), 3):
+    print(list(batch))  # [0, 1, 2], [3, 4, 5], [6, 7, 8], [9]
+
+# Cycle through values
+colors = cycle(["red", "green", "blue"])
+next(colors)  # "red"
+next(colors)  # "green"
+```
+
+**`contextlib` (Context managers):**
+
+```python
+from contextlib import contextmanager, suppress, redirect_stdout
+import io
+
+# Custom context manager
+@contextmanager
+def temporary_file():
+    path = Path("/tmp/temp.txt")
+    path.write_text("data")
+    try:
+        yield path
+    finally:
+        path.unlink()
+
+# Suppress exceptions
+with suppress(FileNotFoundError):
+    Path("missing.txt").unlink()
+
+# Redirect output
+f = io.StringIO()
+with redirect_stdout(f):
+    print("This goes to StringIO")
+output = f.getvalue()
+```
+
+**`dataclasses` (Data containers):**
+
+```python
+from dataclasses import dataclass, field, asdict
+
+@dataclass
+class User:
+    name: str
+    email: str
+    age: int = 0
+    tags: list[str] = field(default_factory=list)
+
+user = User("John", "john@acme.com", 30)
+user_dict = asdict(user)  # Convert to dict
+```
+
+**`enum` (Enumerations):**
+
+```python
+from enum import Enum, IntEnum, Flag
+
+class Status(Enum):
+    PENDING = "pending"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+status = Status.ACTIVE
+if status == Status.ACTIVE:
+    print("Active!")
+
+# IntEnum for integer values
+class Priority(IntEnum):
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+# Flags for bitwise operations
+class Permissions(Flag):
+    READ = 1
+    WRITE = 2
+    EXECUTE = 4
+
+perms = Permissions.READ | Permissions.WRITE
+```
+
+**`typing` (Type hints, Python 3.14+):**
+
+```python
+from typing import Annotated, Literal, Self, TypeAlias
+
+# Type aliases
+UserId: TypeAlias = int
+
+# Literal types
+Mode = Literal["dev", "staging", "prod"]
+
+def deploy(env: Mode) -> None:
+    ...
+
+# Self type (Python 3.11+)
+class Builder:
+    def with_name(self, name: str) -> Self:
+        self.name = name
+        return self
+
+# Annotated (for metadata)
+from typing import Annotated
+Port = Annotated[int, "Port number between 1 and 65535"]
+```
+
+#### When to Use Third-Party Libraries
+
+**Use third-party libraries when:**
+- Standard library doesn't provide the functionality
+- Third-party library offers significant performance improvements
+- Standard library solution is too complex for the use case
+- You need features not available in stdlib
+
+**Examples:**
+- **`requests`** over `urllib` - Better API, connection pooling, sessions
+- **`pydantic`** over `dataclasses` - Advanced validation, JSON schema
+- **`click`** over `argparse` - Better CLI framework (if building complex CLIs)
+- **`httpx`** over `urllib` - Async HTTP, HTTP/2 support
+
+**Prefer stdlib when:**
+- `pathlib` over `path.py`
+- `tomllib` over `tomli` (Python 3.11+)
+- `secrets` over `random` for security
+- `json` over `ujson` (unless performance critical)
+- `dataclasses` over `attrs` (for simple cases)
+- `heapq` over `heapq` wrapper libraries
+- `graphlib` over `networkx` (for simple topological sorting)
+
 ### Advanced OOP Features
 
 - **Descriptors:** Control attribute access:
