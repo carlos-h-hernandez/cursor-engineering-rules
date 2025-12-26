@@ -486,7 +486,7 @@ debug = config.getboolean("app", "debug", fallback=False)
 **`itertools` (Iterator tools):**
 
 ```python
-from itertools import chain, cycle, islice, pairwise, batched
+from itertools import chain, cycle, islice, pairwise, batched, groupby, combinations, permutations, product, zip_longest
 
 # Chain iterables
 combined = list(chain([1, 2], [3, 4]))  # [1, 2, 3, 4]
@@ -503,6 +503,57 @@ for batch in batched(range(10), 3):
 colors = cycle(["red", "green", "blue"])
 next(colors)  # "red"
 next(colors)  # "green"
+
+# Group consecutive elements
+data = [1, 1, 2, 2, 2, 3, 3]
+for key, group in groupby(data):
+    print(f"{key}: {list(group)}")  # 1: [1, 1], 2: [2, 2, 2], 3: [3, 3]
+
+# Combinations and permutations
+items = ['a', 'b', 'c']
+list(combinations(items, 2))  # [('a', 'b'), ('a', 'c'), ('b', 'c')]
+list(permutations(items, 2))  # [('a', 'b'), ('a', 'c'), ('b', 'a'), ...]
+
+# Cartesian product
+list(product([1, 2], ['a', 'b']))  # [(1, 'a'), (1, 'b'), (2, 'a'), (2, 'b')]
+
+# Zip longest (fill missing with default)
+list(zip_longest([1, 2], ['a'], fillvalue='-'))  # [(1, 'a'), (2, '-')]
+
+# Slice iterator
+for item in islice(range(100), 10, 20):  # Items 10-19
+    print(item)
+```
+
+**`textwrap` (Text formatting):**
+
+```python
+import textwrap
+
+# Wrap text to specified width
+text = "This is a long line that needs to be wrapped to fit within 50 characters."
+wrapped = textwrap.wrap(text, width=50)
+# ['This is a long line that needs to be', 'wrapped to fit within 50 characters.']
+
+# Fill text (wrap and join)
+filled = textwrap.fill(text, width=50)
+# Multi-line string with line breaks
+
+# Dedent (remove leading whitespace) - great for SQL, templates
+sql = textwrap.dedent("""
+    SELECT *
+    FROM users
+    WHERE active = true
+""").strip()
+# Removes common leading whitespace
+
+# Indent text
+indented = textwrap.indent("Line 1\nLine 2", prefix="  ")
+# "  Line 1\n  Line 2"
+
+# Shorten text with ellipsis
+short = textwrap.shorten("This is a very long string", width=20, placeholder="...")
+# "This is a very..."
 ```
 
 **`contextlib` (Context managers):**
