@@ -310,10 +310,26 @@ logmsg() {
   local timestamp
   timestamp=$(date -u +"%Y-%m-%d %T,%3N" 2>/dev/null || date -u +"%Y-%m-%d %T")
   printf "%s: %s: %s\n" "$timestamp" "$level" "$*" | tee -a "$LOGFILE"
-  # Optional: JSON error log
-  [[ "$level" == "ERROR" ]] && printf '{"timestamp":"%s","level":"%s","message":"%s"}\n' \
-    "$timestamp" "$level" "$*" >> "$LOGFILE.errors"
+  command -v logger >/dev/null && logger -t "$SCRIPT_NAME" "$level: $*"
+
+  # Structured JSON error reporting for post-mortem analysis
+  if [[ "$level" == "ERROR" ]]; then
+    printf '{"timestamp":"%s","level":"%s","message":"%s","source":"%s","line":%d,"function":"%s"}\n' \
+      "$timestamp" "$level" "$*" "${BASH_SOURCE[1]}" "${BASH_LINENO[0]}" "${FUNCNAME[1]:-main}" \
+      >> "${LOGFILE}.errors"
+  fi
 }
+```
+
+**Error Log File Management:**
+```bash
+# Separate error log for structured analysis
+readonly ERROR_LOG="${LOGFILE}.errors"
+
+# Rotate error logs if they get too large
+if [[ -f "$ERROR_LOG" ]] && [[ $(stat -f%z "$ERROR_LOG" 2>/dev/null || stat -c%s "$ERROR_LOG" 2>/dev/null || echo 0) -gt 10485760 ]]; then
+  mv "$ERROR_LOG" "${ERROR_LOG}.old"
+fi
 ```
 
 ---
@@ -324,6 +340,55 @@ logmsg() {
 - **Functions:** Use `function_name() { ... }` style.
 - **Locals:** Use `local` keyword for variables inside functions.
 - **Usage:** Provide a `usage()` function for help text.
+
+### Variable Declaration: `local`, `declare`/`typeset`, `readonly`, `export`
+
+**Goal:** Use the right primitive for scope, attributes, and intent without sacrificing portability.
+
+**Guidelines:**
+
+* **Scope**
+  * Use `local` **inside functions** for locals.
+  * At top-level, simple assignments create globals.
+
+* **Attributes (Bash/ksh/zsh only)**
+  * Use `declare` **or** `typeset` to add attributes:
+    * `-i` integer, `-a` array, `-A` assoc array, `-l` lower, `-u` upper, `-r` readonly, `-x` export, `-g` global (bash/zsh).
+  * In **bash**, `typeset` ≈ `declare`. Prefer `declare` for clarity in bash; use `typeset` if targeting ksh/zsh too.
+
+* **Intent**
+  * Use **`readonly`** for constants.
+  * Use **`export`** only if a child process needs the value.
+
+* **Portability**
+  * `typeset`/`declare` are **not POSIX**. For `/bin/sh` portability, avoid them (and arrays) and stick to plain assignments + `export`/`readonly`.
+
+**Examples:**
+
+```bash
+# Top-level constants & environment
+readonly SCRIPT_NAME="$(basename "$0" .sh)"
+readonly DEFAULT_TIMEOUT=60
+export PATH="/usr/local/bin:$PATH"   # Export only when needed by children
+
+# Function locals with attributes (bash)
+do_work() {
+  local -i retries=0 max=5
+  local -A meta=()                  # bash 4+
+  local -a files=()
+  local -l env="${ENVIRONMENT:-dev}"  # always-lowercased on assignment
+}
+
+# Same using declare/typeset
+do_work2() {
+  declare -i retries=0 max=5
+  declare -A meta=()
+  typeset -a files=()
+}
+
+# Make a global from inside a function (rare):
+set_flag() { declare -g BUILD_FLAG=1; }
+```
 
 ```bash
 usage() {
@@ -520,7 +585,107 @@ some_command "$@"
 
 ---
 
-## 8) Testing & Validation
+## 8) Documentation
+
+### Goal
+
+Ensure usability and clarity.
+
+### Guidelines
+
+* Include a header with purpose, usage, dependencies, prompt behavior, exit codes, etc.
+* Add inline comments for complex logic.
+* Document debugging and testing instructions.
+* Use here-documents for multiline documentation blocks.
+
+### Example
+
+```bash
+#!/bin/bash
+#
+# Script Name         : my_script.sh
+#
+# Purpose             : This script automates the processing of files and makes network requests.
+#
+#
+# Usage               : ./script.sh [-d] [-h] <provider> <module> [path]
+#
+# Dependencies        : curl, tar, jq, nc, parallel
+#
+# Prompt Behavior     : Prompts use green for questions, red for errors.
+#
+#
+# Exit Codes          : 0 (success), 1 (error), 2 (cancel), 3 (dependency missing)
+#
+#
+# ----------------------------------------------------------------------------------------
+# Turn debug on or off
+# set -x
+# ----------------------------------------------------------------------------------------
+
+set -euo pipefail
+```
+
+### Usage Function Pattern
+
+```bash
+usage() {
+  cat <<EOF
+Usage: $(basename "${BASH_SOURCE[0]}") [OPTIONS] <arguments>
+
+Description:
+  Brief description of what the script does.
+
+Options:
+  -h, --help      Show this help message
+  -v, --version   Show version information
+  -d, --debug     Enable debug output
+  -q, --quiet     Suppress non-error output
+
+Arguments:
+  <arguments>     Description of required arguments
+
+Examples:
+  $(basename "${BASH_SOURCE[0]}") --debug input.txt
+  $(basename "${BASH_SOURCE[0]}") -q output.txt
+
+Exit Codes:
+  0  Success
+  1  General error
+  2  Invalid arguments
+  3  Missing dependency
+
+See also:
+  man $(basename "${BASH_SOURCE[0]}")
+EOF
+  exit "${1:-1}"
+}
+```
+
+### Inline Documentation Best Practices
+
+```bash
+# BAD: No comments, unclear intent
+process_files() {
+  for f in $*; do
+    do_something $f
+  done
+}
+
+# GOOD: Clear comments explaining why, not what
+process_files() {
+  # Process files in parallel to reduce total execution time
+  # Use process substitution to avoid subshell variable scope issues
+  while IFS= read -r file; do
+    [[ -f "$file" ]] || continue  # Skip if file doesn't exist
+    do_something "$file"
+  done < <(find . -type f -name "*.txt")
+}
+```
+
+---
+
+## 9) Testing & Validation
 
 ```bash
 # Static analysis
@@ -650,7 +815,7 @@ mock_command() {
 
 ---
 
-## 9) Example: Robust Script Template
+## 10) Example: Robust Script Template
 
 ```bash
 #!/usr/bin/env bash
@@ -721,7 +886,7 @@ fi
 
 ---
 
-## 10) Anti-Patterns (Forbidden)
+## 11) Anti-Patterns (Forbidden)
 
 -  `eval` on user input.
 -  Using unquoted variables in file paths.
@@ -734,7 +899,7 @@ fi
 
 ---
 
-## 11) Cross-Platform Notes
+## 12) Cross-Platform Notes
 
 - **macOS ships with Bash 3.2** - install Bash 4+ via Homebrew for modern features (associative arrays, `${var,,}`, etc.)
 - **GNU vs BSD tools** - Provide fallbacks:
@@ -748,7 +913,7 @@ fi
 - **POSIX compliance** - For maximum portability, avoid `[[`, `${var,,}`, associative arrays
 - **Test on target platforms** - Use `dash` or `sh` for POSIX testing
 
-## 12) Troubleshooting & Debugging
+## 13) Troubleshooting & Debugging
 
 ### Debug Techniques
 
@@ -862,7 +1027,7 @@ bash -x script.sh 2>&1 | ts '[%Y-%m-%d %H:%M:%.S]'
 /usr/bin/time -v ./script.sh
 ```
 
-## 13) Advanced Patterns
+## 14) Advanced Patterns
 
 ### Retry with Exponential Backoff
 
@@ -957,7 +1122,215 @@ trap 'echo "Received SIGUSR1"' USR1
 trap 'echo "Received SIGUSR2"' USR2
 ```
 
-## 14) Comprehensive Example Script
+## 15) Prompting & User Interaction
+
+### Goal
+
+Provide efficient, user-friendly, and visually enhanced interaction.
+
+### Guidelines
+
+* Use `read` for prompts: simple (`-p`), single-key (`-n 1`), with defaults (`-t 5`).
+* Validate responses with `case` or regex.
+* Support Yes/No/Cancel with a reusable function.
+* Use colors sparingly (green for prompts, red for errors).
+* Support advanced prompting with `select` or `dialog`.
+* **Adapt prompts to user locale** (e.g., `locale LC_MESSAGES`).
+* Log responses for auditability.
+* Test prompts with edge cases (e.g., empty input, Ctrl+C).
+
+### Basic Prompting Patterns
+
+```bash
+# Simple prompt
+read -p "Enter your name: " name
+
+# Single-key prompt
+read -n 1 -p "Continue? [y/n] " yn
+echo
+[[ "$yn" =~ ^[Yy]$ ]] && proceed
+
+# Prompt with timeout
+read -t 5 -p "Press Enter to continue (timeout in 5s): " || echo "Timeout"
+```
+
+### Yes/No/Cancel Function
+
+```bash
+prompt_ync() {
+  local yn
+  while true; do
+    read -n 1 -p "${GREEN}$1 [y/n/c]${NC} " yn
+    echo
+    case "$yn" in
+      [Yy]*) logmsg "INFO" "User chose Yes"; return 0 ;;
+      [Nn]*) logmsg "INFO" "User chose No"; return 1 ;;
+      [Cc]*) logmsg "INFO" "User canceled"; exit 2 ;;
+      *) logmsg "${RED}Invalid (y/n/c)${NC}" ;;
+    esac
+  done
+}
+```
+
+### Locale-Aware Prompting
+
+```bash
+# Detect locale for Yes/No prompts
+get_locale_yes_no() {
+  local locale_msg
+  locale_msg=$(locale LC_MESSAGES 2>/dev/null || echo "yes;no")
+  IFS=';' read -r yes_pattern no_pattern <<< "$locale_msg"
+  echo "$yes_pattern|$no_pattern"
+}
+
+# Use locale-aware prompts
+prompt_locale() {
+  local prompt_text="$1"
+  local yes_no_pattern
+  yes_no_pattern=$(get_locale_yes_no)
+
+  read -p "${GREEN}${prompt_text} (${yes_no_pattern})${NC} " response
+  if [[ "$response" =~ $yes_no_pattern ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Alternative: Use locale directly
+set -- $(locale LC_MESSAGES)
+read -p "${GREEN}Proceed? ($3/$4)${NC} " yn
+[[ "$yn" =~ $1 ]] && logmsg "Yes chosen"
+```
+
+### Advanced Prompting with `select`
+
+```bash
+# Interactive menu
+select region in "us-east-1" "us-west-2" "eu-west-1" "Cancel"; do
+  case "$region" in
+    "Cancel")
+      logmsg "INFO" "User canceled"
+      exit 0
+      ;;
+    "")
+      logmsg "${RED}Invalid selection${NC}"
+      ;;
+    *)
+      logmsg "INFO" "Selected region: $region"
+      break
+      ;;
+  esac
+done
+```
+
+### Secure Password Prompting
+
+```bash
+# Prompt for password without echoing
+read -r -s -p "${GREEN}Enter password:${NC} " password
+echo  # Newline after hidden input
+
+# Validate password strength
+if [[ ${#password} -lt 8 ]]; then
+  logmsg "${RED}Password must be at least 8 characters${NC}"
+  exit 1
+fi
+```
+
+### Prompt Validation Patterns
+
+```bash
+# Validate email
+prompt_email() {
+  local email
+  while true; do
+    read -p "${GREEN}Enter email:${NC} " email
+    if [[ "$email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+      echo "$email"
+      return 0
+    else
+      logmsg "${RED}Invalid email format${NC}"
+    fi
+  done
+}
+
+# Validate numeric input
+prompt_number() {
+  local min="${1:-0}"
+  local max="${2:-100}"
+  local number
+
+  while true; do
+    read -p "${GREEN}Enter number [$min-$max]:${NC} " number
+    if [[ "$number" =~ ^[0-9]+$ ]] && [[ "$number" -ge "$min" ]] && [[ "$number" -le "$max" ]]; then
+      echo "$number"
+      return 0
+    else
+      logmsg "${RED}Invalid number (must be $min-$max)${NC}"
+    fi
+  done
+}
+```
+
+---
+
+## 16) Version Compatibility Matrix
+
+| Feature | Bash 3.2 | Bash 4.x | Bash 5.x | POSIX sh |
+|---------|----------|----------|----------|----------|
+| `[[...]]` | ✅ | ✅ | ✅ | ❌ |
+| `${var,,}` (lowercase) | ❌ | ✅ | ✅ | ❌ |
+| `${var^^}` (uppercase) | ❌ | ✅ | ✅ | ❌ |
+| `readlink -f` | ✅ (GNU) | ✅ (GNU) | ✅ (GNU) | ❌ (BSD) |
+| Associative arrays `-A` | ❌ | ✅ | ✅ | ❌ |
+| `&>>` redirect | ✅ | ✅ | ✅ | ❌ |
+| `mapfile`/`readarray` | ❌ | ✅ | ✅ | ❌ |
+| `${var@Q}` (quoted) | ❌ | ✅ | ✅ | ❌ |
+| `${var@A}` (declare) | ❌ | ✅ | ✅ | ❌ |
+| `local -g` (global in func) | ❌ | ❌ | ✅ | ❌ |
+| Process substitution `<()` | ✅ | ✅ | ✅ | ❌ |
+| `[...]` test | ✅ | ✅ | ✅ | ✅ |
+| `getopts` | ✅ | ✅ | ✅ | ✅ |
+| `readonly` | ✅ | ✅ | ✅ | ✅ |
+| `local` | ✅ | ✅ | ✅ | ❌ |
+| `declare`/`typeset` | ✅ | ✅ | ✅ | ❌ |
+| `$RANDOM` | ✅ | ✅ | ✅ | ❌ |
+| `$SECONDS` | ✅ | ✅ | ✅ | ❌ |
+| `$BASH_SOURCE` | ✅ | ✅ | ✅ | ❌ |
+| `$BASH_LINENO` | ✅ | ✅ | ✅ | ❌ |
+| `$FUNCNAME` | ✅ | ✅ | ✅ | ❌ |
+
+**Notes:**
+- **macOS ships with Bash 3.2 by default** (GPLv2 license). For modern Bash features (4.x+), install via Homebrew: `brew install bash`
+- For maximum portability (POSIX sh), avoid Bash-specific features and test with `dash` or `sh`
+- GNU tools (`readlink -f`, `date -d`, `find -printf`) have different syntax on BSD/macOS - provide fallbacks
+- When targeting Bash 3.2 (macOS default), avoid associative arrays, `${var,,}`, `${var^^}`, and `mapfile`
+- Use `command -v` instead of `which` for portability (POSIX-compliant)
+- Test scripts with `dash` or `sh` to verify POSIX compliance when needed
+
+**Platform-Specific Considerations:**
+
+```bash
+# Detect Bash version
+BASH_VERSION_MAJOR="${BASH_VERSION%%.*}"
+if [[ "$BASH_VERSION_MAJOR" -lt 4 ]]; then
+  echo "Warning: Bash 4+ recommended for full feature support"
+fi
+
+# Feature detection instead of version checking
+if declare -A test_array 2>/dev/null; then
+  # Associative arrays supported
+  declare -A config
+else
+  # Fallback for Bash 3.2
+  echo "Associative arrays not supported"
+fi
+```
+
+---
+
+## 17) Comprehensive Example Script
 
 Complete example demonstrating Bash best practices:
 

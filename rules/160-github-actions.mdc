@@ -176,6 +176,8 @@ gh api repos/actions/github-script/releases/latest --jq .tag_name
 
 ### Example Workflow Header
 
+**Important:** Add a description of what the workflow does as comments right after the workflow name.
+
 ```yaml
 name: Deploy Infrastructure
 
@@ -682,7 +684,18 @@ on:
       - 'package*.json'
 ```
 
-### 5. Missing Timeout Protection
+### 5. Hardcoding Runner OS Commands
+```yaml
+#  Fragile - Breaks on Windows/macOS
+- run: rm -rf dist/
+
+#  Portable - Use actions or shell-agnostic commands
+- run: |
+    if [ -d dist ]; then rm -rf dist; fi
+  shell: bash
+```
+
+### 6. Missing Timeout Protection
 ```yaml
 #  Can run for 6 hours (GitHub default)
 jobs:
@@ -696,7 +709,7 @@ jobs:
     timeout-minutes: 30
 ```
 
-### 6. Not Handling Matrix Failures
+### 7. Not Handling Matrix Failures Gracefully
 ```yaml
 #  One failure cancels all jobs
 strategy:
@@ -708,6 +721,20 @@ strategy:
   fail-fast: false
   matrix:
     os: [ubuntu-latest, windows-latest, macos-latest]
+```
+
+### 8. Not Cleaning Up Artifacts
+```yaml
+#  Artifacts kept for 90 days (GitHub default)
+- uses: actions/upload-artifact@v4
+  with:
+    name: logs
+
+#  Set appropriate retention
+- uses: actions/upload-artifact@v4
+  with:
+    name: logs
+    retention-days: 7  # Adjust based on needs
 ```
 
 ---
@@ -1080,6 +1107,46 @@ jobs:
 ```
 
 **Environment-specific secrets:** Only available when deploying to that environment
+
+### Dynamic Input Choices
+
+Use `workflow_dispatch` with choice inputs for better UX:
+
+```yaml
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+      log-level:
+        description: 'Log level'
+        type: choice
+        options:
+          - debug
+          - info
+          - warning
+          - error
+        default: 'info'
+      dry-run:
+        description: 'Dry run mode'
+        type: boolean
+        default: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: |
+          echo "Deploying to ${{ inputs.environment }}"
+          echo "Log level: ${{ inputs.log-level }}"
+          echo "Dry run: ${{ inputs.dry-run }}"
+```
 
 ---
 

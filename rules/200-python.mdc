@@ -350,24 +350,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
-      
+
       - name: Install dependencies
         run: |
           uv sync
-      
+
       - name: Format check
         run: |
           black --check .
           isort --check-only .
-      
+
       - name: Lint
         run: |
           ruff check .
-      
+
       - name: Type check
         run: |
           mypy --strict .
-      
+
       - name: Pylint
         run: |
           pylint --fail-under=9.5 .
@@ -1050,10 +1050,10 @@ class User:
         self.name = name
         self.email = email
         self.age = age
-    
+
     def __repr__(self):
         return f"User(name={self.name!r}, email={self.email!r}, age={self.age})"
-    
+
     def __eq__(self, other):
         if not isinstance(other, User):
             return False
@@ -1071,12 +1071,12 @@ class User:
 # GOOD: Stateful object - use class
 class ConnectionPool:
     """Manages database connections with state."""
-    
+
     def __init__(self, max_connections: int = 10):
         self.max_connections = max_connections
         self._connections: list[Connection] = []
         self._active = 0
-    
+
     def acquire(self) -> Connection:
         """Acquire connection from pool."""
         if self._active >= self.max_connections:
@@ -1084,7 +1084,7 @@ class ConnectionPool:
         # ... connection logic
         self._active += 1
         return connection
-    
+
     def release(self, conn: Connection) -> None:
         """Release connection back to pool."""
         self._active -= 1
@@ -1132,7 +1132,7 @@ def process_items(items: list[str]) -> list[str]:
 class ItemProcessor:
     def __init__(self):
         self.processed: list[str] = []
-    
+
     def process(self, items: list[str]) -> list[str]:
         # ... process with state
 ```
@@ -1330,17 +1330,17 @@ def is_valid_email(email: str) -> bool:
     """Validate email format."""
     if not email or '@' not in email:
         return False
-    
+
     local, domain = email.rsplit('@', 1)
-    
+
     # Validate local part
     if not re.match(r'^[a-zA-Z0-9._%+-]+$', local):
         return False
-    
+
     # Validate domain
     if not re.match(r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', domain):
         return False
-    
+
     return True
 ```
 
@@ -1381,7 +1381,7 @@ from pydantic import BaseModel, HttpUrl, field_validator
 
 class Link(BaseModel):
     url: HttpUrl  # Automatic URL validation
-    
+
     @field_validator('url', mode='before')
     @classmethod
     def validate_url(cls, v: str) -> str:
