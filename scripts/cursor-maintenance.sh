@@ -11,8 +11,7 @@
 # Options:
 #   -n, --dry-run    Show what would be deleted without actually deleting
 #   -v, --verbose    Enable verbose output
-#   -a, --aggressive Include additional cleanup (terminal history, backups, stale projects)
-#   -d, --days N     Age threshold for stale projects (default: 30 days)
+#   -a, --aggressive Include additional cleanup (terminal history, backups)
 #   -h, --help       Show this help message
 #
 # Safe to run weekly. Cursor should be closed for best results.
@@ -25,7 +24,8 @@ set -uo pipefail
 # -----------------------------------------------------------------------------
 
 readonly CURSOR_DIR="${HOME}/.cursor"
-readonly VERSION="1.0.0"
+readonly VERSION="1.1.0"
+readonly CHAT_RETENTION_DAYS=30
 
 # Declare separately to avoid masking return values (SC2155)
 SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
@@ -50,7 +50,6 @@ fi
 DRY_RUN=false
 VERBOSE=false
 AGGRESSIVE=false
-STALE_DAYS=30
 
 # Counters
 TOTAL_SIZE=0
@@ -98,16 +97,14 @@ USAGE:
 OPTIONS:
     -n, --dry-run      Show what would be deleted without actually deleting
     -v, --verbose      Enable verbose output
-    -a, --aggressive   Include additional cleanup (terminal history, backups, stale projects)
-    -d, --days N       Age threshold for stale projects in days (default: 30)
+    -a, --aggressive   Include additional cleanup (old chats, terminal history, backups)
     -h, --help         Show this help message
 
 EXAMPLES:
     ${SCRIPT_NAME}                # Standard cleanup
     ${SCRIPT_NAME} -n             # Dry run - preview what would be deleted
     ${SCRIPT_NAME} -v             # Verbose output
-    ${SCRIPT_NAME} -a             # Aggressive cleanup including backups and stale projects
-    ${SCRIPT_NAME} -a -d 60       # Aggressive cleanup, projects older than 60 days
+    ${SCRIPT_NAME} -a             # Aggressive cleanup including backups
     ${SCRIPT_NAME} -n -a -v       # Dry run with aggressive + verbose
 
 CLEANED DIRECTORIES:
@@ -120,9 +117,9 @@ CLEANED DIRECTORIES:
       - logs/               Application logs
 
     Aggressive (-a):
+      - chats/ (30+ days)   Chat sessions not modified in last 30 days
       - Backups/            Old file backups
       - projects/*/terminals/  Terminal session history
-      - projects/*          Stale project directories (older than N days)
 
 NOTES:
     - Close Cursor before running for best results
@@ -152,11 +149,11 @@ get_dir_size_bytes() {
 
 format_bytes() {
   local bytes=$1
-  if [[ ${bytes} -ge 1073741824 ]]; then
+  if [[ "${bytes}" -ge 1073741824 ]]; then
     printf "%.2f GB" "$(echo "scale=2; ${bytes} / 1073741824" | bc)"
-  elif [[ ${bytes} -ge 1048576 ]]; then
+  elif [[ "${bytes}" -ge 1048576 ]]; then
     printf "%.2f MB" "$(echo "scale=2; ${bytes} / 1048576" | bc)"
-  elif [[ ${bytes} -ge 1024 ]]; then
+  elif [[ "${bytes}" -ge 1024 ]]; then
     printf "%.2f KB" "$(echo "scale=2; ${bytes} / 1024" | bc)"
   else
     printf "%d B" "${bytes}"
@@ -266,71 +263,71 @@ clean_terminal_directories() {
   TOTAL_SIZE=$((TOTAL_SIZE + total_terminal_size))
 }
 
-clean_stale_projects() {
-  local projects_dir="${CURSOR_DIR}/projects"
-  local days="${STALE_DAYS}"
+clean_old_chats() {
+  local chats_dir="${CURSOR_DIR}/chats"
 
-  if [[ ! -d "${projects_dir}" ]]; then
-    log_verbose "Skipping stale projects (no projects directory)"
+  if [[ ! -d "${chats_dir}" ]]; then
+    log_verbose "Skipping old chats (no chats directory)"
     return 0
   fi
 
-  # Find project directories not modified in the last N days
-  # Exclude hidden files like .DS_Store
-  local stale_projects
-  stale_projects=$(find "${projects_dir}" -mindepth 1 -maxdepth 1 -type d -mtime +"${days}" 2> /dev/null || true)
+  # Find chat directories older than retention period
+  local old_chats
+  old_chats=$(find "${chats_dir}" -type d -mindepth 1 -maxdepth 1 -mtime +${CHAT_RETENTION_DAYS} 2> /dev/null || true)
 
-  if [[ -z "${stale_projects}" ]]; then
-    log_verbose "Skipping stale projects (none older than ${days} days)"
+  if [[ -z "${old_chats}" ]]; then
+    log_verbose "Skipping old chats (none found older than ${CHAT_RETENTION_DAYS} days)"
     return 0
   fi
 
-  local total_stale_size=0
-  local stale_count=0
-  local stale_list=()
+  local total_chat_size=0
+  local chat_count=0
 
-  while IFS= read -r project_dir; do
-    if [[ -d "${project_dir}" ]]; then
+  # Calculate total size of old chats
+  while IFS= read -r chat_dir; do
+    if [[ -d "${chat_dir}" ]]; then
       local size_bytes
-      size_bytes=$(get_dir_size_bytes "${project_dir}")
-      total_stale_size=$((total_stale_size + size_bytes))
-      ((stale_count++)) || true
-      stale_list+=("$(basename "${project_dir}")")
+      size_bytes=$(get_dir_size_bytes "${chat_dir}")
+      total_chat_size=$((total_chat_size + size_bytes))
+      ((chat_count++)) || true
     fi
-  done <<< "${stale_projects}"
+  done <<< "${old_chats}"
 
-  if [[ "${total_stale_size}" -eq 0 ]]; then
-    log_verbose "Skipping stale projects (empty)"
+  if [[ "${total_chat_size}" -eq 0 ]]; then
+    log_verbose "Skipping old chats (empty directories)"
     return 0
   fi
 
   local size
-  size=$(format_bytes $((total_stale_size * 1024)))
+  size=$(format_bytes $((total_chat_size * 1024)))
 
   if [[ "${DRY_RUN}" == true ]]; then
-    log_info "[DRY RUN] Would remove ${stale_count} stale project(s) older than ${days} days: ${size}"
+    log_info "[DRY RUN] Would clean ${chat_count} old chat(s) (${CHAT_RETENTION_DAYS}+ days): ${size}"
     if [[ "${VERBOSE}" == true ]]; then
-      for project in "${stale_list[@]}"; do
-        log_verbose "Would remove: ${project}"
-      done
+      while IFS= read -r chat_dir; do
+        if [[ -d "${chat_dir}" ]]; then
+          local chat_size
+          chat_size=$(get_dir_size "${chat_dir}")
+          log_verbose "  Would remove: $(basename "${chat_dir}") (${chat_size})"
+        fi
+      done <<< "${old_chats}"
     fi
   else
-    log_info "Removing ${stale_count} stale project(s) older than ${days} days: ${size}"
-    if [[ "${VERBOSE}" == true ]]; then
-      for project in "${stale_list[@]}"; do
-        log_verbose "Removing: ${project}"
-      done
-    fi
-    while IFS= read -r project_dir; do
-      if [[ -d "${project_dir}" ]]; then
-        rm -rf "${project_dir:?}" 2> /dev/null || true
+    log_info "Cleaning ${chat_count} old chat(s) (${CHAT_RETENTION_DAYS}+ days): ${size}"
+    while IFS= read -r chat_dir; do
+      if [[ -d "${chat_dir}" ]]; then
+        if rm -rf "${chat_dir:?}" 2> /dev/null; then
+          log_verbose "Removed: $(basename "${chat_dir}")"
+        else
+          log_warn "Failed to remove: $(basename "${chat_dir}")"
+        fi
       fi
-    done <<< "${stale_projects}"
-    log_success "Removed ${stale_count} stale project(s)"
+    done <<< "${old_chats}"
+    log_success "Cleaned ${chat_count} old chat(s)"
     ((ITEMS_CLEANED++)) || true
   fi
 
-  TOTAL_SIZE=$((TOTAL_SIZE + total_stale_size))
+  TOTAL_SIZE=$((TOTAL_SIZE + total_chat_size))
 }
 
 # -----------------------------------------------------------------------------
@@ -339,7 +336,7 @@ clean_stale_projects() {
 
 main() {
   # Parse arguments
-  while [[ $# -gt 0 ]]; do
+  while [[ "$#" -gt 0 ]]; do
     case "$1" in
       -n | --dry-run)
         DRY_RUN=true
@@ -352,14 +349,6 @@ main() {
       -a | --aggressive)
         AGGRESSIVE=true
         shift
-        ;;
-      -d | --days)
-        if [[ -z "${2:-}" ]] || [[ ! "${2}" =~ ^[0-9]+$ ]]; then
-          log_error "Option --days requires a numeric argument"
-          exit 1
-        fi
-        STALE_DAYS="$2"
-        shift 2
         ;;
       -h | --help)
         usage
@@ -411,10 +400,10 @@ main() {
 
   # Aggressive cleanup
   if [[ "${AGGRESSIVE}" == true ]]; then
-    log_info "Aggressive cleanup (stale threshold: ${STALE_DAYS} days):"
+    log_info "Aggressive cleanup:"
+    clean_old_chats
     clean_directory "${CURSOR_DIR}/Backups" "Backups"
     clean_terminal_directories
-    clean_stale_projects
     echo ""
   fi
 
