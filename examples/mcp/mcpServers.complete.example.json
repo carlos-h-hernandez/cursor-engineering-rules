@@ -1,5 +1,75 @@
 {
   "mcpServers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem"
+      ],
+      "env": {
+        "MCP_FILESYSTEM_ROOT": "${env:MCP_FILESYSTEM_ROOT}"
+      },
+      "metadata": {
+        "title": "Filesystem MCP",
+        "description": "File system operations with scoped root directory"
+      }
+    },
+    "git": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-git"
+      ],
+      "env": {},
+      "metadata": {
+        "title": "Git MCP",
+        "description": "Git operations and repository management"
+      }
+    },
+    "context7": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {},
+      "metadata": {
+        "title": "Context7",
+        "description": "Upstash Context7 MCP server for context management"
+      }
+    },
+    "shellwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@dwmkerr/shellwright"
+      ],
+      "env": {
+        "THEME": "${env:THEME}",
+        "FONT_SIZE": "${env:FONT_SIZE}",
+        "FONT_FAMILY": "${env:FONT_FAMILY}",
+        "TEMP_DIR": "${env:TEMP_DIR}"
+      },
+      "metadata": {
+        "title": "Shellwright",
+        "description": "Terminal automation, screenshots, and GIF recording for AI agents"
+      }
+    },
+    "github-remote": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_MCP_PAT}"
+      },
+      "metadata": {
+        "title": "GitHub MCP (remote)",
+        "description": "Repos, PRs, issues, Actions (remote hosted)"
+      }
+    },
     "aws-ccapi": {
       "type": "stdio",
       "command": "uvx",

@@ -11,6 +11,11 @@ MD013:
 # Inline HTML - allowed (needed for badges, GitHub-specific formatting)
 MD033: false
 
+# Table column style
+# This repo contains many legacy tables and multiple formatting styles.
+# Enforcing a single style creates large, noisy diffs.
+MD060: false
+
 # First line in file should be top-level heading - disabled
 MD041: false
 
