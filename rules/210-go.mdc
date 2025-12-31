@@ -2575,11 +2575,18 @@ func printVersion() {
 
 - **Package Docs**: Capture purpose in `doc.go`
 - **Exported Items**: Every exported item gets a comment
+  - **Doc comment (required for exported items)**: A `//` comment immediately preceding the declaration that **starts with the exported identifier name**, so `go doc` / `godoc` associates it correctly
 - **Concurrency Contracts**: Document goroutine-safety
 
 ```go
 // Package user provides user management functionality.
 package user
+
+// FetchIdentity retrieves the current AWS caller identity using STS.
+// It returns an error if the request fails.
+func FetchIdentity(ctx context.Context, client *sts.Client) (*sts.GetCallerIdentityOutput, error) {
+    // ...
+}
 
 // User represents a user in the system.
 type User struct {
