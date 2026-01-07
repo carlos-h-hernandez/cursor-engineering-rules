@@ -90,8 +90,22 @@ High-quality examples should:
 1. **Fork the repository**
 2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
 3. **Make your changes**
-4. **Test your changes**: Ensure examples work and formatting is correct
-5. **Commit with conventional commits**: `feat: add rust async patterns`
+4. **Run pre-commit hooks**: `pre-commit run --all-files`
+5. **Test your changes**: Ensure examples work and formatting is correct
+6. **Commit with conventional commits**: `feat: add rust async patterns`
+
+### Pre-commit Setup
+
+```bash
+# Install pre-commit hooks (run once after cloning)
+pre-commit install
+
+# Run hooks on all files
+pre-commit run --all-files
+
+# Update hooks to latest versions (run periodically)
+pre-commit autoupdate
+```
 
 ### Commit Message Format
 

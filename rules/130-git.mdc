@@ -704,38 +704,148 @@ pre-commit autoupdate
 
 #  Repository Scaffolding & Hygiene
 
-Every repo **must** contain the following foundational files with project-appropriate content:
+Every repo **must** contain the following foundational files with project-appropriate content.
 
-| File                               | Requirement                                                           |
-| ---------------------------------- | --------------------------------------------------------------------- |
-| `.gitignore`                       | Based on language/framework presets (GitHub templates)                |
-| `.editorconfig`                    | Enforce consistent indentation, LF, charset                           |
-| `.gitattributes`                   | Normalize line endings, set diff behavior for binaries                |
-| `.pre-commit-config.yaml`          | **Must include top-level `name:`** and proper language-specific hooks |
-| `.markdownlint.yaml`               | Align with workspace Markdown rules                                   |
-| `.commitlintrc.yaml`               | Enforce commit conventions                                            |
-| `.dependabot.yaml`                 | Automated dependency update checks                                    |
-| `.github/CODEOWNERS`               | Assign ownership to enforce review policy                             |
-| `.github/PULL_REQUEST_TEMPLATE.md` | Enforce PR format above                                               |
+> [!IMPORTANT]
+> **Always use `.yaml` extension, NOT `.yml`** — This is a project-wide convention for consistency and clarity.
+
+## Required Files
+
+| File | Requirement |
+| ---- | ----------- |
+| `README.md` | Project overview, setup instructions, usage examples |
+| `.gitignore` | Based on language/framework presets ([GitHub templates](https://github.com/github/gitignore)) |
+| `.gitattributes` | Normalize line endings, set diff behavior for binaries |
+| `.editorconfig` | Enforce consistent indentation, LF, charset |
+
+## GitHub Configuration
+
+| File | Requirement |
+| ---- | ----------- |
+| `.github/CODEOWNERS` | Assign ownership to enforce review policy |
+| `.github/CONTRIBUTING.md` | Contribution guidelines, commit standards, PR process |
+| `.github/PULL_REQUEST_TEMPLATE.md` | Enforce PR format (see PR Standards above) |
+| `.github/dependabot.yaml` | Automated dependency updates (see schedule below) |
+| `.github/workflows/ci-pre-commit-checks.yaml` | CI pipeline for pre-commit hooks validation |
+
+## Code Quality
+
+| File | Requirement |
+| ---- | ----------- |
+| `.pre-commit-config.yaml` | **Must include `name:` on each hook** for identification |
+| `.markdownlint.yaml` | Align with workspace Markdown rules |
+| `.commitlintrc.yaml` | Enforce conventional commit standards |
+
+---
+
+### Dependabot Configuration
+
+Create `.github/dependabot.yaml` with the following schedule:
+
+```yaml
+---
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    commit-message:
+      prefix: "ci(deps): "
+    schedule:
+      interval: weekly
+      day: friday
+      time: "00:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - github-actions
+
+  # Add additional ecosystems as needed:
+  # - package-ecosystem: pip
+  #   directory: /
+  #   commit-message:
+  #     prefix: "chore(deps): "
+  #   schedule:
+  #     interval: weekly
+  #     day: friday
+  #     time: "00:00"
+  #     timezone: UTC
+```
+
+---
+
+### Pre-commit Configuration
+
+Ensure `.pre-commit-config.yaml`:
+
+1. **Has `name:` on each hook** for easy identification in logs
+2. **Documents update command** in the file header or `CONTRIBUTING.md`
+
+**Example header:**
+
+```yaml
+---
+# Pre-commit hooks configuration
+# Install: pre-commit install
+# Update: pre-commit autoupdate
+# Run manually: pre-commit run --all-files
+```
 
 > [!TIP]
-> Add a periodic maintenance step like:
->
-> ```
-> pre-commit autoupdate
-> ```
->
-> to keep hooks updated.
+> Run `pre-commit autoupdate` periodically to keep hooks current with upstream releases.
+
+---
+
+### CI Pre-commit Workflow
+
+Create `.github/workflows/ci-pre-commit-checks.yaml`:
+
+```yaml
+---
+name: Pre-commit Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pre-commit:
+    name: Run pre-commit hooks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
+```
 
 ---
 
 ### Repo Creation Checklist
 
-* [ ] Meta files exist and follow best practices
-* [ ] Pre-commit hooks enabled and documented
-* [ ] Codeowners enforce mandatory reviews
-* [ ] PR template references testing + security checks
-* [ ] Dependabot and automation enabled as needed
+* [ ] `README.md` exists with project overview and setup instructions
+* [ ] `.gitignore` covers language/framework artifacts
+* [ ] `.gitattributes` normalizes line endings
+* [ ] `.editorconfig` enforces consistent formatting
+* [ ] `.github/CODEOWNERS` assigns reviewers
+* [ ] `.github/CONTRIBUTING.md` documents contribution process
+* [ ] `.github/PULL_REQUEST_TEMPLATE.md` enforces PR format
+* [ ] `.github/dependabot.yaml` configured (weekly, Friday, 00:00 UTC)
+* [ ] `.github/workflows/ci-pre-commit-checks.yaml` validates hooks in CI
+* [ ] `.pre-commit-config.yaml` has `name:` on each hook
+* [ ] `.markdownlint.yaml` configured
+* [ ] `.commitlintrc.yaml` enforces commit conventions
 * [ ] No secrets or credentials in history
 
 ---
